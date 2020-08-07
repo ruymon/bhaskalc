@@ -1,0 +1,41 @@
+input.themeToggle[type=checkbox] {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+
+label {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 35px;
+    height: 15px;
+    background: rgb(53, 53, 53);
+    display: block;
+    border-radius: 50px;
+    position: relative;
+}
+
+label:after {
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: -0.1px;
+    width: 15px;
+    height: 15px;
+    background: rgb(131, 131, 131);
+    border-radius: 90px;
+    transition: 0.3s;
+}
+
+input:checked+label {
+    background: rgb(184, 184, 184);
+}
+
+input:checked+label:after {
+    left: calc(100% - 0px);
+    transform: translateX(-100%);
+}
+
+label:active:after {
+    width: 10px;
+}

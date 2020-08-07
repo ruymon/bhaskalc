@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <!-- META TAGS-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- END META TAGS -->
+    <title>Bhaskar Calculator</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital@1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap" rel="stylesheet">
+    <!-- Font End-->
+    <!-- MathJax V3 -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- END MathJax V3-->
+    <!-- jQuery -->
+    <script src="./assets/js/jquery-3.5.1.js"></script>
+    <!-- end jQuery -->
+    <!-- Dark Mode jQuery Script-->
+    <script src="./assets/js/theme.js"></script>
+    <!-- End of Dark Mode jQuery Scrip-->
+    <!--CDN-->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.1/js/bootstrap.min.js" integrity="sha384-XEerZL0cuoUbHE4nZReLT7nx9gQrQreJekYhJD9WNWhH8nEW+0c5qq7aIo2Wl30J" crossorigin="anonymous"></script>
+    <!-- END Bootstrap-->
+    <!-- CSS LINK-->
+    <link rel="stylesheet" href="./assets/css/reset.css">
+    <link rel="stylesheet" href="./assets/css/toggle.css">
+    <link rel="stylesheet" href="./assets/css/main.css">
+
+    <!--Themes -->
+    <link rel="stylesheet" href="./assets/css/theme.css">
+    <!-- END CSS LINK-->
+
+
+</head>
+
+<body class="bodyStyle">
+
+    <!-- Start of User Input Content -->
+
+    <div class="formInput">
+        <form>
+
+            <!-- Interface Header -->
+            <h2 class="inputTittle">Bhaskara Calculator</h2>
+            <p class="formula">f(x) = ax&#178 + bx + c</p>
+            <!-- End of Interface Header -->
+
+            <!-- Start User Input -->
+            <div class="inputPH">
+                <input class="inputA" placeholder="Coeficiente A" id="coeficienteA" />
+                <input class="inputB" placeholder="Coeficiente B" id="coeficienteB" />
+                <input class="inputC" placeholder="Coeficiente C" id="coeficienteC" />
+            </div>
+            <!-- End of User Input -->
+
+            <!-- Interface Buttons -->
+            <button type="button" class="botaoLimpar" onclick="window.location.href=window.location.href">Reset</button>
+            <button type="button" class="botaoCalcular" onclick='calcularResultado()'>Calcular</button>
+
+            <!-- Dark Mode Toggle-->
+            <div class="modoNoturno">
+                <input class="themeToggle" type="checkbox" id="switch" onclick='mudarCor()' /><label for="switch">Toggle</label>
+            </div>
+            <!--  End Color Mode-->
+
+            <!-- Developer Details => Do not Remove! -->
+            <p class="devCredits">Feito com ❤️<strong>Ruy Monteiro</strong></p>
+            <!-- Developer Details => Do not Remove! -->
+
+
+        </form>
+    </div>
+    <!-- End of User Content-->
+
+    <!-- Start of Output Content-->
+    <div class="formOutput">
+
+        <div class="headerOutput"></div>
+
+        <div class="outputDelta">
+            <p class="headerDelta"><strong>DELTA :</strong> </p>
+            <p id="resultadoDeltaRaw"></p>
+        </div>
+
+        <div class="outputX1">
+            <p class="headerX1">x1 :</p>
+            <p class="valorX1" id="x1Raw"></p>
+        </div>
+
+        <div class="outputX2">
+            <p class="headerX2"> x2 :</p>
+            <p class="valorX2" id="x2Raw"></p>
+        </div>
+
+        <div class="outputConjuntoSolucao">
+            <p class="headerConjuntoSolucao" style="color: rgb(0, 238, 255); font-size: 25px;"> CONJUNTO SOLUÇÃO :</p>
+            <p class="valorConjuntoSolucao"> S = {
+                <a id="resCS1Raw"> </a><a> ; </a>
+                <a id="resCS2Raw"> </a>}</p>
+        </div>
+
+        <div class="outputDeltaTratado">
+            <p class="headerDeltaTratado"><strong>DELTA :</strong> </p>
+            <p id="resultadoDeltaTratado"></p>
+        </div>
+
+        <div class="outputX1Tratado">
+            <p class="headerX1Tratado">x1 :</p>
+            <p class="valorX1Tratado" id="x1"></p>
+        </div>
+
+        <div class="outputX2Tratado">
+            <p class="headerX2Tratado"> x2 :</p>
+            <p class="valorX2Tratado" id="x2"></p>
+        </div>
+
+        <div class="outputConjuntoSolucaoTratado">
+            <p class="headerConjuntoSolucaoTratado" style="color: rgb(0, 238, 255); font-size: 25px;"> CONJUNTO SOLUÇÃO :</p>
+            <p class="valorConjuntoSolucaoTratado"> S = {
+                <a id="resTratCS1"> </a><a> ; </a>
+                <a id="resTratCS2"> </a>}</p>
+        </div>
+    </div>
+    <!-- End of Output Content-->
+
+    <!-- Bhaskara F(x) Script-->
+    <script src="../bhaskara/assets/js/bhaskara.js"></script>
+    <!-- End of Bhaskara Script-->
+
+
+
+
+</body>
+
+</html>
