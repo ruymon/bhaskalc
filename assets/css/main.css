@@ -24,7 +24,7 @@ body {
 }
 
 .bodyStyle {
-    background-color: rgb(36, 36, 36);
+    background-color: rgb(87, 152, 158);
 }
 
 
@@ -37,14 +37,13 @@ body {
     height: 550px;
     position: absolute;
     text-align: center;
-    border-radius: 20px;
-    background-color: rgb(41, 41, 41);
-    border: 1px solid rgb(41, 41, 41);
-    box-shadow: -25px 24px 35px 9px rgba(0, 0, 0, 0.75);
+    border-radius: 5px;
+    background-color: rgb(255,255,255);
+    box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
 }
 
 .inputTittle {
-    color: green;
+    color: rgb(46, 46, 46);
     font-family: 'Titillium Web', sans-serif;
     font-weight: 500;
     margin-top: 25px;
@@ -53,76 +52,93 @@ body {
 }
 
 .formula {
-    color: rgb(85, 85, 85);
+    color: rgb(69, 69, 69);
     font-family: 'Crimson Text', serif;
     font-size: 22px;
     letter-spacing: 3px;
-    margin-bottom: 40px;
 }
 
 
 /* User Input */
-
+.inputAText{
+    text-align: left;
+    margin-left: 10%;
+    font-size: 16px;
+}
 .inputA {
-    background-color: rgb(35, 35, 35);
-    border: 2px solid rgb(35, 35, 35);
-    color: white;
+    background-color: rgb(245, 245, 245);
+    border: 2px solid rgb(255, 255, 255);
+    color:rgb(41, 41, 41);
     width: 250px;
     height: 40px;
-    margin-bottom: 20px;
     font-weight: 200;
     box-sizing: border-box;
-    border-radius: 10px;
-    text-align: center;
+    border-radius: 5px;
+    padding-left: 5px ;
+    text-align: left;
     font-size: 16px;
 }
 
+.inputBText{
+    text-align: left;
+    margin-left: 10%;
+    font-size: 16px;
+}
 .inputB {
-    background-color: rgb(35, 35, 35);
-    border: 2px solid rgb(35, 35, 35);
-    color: white;
+    background-color: rgb(245, 245, 245);
+    border: 2px solid rgb(255, 255, 255);
+    color: rgb(41, 41, 41);
     width: 250px;
     height: 40px;
-    margin-bottom: 20px;
     box-sizing: border-box;
-    border-radius: 10px;
-    text-align: center;
+    border-radius: 5px;
+    text-align: left;
+    padding-left: 5px ;
     font-size: 16px;
     font-weight: 200;
 }
 
+.inputCText{
+    text-align: left;
+    margin-left: 10%;
+    font-size: 16px;
+}
 .inputC {
-    background-color: rgb(35, 35, 35);
-    border: 2px solid rgb(35, 35, 35);
-    color: white;
+    background-color: rgb(245, 245, 245);
+    border: 2px solid rgb(255, 255, 255);
+    color: rgb(41, 41, 41);
     width: 250px;
     height: 40px;
-    margin-bottom: 35px;
     font-weight: 200;
     box-sizing: border-box;
-    border-radius: 10px;
-    text-align: center;
+    border-radius: 5px;
+    padding-left: 5px ;
+    text-align: left;
     font-size: 16px;
 }
 
 ::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
-    color: rgb(82, 82, 82);
+    font-family: 'Titillium Web', sans-serif;
+    color: rgb(0, 0, 0);
 }
 
 ::-moz-placeholder {
     /* Firefox 19+ */
-    color: rgb(82, 82, 82);
+    font-family: 'Titillium Web', sans-serif;
+    color: rgb(0, 0, 0);
 }
 
 :-ms-input-placeholder {
     /* IE 10+ */
-    color: rgb(82, 82, 82);
+    font-family: 'Titillium Web', sans-serif;
+    color: rgb(0, 0, 0);
 }
 
 :-moz-placeholder {
     /* Firefox 18- */
-    color: rgb(82, 82, 82);
+    font-family: 'Titillium Web', sans-serif;
+    color: rgb(0, 0, 0);
 }
 
 :focus {
@@ -135,11 +151,12 @@ body {
     margin-bottom: 10px;
     padding: 3px;
     width: 250px;
-    background-color: rgb(12, 60, 116);
-    border: 5px solid rgb(12, 60, 116);
+    height: 40px;
+    background: rgb(1,210,180);
+    background: linear-gradient(90deg, rgba(1,210,180,1) 0%, rgba(0,178,214,1) 100%);
     color: white;
-    border-radius: 9px;
-    box-shadow: -16px 16px 25px -10px rgba(41, 41, 41, 1);
+    border-radius: 5px;
+    font-family: 'Titillium Web', sans-serif;   
     font-weight: 200;
     font-size: 17px;
     letter-spacing: 1px;
@@ -150,11 +167,12 @@ body {
     margin-bottom: 5px;
     padding: 3px;
     width: 250px;
-    background-color: #00792e;
-    border: 5px solid #00792e;
+    height: 40px;
+    background: rgb(1,210,180);
+    background: linear-gradient(90deg, rgba(1,210,180,1) 0%, rgba(0,178,214,1) 100%);
     color: white;
-    border-radius: 9px;
-    box-shadow: -16px 16px 25px -10px rgba(41, 41, 41, 1);
+    border-radius: 5px;
+    font-family: 'Titillium Web', sans-serif;
     font-weight: 200;
     font-size: 17px;
     letter-spacing: 1px;
@@ -187,22 +205,41 @@ body {
 
 /* OUTPUT TABLE FORMATING + CUSTOM INPUT COLORS */
 
-.formOutput {
+.outputDivision {
     width: 1100px;
-    height: 800px;
+    height: 700px;
     left: 35%;
-    bottom: 10%;
+    bottom: 20%;
     position: absolute;
-    background-color: rgb(155, 43, 43);
     border-radius: 10px;
-    border: 1px solid rgb(255, 206, 0);
-    text-align: center;
+    box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
 }
 
+/* Output Graph */
+.graph{
+    
+    float: left;
+    height: 100%;
+    text-align: center;
+    font-size: 72px;
+    background-color:rgb(141, 196, 201);
+    width: 66%;
+}
+
+.formOutput{
+    float: right;
+    height: 100%;
+    background-color:white;
+    width: 34%;
+}
 
 /* Output Delta */
 
-.outputDelta {}
+.outputDelta {
+    margin-top: 30px;
+    font-size: 30px;
+    text-align: center;
+}
 
 .headerDelta {
     display: inline;
@@ -212,6 +249,8 @@ body {
 }
 
 .resultadoDelta {
+    width: 100%;
+    height: 500px;
     color: rgb(0, 255, 34);
     background-color: #292929;
     border-radius: 4px;
@@ -219,13 +258,7 @@ body {
     padding: 15px;
     margin: 5px;
 }
-
-
-/* Fim Output Delta */
-
-
-/* Output X1 */
-
+/*
 .outputX1 {}
 
 .headerX1 {
@@ -245,12 +278,6 @@ body {
     padding: 15px;
     margin: 5px;
 }
-
-
-/* Fim Output X1 */
-
-
-/* Output X2 */
 
 .outputX2 {}
 
@@ -272,12 +299,6 @@ body {
     margin: 5px;
 }
 
-
-/* Fim Output X2 */
-
-
-/* Output Conjunto Solução */
-
 .outputConjuntoSolucao {}
 
 .headerConjuntoSolucao {
@@ -295,114 +316,88 @@ body {
     font-size: 20px;
     padding: 20px;
     text-align: center;
-}
+} */
 
 
-/* Fim Output Conjunto Solução */
+.outputDeltaTratado {
+    margin-top: 30px;
+ }
 
-
-/* *************** */
-
-
-/* OUTPUT TRATADO */
-
-
-/* ************** */
-
-.outputDeltaTratado {}
-
-.headerDeltaTratado {
-    display: inline;
-    padding: 5px;
-    border-radius: 5px;
-    border: 2px solid tomato;
+.headerDeltaTratado { 
+    font-size: 29px;
+    text-align: center;
 }
 
 .resultadoDeltaTratado {
-    color: rgb(0, 255, 34);
-    background-color: #292929;
-    border-radius: 4px;
-    font-size: 16px;
-    padding: 15px;
-    margin: 5px;
+    
 }
 
 
-/* Fim Output Delta */
-
-
-/* Output X1 */
-
-.outputX1Tratado {}
+.outputX1Tratado {
+    margin: 20px;
+}
 
 .headerX1Tratado {
     display: inline;
     padding: 5px;
     border-radius: 5px;
-    border: 2px solid rgb(255, 0, 200);
-    background-color: rgba(255, 0, 0, 0.219);
-    color: greenyellow;
+    font-size: 20px;
 }
 
 .valorX1Tratado {
     color: rgb(0, 255, 34);
     background-color: #292929;
-    border-radius: 4px;
     font-size: 16px;
-    padding: 15px;
-    margin: 5px;
+    padding: 20px;
+    border-radius: 5px;
 }
 
 
-/* Fim Output X1 */
-
-
-/* Output X2 */
-
-.outputX2Tratado {}
+.outputX2Tratado {
+    margin: 20px;
+}
 
 .headerX2Tratado {
     display: inline;
     padding: 5px;
     border-radius: 5px;
-    background-color: rgba(255, 0, 0, 0.219);
-    border: 2px solid rgb(255, 0, 157);
-    color: greenyellow;
+    font-size: 20px;
 }
 
 .valorX2Tratado {
     color: rgb(0, 255, 34);
     background-color: #292929;
-    border-radius: 4px;
     font-size: 16px;
-    padding: 15px;
-    margin: 5px;
+    padding: 20px;
+    border-radius: 5px;
 }
 
 
-/* Fim Output X2 */
-
-
-/* Output Conjunto Solução */
-
-.outputConjuntoSolucaoTratado {}
+.outputConjuntoSolucaoTratado {
+    margin: 20px;
+}
 
 .headerConjuntoSolucaoTratado {
-    color: rgb(0, 238, 255);
     font-size: 25px;
 }
 
 .valorConjuntoSolucaoTratado {
+    padding: 10px;
     color: rgb(0, 238, 255);
-    border: 3px solid yellow;
     height: 40px;
-    width: 500px;
     background-color: #292929;
     border-radius: 4px;
     font-size: 20px;
-    padding: 20px;
     text-align: center;
+    border-radius: 5px;
 }
+
+/* Fim Output Delta */
+
+
+/* TESTE */
+
+
 
 
 /* Fim Output Conjunto Solução */
