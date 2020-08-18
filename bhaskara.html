@@ -42,7 +42,6 @@
 </head>
 
 <body class="bodyStyle">
-
     <!-- Start of User Input Content -->
 
     <div class="formInput">
@@ -55,16 +54,28 @@
 
             <!-- Start User Input -->
             <div class="inputPH">
-                <input class="inputA" placeholder="Coeficiente A" id="coeficienteA" />
-                <input class="inputB" placeholder="Coeficiente B" id="coeficienteB" />
-                <input class="inputC" placeholder="Coeficiente C" id="coeficienteC" />
+                <div style="padding: 7px;">
+                    <div class="inputAText">Coeficiente A</div>
+                    <input class="inputA" placeholder="" id="coeficienteA" autocomplete="off" />
+                </div>
+
+                <div style="padding: 7px;"> 
+                    <div class="inputBText">Coeficiente B</div>
+                    <input class="inputB" placeholder="" id="coeficienteB" autocomplete="off" />
+                </div>
+                
+                <div style="padding: 7px;"> 
+                    <div class="inputCText">Coeficiente C</div>
+                    <input class="inputC" placeholder="" id="coeficienteC" autocomplete="off"  />
+                </div>
             </div>
             <!-- End of User Input -->
 
-            <!-- Interface Buttons -->
-            <button type="button" class="botaoLimpar" onclick="window.location.href=window.location.href">Reset</button>
-            <button type="button" class="botaoCalcular" onclick='calcularResultado()'>Calcular</button>
-
+            <div>
+                <!-- Interface Buttons -->
+                <button type="button" class="botaoLimpar" onclick="window.location.href=window.location.href">Reset</button>
+                <button type="button" class="botaoCalcular" onclick='calcularResultado()'>Calcular</button>
+            </div>
             <!-- Dark Mode Toggle-->
             <div class="modoNoturno">
                 <input class="themeToggle" type="checkbox" id="switch" onclick='mudarCor()' /><label for="switch">Toggle</label>
@@ -72,7 +83,7 @@
             <!--  End Color Mode-->
 
             <!-- Developer Details => Do not Remove! -->
-            <p class="devCredits">Feito com ❤️<strong>Ruy Monteiro</strong></p>
+            <p class="devCredits">Feito com ❤️<strong>RUY MORTEIRO O-o</strong></p>
             <!-- Developer Details => Do not Remove! -->
 
 
@@ -81,55 +92,67 @@
     <!-- End of User Content-->
 
     <!-- Start of Output Content-->
-    <div class="formOutput">
-
-        <div class="headerOutput"></div>
-
-        <div class="outputDelta">
-            <p class="headerDelta"><strong>DELTA :</strong> </p>
-            <p id="resultadoDeltaRaw"></p>
+    <div class="outputDivision">
+        <!-- Parable graph display-->
+        <div class="graph">
+            <p style="text-align: center; font-size: 72px; margin-top: 40%;">Insert Graph</p>
         </div>
 
-        <div class="outputX1">
-            <p class="headerX1">x1 :</p>
-            <p class="valorX1" id="x1Raw"></p>
-        </div>
+        <!-- Results (delta, x1, x2...)-->
+        <div class="formOutput">
 
-        <div class="outputX2">
-            <p class="headerX2"> x2 :</p>
-            <p class="valorX2" id="x2Raw"></p>
-        </div>
+            <div class="headerOutput">
 
-        <div class="outputConjuntoSolucao">
-            <p class="headerConjuntoSolucao" style="color: rgb(0, 238, 255); font-size: 25px;"> CONJUNTO SOLUÇÃO :</p>
-            <p class="valorConjuntoSolucao"> S = {
-                <a id="resCS1Raw"> </a><a> ; </a>
-                <a id="resCS2Raw"> </a>}</p>
-        </div>
+            </div>
+<!--
+            <div class="outputDelta">
+                <p class="headerDelta"><strong>DELTA :</strong> </p>
+                <p id="resultadoDeltaRaw"></p>
+            </div>
 
-        <div class="outputDeltaTratado">
-            <p class="headerDeltaTratado"><strong>DELTA :</strong> </p>
-            <p id="resultadoDeltaTratado"></p>
-        </div>
+            <div class="outputX1">
+                <p class="headerX1">x1 :</p>
+                <p class="valorX1" id="x1Raw"></p>
+            </div>
 
-        <div class="outputX1Tratado">
-            <p class="headerX1Tratado">x1 :</p>
-            <p class="valorX1Tratado" id="x1"></p>
-        </div>
+            <div class="outputX2">
+                <p class="headerX2"> x2 :</p>
+                <p class="valorX2" id="x2Raw"></p>
+            </div>
+            
+            <div class="outputConjuntoSolucao">
+                <p class="headerConjuntoSolucao" style="color: rgb(0, 238, 255); font-size: 25px;"> CONJUNTO SOLUÇÃO :</p>
+                <p class="valorConjuntoSolucao"> S = {
+                    <a id="resCS1Raw"> </a><a> ; </a>
+                    <a id="resCS2Raw"> </a>}</p>
+            </div>
+            -->
 
-        <div class="outputX2Tratado">
-            <p class="headerX2Tratado"> x2 :</p>
-            <p class="valorX2Tratado" id="x2"></p>
-        </div>
+            <div class="outputDeltaTratado">
+                <p class="headerDeltaTratado"><strong>DELTA :</strong> </p>
+                <p id="resultadoDeltaTratado">DELTA TESTE</p>
+            </div>
 
-        <div class="outputConjuntoSolucaoTratado">
-            <p class="headerConjuntoSolucaoTratado" style="color: rgb(0, 238, 255); font-size: 25px;"> CONJUNTO SOLUÇÃO :</p>
-            <p class="valorConjuntoSolucaoTratado"> S = {
-                <a id="resTratCS1"> </a><a> ; </a>
-                <a id="resTratCS2"> </a>}</p>
-        </div>
+            <div class="outputX1Tratado">
+                <p class="headerX1Tratado">Raíz 1</p>
+                <p class="valorX1Tratado" id="x1">value</p>
+            </div>
+
+            <div class="outputX2Tratado">
+                <p class="headerX2Tratado">Raíz 2</p>
+                <p class="valorX2Tratado" id="x2">value</p>
+            </div>
+
+            <div class="outputConjuntoSolucaoTratado">
+                <p class="headerConjuntoSolucaoTratado"> Conjunto Solução</p>
+                <p class="valorConjuntoSolucaoTratado"> S = {
+                    <a id="resTratCS1"> </a><a> ; </a>
+                    <a id="resTratCS2"> </a>}</p>
+            </div>
     </div>
     <!-- End of Output Content-->
+    </div>
+
 
     <!-- Bhaskara F(x) Script-->
     <script src="../bhaskara/assets/js/bhaskara.js"></script>
