@@ -7,7 +7,8 @@
  */
 
 .lightBodyStyle {
-    background-color: rgb(36, 36, 36);
+
+    background-color: rgb(87, 152, 158);
 }
 
 .lightFormInput {
@@ -18,13 +19,12 @@
     position: absolute;
     text-align: center;
     border-radius: 5px;
-    background-color: rgb(48, 59, 64);
-    border: 0px solid rgb(56, 59, 61);
+    background-color: rgb(255,255,255);
     box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
 }
 
 .lightInputTittle {
-    color: rgb(242, 251, 255);
+    color: rgb(46, 46, 46);
     font-family: 'Titillium Web', sans-serif;
     font-weight: 500;
     margin-top: 25px;
@@ -33,16 +33,16 @@
 }
 
 .lightFormula {
-    color: rgb(158, 173, 184);
+    color: rgb(69, 69, 69);
     font-family: 'Crimson Text', serif;
     font-size: 22px;
     letter-spacing: 3px;
 }
 
 .lightInputA {
-    background-color: rgb(34, 42, 46);
-    border: 2px solid rgb(34, 42, 46);
-    color:rgb(158, 173, 184);
+    background-color: rgb(245, 245, 245);
+    border: 2px solid rgb(255, 255, 255);
+    color:rgb(41, 41, 41);
     width: 250px;
     height: 40px;
     font-weight: 200;
@@ -54,9 +54,9 @@
 }
 
 .lightInputB {
-    background-color: rgb(34, 42, 46);
-    border: 2px solid rgb(34, 42, 46);
-    color:rgb(158, 173, 184);
+    background-color: rgb(245, 245, 245);
+    border: 2px solid rgb(255, 255, 255);
+    color: rgb(41, 41, 41);
     width: 250px;
     height: 40px;
     box-sizing: border-box;
@@ -68,9 +68,9 @@
 }
 
 .lightInputC {
-    background-color: rgb(34, 42, 46);
-    border: 2px solid rgb(34, 42, 46);
-    color:rgb(158, 173, 184);
+    background-color: rgb(245, 245, 245);
+    border: 2px solid rgb(255, 255, 255);
+    color: rgb(41, 41, 41);
     width: 250px;
     height: 40px;
     font-weight: 200;
@@ -127,8 +127,7 @@ input:focus {
     padding: 3px;
     width: 250px;
     height: 40px;
-    background: rgb(1,210,180);
-    background: linear-gradient(90deg, rgba(1,210,180,1) 0%, rgba(0,178,214,1) 100%);
+    background-color: rgb(87, 152, 158);
     color: white;
     border-radius: 5px;
     font-family: 'Titillium Web', sans-serif;   
@@ -143,8 +142,7 @@ input:focus {
     padding: 3px;
     width: 250px;
     height: 40px;
-    background: rgb(1,210,180);
-    background: linear-gradient(90deg, rgba(1,210,180,1) 0%, rgba(0,178,214,1) 100%);
+    background-color: rgb(87, 152, 158);
     color: white;
     border-radius: 5px;
     font-family: 'Titillium Web', sans-serif;
@@ -171,4 +169,47 @@ input:focus {
     color: white;
 }
 
+.lightGraph{
+    float: left;
+    height: 100%;
+    text-align: center;
+    font-size: 72px;
+    background-color:rgb(141, 196, 201);
+    width: 66%;
+}
+
+.lightFormOutput{
+    float: right;
+    height: 100%;
+    width: 34%;
+    background-color:white;
+}
+
+.lightHeaderDeltaTratado{
+
+    color:rgb(0,0,0);
+    font-size: 29px;
+    text-align: center;
+}
+
+.lightHeaderX1Tratado{
+    color: rgb(0, 0, 0);
+    display: inline;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.lightHeaderX2Tratado{
+    color: rgb(0, 0, 0);
+    display: inline;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.lightHeaderConjuntoSolucaoTratado{
+    color: rgb(0, 0, 0);
+    font-size: 25px;
+}
 /*
