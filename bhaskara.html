@@ -42,19 +42,19 @@
     <!-- End of Script-->
 </head>
 
-<body class="bodyStyle">
+<body id="bodyStyle" class="bodyStyle">
     <!-- Start of User Input Content -->
 
-    <div class="formInput">
+    <div class="formInput" id="formInput">
         <form>
 
             <!-- Interface Header -->
-            <h2 class="inputTittle">Bhaskara Calculator</h2>
-            <p class="formula">f(x) = ax&#178 + bx + c</p>
+            <h2 class="inputTittle" id="inputTittle">Bhaskara Calculator</h2>
+            <p class="formula" id="formula">f(x) = ax&#178 + bx + c</p>
             <!-- End of Interface Header -->
 
             <!-- Start User Input -->
-            <div class="inputPH">
+            <div class="inputPH" id="inputPH">
                 <div style="padding: 7px;">
                     <div class="inputAText">Coeficiente A</div>
                     <input class="inputA" placeholder="" id="coeficienteA" autocomplete="off" />
@@ -74,17 +74,17 @@
 
             <div>
                 <!-- Interface Buttons -->
-                <button type="button" class="botaoLimpar" onclick="window.location.href=window.location.href">Reset</button>
-                <button type="button" class="botaoCalcular" onclick='calcularResultado()'>Calcular</button>
+                <button type="button" class="botaoLimpar" id="botaoLimpar" onclick="window.location.href=window.location.href">Reset</button>
+                <button type="button" class="botaoCalcular" id="botaoLimpar" onclick='calcularResultado()'>Calcular</button>
             </div>
             <!-- Dark Mode Toggle-->
-            <div class="modoNoturno">
+            <div class="modoNoturno" id="modoNoturno">
                 <input class="themeToggle" type="checkbox" id="switch" onclick='mudarCor()' /><label for="switch">Toggle</label>
             </div>
             <!--  End Color Mode-->
 
             <!-- Developer Details => Do not Remove! -->
-            <p class="devCredits">Feito com ❤️ por<strong>Ruy Monteiro & Kenzo Arakawa</strong></p>
+            <p class="devCredits" id="devCredits">Feito com ❤️ por<strong> Ruy Monteiro & Kenzo Arakawa</strong></p>
             <!-- Developer Details => Do not Remove! -->
 
 
@@ -95,12 +95,12 @@
     <!-- Start of Output Content-->
     <div class="outputDivision">
         <!-- Parable graph display-->
-        <div class="graph">
+        <div class="graph" id="graph">
             <p style="text-align: center; font-size: 72px; margin-top: 40%;">Insert Graph</p>
         </div>
 
         <!-- Results (delta, x1, x2...)-->
-        <div class="formOutput">
+        <div class="formOutput" id="formOutput">
 
             <div class="headerOutput">
 
@@ -130,22 +130,23 @@
             -->
 
             <div class="outputDeltaTratado">
-                <p class="headerDeltaTratado"><strong>DELTA :</strong> </p>
+                <p class="headerDeltaTratado" id="headerDeltaTratado"><strong>DELTA </strong>
+                </p>
                 <p id="resultadoDeltaTratado">DELTA TESTE</p>
             </div>
 
             <div class="outputX1Tratado">
-                <p class="headerX1Tratado">Raíz 1</p>
+                <p class="headerX1Tratado" id="headerX1Tratado">Raíz 1</p>
                 <p class="valorX1Tratado" id="x1">value</p>
             </div>
 
             <div class="outputX2Tratado">
-                <p class="headerX2Tratado">Raíz 2</p>
+                <p class="headerX2Tratado" id="headerX2Tratado">Raíz 2</p>
                 <p class="valorX2Tratado" id="x2">value</p>
             </div>
 
             <div class="outputConjuntoSolucaoTratado">
-                <p class="headerConjuntoSolucaoTratado"> Conjunto Solução</p>
+                <p class="headerConjuntoSolucaoTratado" id="headerConjuntoSolucaoTratado"> Conjunto Solução</p>
                 <p class="valorConjuntoSolucaoTratado"> S = {
                     <a id="resTratCS1"> </a><a> ; </a>
                     <a id="resTratCS2"> </a>}</p>
