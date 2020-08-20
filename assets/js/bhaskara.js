@@ -39,15 +39,15 @@ function calcularResultado() {
         const { x1, x2 } = calcularBhaskara(A, B, C);
 
         // Dados Cru
+        /*
+                document.getElementById("resultadoDeltaRaw").innerHTML = calcularDelta(A, B, C)
+                document.getElementById("x1Raw").innerHTML = x1
+                document.getElementById("x2Raw").innerHTML = x2
 
-        document.getElementById("resultadoDeltaRaw").innerHTML = calcularDelta(A, B, C)
-        document.getElementById("x1Raw").innerHTML = x1
-        document.getElementById("x2Raw").innerHTML = x2
+                document.getElementById("resCS1Raw").innerHTML = x1
+                document.getElementById("resCS2Raw").innerHTML = x2
 
-        document.getElementById("resCS1Raw").innerHTML = x1
-        document.getElementById("resCS2Raw").innerHTML = x2
-
-
+        */
         // Dados Tratados
 
 

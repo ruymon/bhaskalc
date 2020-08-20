@@ -34,7 +34,7 @@ body {
     left: 5%;
     bottom: 25%;
     width: 320px;
-    height: 550px;
+    height: 570px;
     position: absolute;
     text-align: center;
     border-radius: 5px;
@@ -56,6 +56,7 @@ body {
     font-family: 'Crimson Text', serif;
     font-size: 22px;
     letter-spacing: 3px;
+    margin-bottom: 10px;
 }
 
 
@@ -67,7 +68,7 @@ body {
     font-size: 16px;
 }
 
-.inputA {
+.input {
     background-color: rgb(34, 42, 46);
     border: 2px solid rgb(34, 42, 46);
     color: rgb(158, 173, 184);
@@ -79,6 +80,7 @@ body {
     padding-left: 5px;
     text-align: left;
     font-size: 16px;
+    outline: none;
 }
 
 .inputBText {
@@ -87,43 +89,15 @@ body {
     font-size: 16px;
 }
 
-.inputB {
-    background-color: rgb(34, 42, 46);
-    border: 2px solid rgb(34, 42, 46);
-    color: rgb(158, 173, 184);
-    width: 250px;
-    height: 40px;
-    box-sizing: border-box;
-    border-radius: 5px;
-    text-align: left;
-    padding-left: 5px;
-    font-size: 16px;
-    font-weight: 200;
-}
-
 .inputCText {
     text-align: left;
     margin-left: 10%;
     font-size: 16px;
 }
 
-.inputC {
-    background-color: rgb(34, 42, 46);
-    border: 2px solid rgb(34, 42, 46);
-    color: rgb(158, 173, 184);
-    width: 250px;
-    height: 40px;
-    font-weight: 200;
-    box-sizing: border-box;
-    border-radius: 5px;
-    padding-left: 5px;
-    text-align: left;
-    font-size: 16px;
-}
-
-:focus {
+.input:focus {
     border-radius: 10px;
-    border: 1px solid green;
+    border: 2px solid rgb(79, 98, 107);
 }
 
 .botaoLimpar {
@@ -132,9 +106,11 @@ body {
     padding: 3px;
     width: 250px;
     height: 40px;
-    background-color: rgb(87, 152, 158);
+    background-color: rgb(36, 36, 36);
     color: white;
     border-radius: 5px;
+    border: none;
+    outline: none;
     font-family: 'Titillium Web', sans-serif;
     font-weight: 200;
     font-size: 17px;
@@ -143,13 +119,14 @@ body {
 
 .botaoCalcular {
     margin-top: 7px;
-    margin-bottom: 5px;
     padding: 3px;
     width: 250px;
     height: 40px;
-    background-color: rgb(87, 152, 158);
+    background-color: rgb(36, 36, 36);
     color: white;
     border-radius: 5px;
+    border: none;
+    outline: none;
     font-family: 'Titillium Web', sans-serif;
     font-weight: 200;
     font-size: 17px;
@@ -163,21 +140,18 @@ body {
     display: absolute;
     text-align: center;
     align-content: center;
-    padding: 1px;
     margin-left: 140px;
-    margin-top: 5px;
-    margin-bottom: 10px;
 }
 
 
 /* Input Table Buttons */
 
 .devCredits {
-    margin-top: 25px;
-    letter-spacing: 3px;
-    font-size: 13px;
+    margin-top: 18px;
+    letter-spacing: 0.8px;
+    font-size: 12px;
     font-weight: 100;
-    color: white;
+    color: rgb(170, 170, 170);
 }
 
 
@@ -202,6 +176,7 @@ body {
     text-align: center;
     font-size: 72px;
     background-color: rgb(79, 98, 107);
+    color: #292929;
     width: 66%;
 }
 
@@ -212,16 +187,26 @@ body {
     width: 34%;
 }
 
+.tituloOutput {
+    padding: 5px;
+    margin-top: 20px;
+    color: rgb(170, 170, 170);
+    font-size: 30px;
+    text-align: center;
+}
+
 
 /* Output Delta */
 
+
+/*
 .outputDelta {
     margin-top: 30px;
     font-size: 30px;
     text-align: center;
 }
 
-.headerDelta {
+.headerDelta {*
     display: inline;
     padding: 5px;
     border-radius: 5px;
@@ -240,7 +225,6 @@ body {
 }
 
 
-/*
 .outputX1 {}
 
 .headerX1 {
@@ -300,18 +284,28 @@ body {
     text-align: center;
 } */
 
-.outputDeltaTratado {
-    margin-top: 30px;
-}
+
+/* .resultadoDeltaTratado {} */
 
 .headerDeltaTratado {
     color: rgb(158, 173, 184);
-    font-size: 29px;
-    text-align: center;
+    display: inline;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 20px;
 }
 
+.outputDeltaTratado {
+    margin: 20px;
+}
 
-/* .resultadoDeltaTratado {} */
+.resultadoDeltaTratado {
+    color: rgb(209, 13, 209);
+    background-color: #292929;
+    font-size: 16px;
+    padding: 20px;
+    border-radius: 5px;
+}
 
 .outputX1Tratado {
     margin: 20px;
@@ -360,6 +354,8 @@ body {
 .headerConjuntoSolucaoTratado {
     color: rgb(158, 173, 184);
     font-size: 25px;
+    margin-top: 50px;
+    margin-bottom: 10px;
 }
 
 .valorConjuntoSolucaoTratado {
@@ -367,7 +363,7 @@ body {
     color: rgb(0, 238, 255);
     height: 40px;
     background-color: #292929;
-    border-radius: 4px;
+    border-radius: 5px;
     font-size: 20px;
     text-align: center;
     border-radius: 5px;

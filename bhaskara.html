@@ -57,17 +57,17 @@
             <div class="inputPH" id="inputPH">
                 <div style="padding: 7px;">
                     <div class="inputAText">Coeficiente A</div>
-                    <input class="inputA" placeholder="" id="coeficienteA" autocomplete="off" />
+                    <input class="input inputDefault" placeholder="" id="coeficienteA" autocomplete="off" />
                 </div>
 
                 <div style="padding: 7px;">
                     <div class="inputBText">Coeficiente B</div>
-                    <input class="inputB" placeholder="" id="coeficienteB" autocomplete="off" />
+                    <input class="input inputDefault" placeholder="" id="coeficienteB" autocomplete="off" />
                 </div>
 
                 <div style="padding: 7px;">
                     <div class="inputCText">Coeficiente C</div>
-                    <input class="inputC" placeholder="" id="coeficienteC" autocomplete="off" />
+                    <input class="input inputDefault" placeholder="" id="coeficienteC" autocomplete="off" />
                 </div>
             </div>
             <!-- End of User Input -->
@@ -75,7 +75,7 @@
             <div>
                 <!-- Interface Buttons -->
                 <button type="button" class="botaoLimpar" id="botaoLimpar" onclick="window.location.href=window.location.href">Reset</button>
-                <button type="button" class="botaoCalcular" id="botaoLimpar" onclick='calcularResultado()'>Calcular</button>
+                <button type="button" class="botaoCalcular" id="botaoCalcular" onclick='calcularResultado()'>Calcular</button>
             </div>
             <!-- Dark Mode Toggle-->
             <div class="modoNoturno" id="modoNoturno">
@@ -84,13 +84,13 @@
             <!--  End Color Mode-->
 
             <!-- Developer Details => Do not Remove! -->
-            <p class="devCredits" id="devCredits">Feito com ❤️ por<strong> Ruy Monteiro & Kenzo Arakawa</strong></p>
+            <p class="devCredits" id="devCredits">Feito com ❤️ por Ruy Monteiro e Kenzo Arakawa</p>
             <!-- Developer Details => Do not Remove! -->
 
 
         </form>
     </div>
-    <!-- End of User Content-->
+    <!-- End of User Content-->*
 
     <!-- Start of Output Content-->
     <div class="outputDivision">
@@ -103,6 +103,9 @@
         <div class="formOutput" id="formOutput">
 
             <div class="headerOutput">
+
+
+                <p class="tituloOutput" id="tituloOutput">Output</p>
 
             </div>
             <!--
@@ -130,26 +133,25 @@
             -->
 
             <div class="outputDeltaTratado">
-                <p class="headerDeltaTratado" id="headerDeltaTratado"><strong>DELTA </strong>
-                </p>
-                <p id="resultadoDeltaTratado">DELTA TESTE</p>
+                <p class="headerDeltaTratado" id="headerDeltaTratado">Delta</p>
+                <p class="resultadoDeltaTratado" id="resultadoDeltaTratado">value</p>
             </div>
 
             <div class="outputX1Tratado">
                 <p class="headerX1Tratado" id="headerX1Tratado">Raíz 1</p>
-                <p class="valorX1Tratado" id="x1">value</p>
+                <p class="valorX1Tratado" id="x1Tratado">value</p>
             </div>
 
             <div class="outputX2Tratado">
                 <p class="headerX2Tratado" id="headerX2Tratado">Raíz 2</p>
-                <p class="valorX2Tratado" id="x2">value</p>
+                <p class="valorX2Tratado" id="x2Tratado">value</p>
             </div>
 
             <div class="outputConjuntoSolucaoTratado">
                 <p class="headerConjuntoSolucaoTratado" id="headerConjuntoSolucaoTratado"> Conjunto Solução</p>
                 <p class="valorConjuntoSolucaoTratado"> S = {
-                    <a id="resTratCS1"> </a><a> ; </a>
-                    <a id="resTratCS2"> </a>}</p>
+                    <a id="resCS1Tratado"> </a><a> ; </a>
+                    <a id="resCS2Tratado"> </a>}</p>
             </div>
         </div>
         <!-- End of Output Content-->

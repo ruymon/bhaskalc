@@ -14,7 +14,7 @@
     left: 5%;
     bottom: 25%;
     width: 320px;
-    height: 550px;
+    height: 570px;
     position: absolute;
     text-align: center;
     border-radius: 5px;
@@ -36,9 +36,10 @@
     font-family: 'Crimson Text', serif;
     font-size: 22px;
     letter-spacing: 3px;
+    margin-bottom: 10px;
 }
 
-.lightInputA {
+.lightInput {
     background-color: rgb(245, 245, 245);
     border: 2px solid rgb(255, 255, 255);
     color: rgb(41, 41, 41);
@@ -50,75 +51,13 @@
     padding-left: 5px;
     text-align: left;
     font-size: 16px;
+    outline: none;
 }
 
-.lightInputB {
-    background-color: rgb(245, 245, 245);
-    border: 2px solid rgb(255, 255, 255);
-    color: rgb(41, 41, 41);
-    width: 250px;
-    height: 40px;
-    box-sizing: border-box;
-    border-radius: 5px;
-    text-align: left;
-    padding-left: 5px;
-    font-size: 16px;
-    font-weight: 200;
-}
-
-.lightInputC {
-    background-color: rgb(245, 245, 245);
-    border: 2px solid rgb(255, 255, 255);
-    color: rgb(41, 41, 41);
-    width: 250px;
-    height: 40px;
-    font-weight: 200;
-    box-sizing: border-box;
-    border-radius: 5px;
-    padding-left: 5px;
-    text-align: left;
-    font-size: 16px;
-}
-
-
-/* .lightInputPH::-webkit-input-placeholder {
-    /* Chrome/Opera/Safari */
-
-
-/*    color: rgb(82, 82, 82);
-}
-
-/*.lightInputPH::-moz-placeholder {
-    /* Firefox 19+ */
-
-
-/*    color: rgb(82, 82, 82);
-}
-
-/*.lightInputPH:-ms-input-placeholder {
-    /* IE 10+ */
-
-
-/*    color: rgb(82, 82, 82);
-}
-
-/*.lightInputPH:-moz-placeholder {
-    /* Firefox 18- */
-
-
-/*    color: rgb(82, 82, 82);
-}
-
-input:focus {
+.lightInput:focus {
     border-radius: 10px;
-    border: 1px solid green;
+    border: 2px solid rgb(87, 152, 158);
 }
-
-
-/* INPUT Place Holder? */
-
-
-/* INPUT Focus? */
 
 .lightBotaoLimpar {
     margin-top: 10px;
@@ -129,6 +68,8 @@ input:focus {
     background-color: rgb(87, 152, 158);
     color: white;
     border-radius: 5px;
+    border: none;
+    outline: none;
     font-family: 'Titillium Web', sans-serif;
     font-weight: 200;
     font-size: 17px;
@@ -137,13 +78,14 @@ input:focus {
 
 .lightBotaoCalcular {
     margin-top: 7px;
-    margin-bottom: 5px;
     padding: 3px;
     width: 250px;
     height: 40px;
     background-color: rgb(87, 152, 158);
     color: white;
     border-radius: 5px;
+    border: none;
+    outline: none;
     font-family: 'Titillium Web', sans-serif;
     font-weight: 200;
     font-size: 17px;
@@ -154,18 +96,15 @@ input:focus {
     display: absolute;
     text-align: center;
     align-content: center;
-    padding: 1px;
     margin-left: 140px;
-    margin-top: 5px;
-    margin-bottom: 10px;
 }
 
 .lightDevCredits {
-    margin-top: 25px;
-    letter-spacing: 3px;
-    font-size: 13px;
+    margin-top: 18px;
+    letter-spacing: 0.8px;
+    font-size: 12px;
     font-weight: 100;
-    color: white;
+    color: rgb(46, 46, 46);
 }
 
 .lightGraph {
@@ -174,6 +113,7 @@ input:focus {
     text-align: center;
     font-size: 72px;
     background-color: rgb(141, 196, 201);
+    color: rgb(69, 69, 69);
     width: 66%;
 }
 
@@ -184,10 +124,20 @@ input:focus {
     background-color: white;
 }
 
+.lightTituloOutput {
+    padding: 5px;
+    margin-top: 20px;
+    color: rgb(0, 0, 0);
+    font-size: 30px;
+    text-align: center;
+}
+
 .lightHeaderDeltaTratado {
     color: rgb(0, 0, 0);
-    font-size: 29px;
-    text-align: center;
+    display: inline;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 20px;
 }
 
 .lightHeaderX1Tratado {
@@ -209,6 +159,8 @@ input:focus {
 .lightHeaderConjuntoSolucaoTratado {
     color: rgb(0, 0, 0);
     font-size: 25px;
+    margin-top: 50px;
+    margin-bottom: 10px;
 }
 
 
