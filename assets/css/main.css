@@ -34,7 +34,7 @@ body {
     left: 5%;
     bottom: 25%;
     width: 320px;
-    height: 550px;
+    height: 570px;
     position: absolute;
     text-align: center;
     border-radius: 5px;
@@ -67,7 +67,7 @@ body {
     font-size: 16px;
 }
 
-.inputA {
+.input {
     background-color: rgb(34, 42, 46);
     border: 2px solid rgb(34, 42, 46);
     color: rgb(158, 173, 184);
@@ -79,6 +79,7 @@ body {
     padding-left: 5px;
     text-align: left;
     font-size: 16px;
+    outline: none;
 }
 
 .inputBText {
@@ -87,42 +88,14 @@ body {
     font-size: 16px;
 }
 
-.inputB {
-    background-color: rgb(34, 42, 46);
-    border: 2px solid rgb(34, 42, 46);
-    color: rgb(158, 173, 184);
-    width: 250px;
-    height: 40px;
-    box-sizing: border-box;
-    border-radius: 5px;
-    text-align: left;
-    padding-left: 5px;
-    font-size: 16px;
-    font-weight: 200;
-}
-
 .inputCText {
     text-align: left;
     margin-left: 10%;
     font-size: 16px;
 }
 
-.inputC {
-    background-color: rgb(34, 42, 46);
-    border: 2px solid rgb(34, 42, 46);
-    color: rgb(158, 173, 184);
-    width: 250px;
-    height: 40px;
-    font-weight: 200;
-    box-sizing: border-box;
+.input:focus {
     border-radius: 5px;
-    padding-left: 5px;
-    text-align: left;
-    font-size: 16px;
-}
-
-:focus {
-    border-radius: 10px;
     border: 1px solid green;
 }
 
@@ -143,7 +116,7 @@ body {
 
 .botaoCalcular {
     margin-top: 7px;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     padding: 3px;
     width: 250px;
     height: 40px;
@@ -165,16 +138,15 @@ body {
     align-content: center;
     padding: 1px;
     margin-left: 140px;
-    margin-top: 5px;
-    margin-bottom: 10px;
+    margin-top: 0px;
+    margin-bottom: 5px;
 }
 
 
 /* Input Table Buttons */
 
 .devCredits {
-    margin-top: 25px;
-    letter-spacing: 3px;
+    letter-spacing: 1px;
     font-size: 13px;
     font-weight: 100;
     color: white;

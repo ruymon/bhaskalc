@@ -4,9 +4,7 @@ function mudarCor() {
     $("#formInput").toggleClass(["formInput", "lightFormInput"]);
     $("#inputTittle").toggleClass(["inputTittle", "lightInputTittle"]);
     $("#formula").toggleClass(["formula", "lightFormula"]);
-    $("#coeficienteA").toggleClass(["inputA", "lightInputA"]);
-    $("#coeficienteB").toggleClass(["inputB", "lightInputB"]);
-    $("#coeficienteC").toggleClass(["inputC", "lightInputC"]);
+    $(".inputDefault").toggleClass(["input", "lightInput"]);
     $("#inputPH").toggleClass(["inputPH", "lightInputPH"]);
     $("#botaoLimpar").toggleClass(["botaoLimpar", "lightBotaoLimpar"]);
     $("#botaoCalcular").toggleClass(["botaoCalcular", "lightBotaoCalcular"]);
