@@ -347,6 +347,53 @@ body {
     border-radius: 5px;
 }
 
+.outputX1TratadoClean {
+    margin: 20px;
+}
+
+.headerX1TratadoClean {
+    color: rgb(158, 173, 184);
+    display: inline;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.valorX1TratadoClean {
+    color: rgb(0, 255, 34);
+    background-color: #292929;
+    font-size: 16px;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.outputX2TratadoClean {
+    margin: 20px;
+}
+
+.headerX2TratadoClean {
+    color: rgb(158, 173, 184);
+    display: inline;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.valorX2TratadoClean {
+    color: rgb(0, 255, 34);
+    background-color: #292929;
+    font-size: 16px;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.mostrarRaiz {
+    display: absolute;
+    text-align: center;
+    align-content: center;
+    margin-left: 140px;
+}
+
 .outputConjuntoSolucaoTratado {
     margin: 20px;
 }

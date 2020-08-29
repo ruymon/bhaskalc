@@ -28,6 +28,12 @@
     <script src="./assets/js/theme.js"></script>
     <!-- End of Dark Mode jQuery Scrip-->
 
+    <!--MathJax-->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/mml-chtml.js">
+    </script>
+    <!--End of MathJax-->
+
     <!--CDN-->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
@@ -103,14 +109,13 @@
         <!-- Parable graph display-->
         <div class="graph" id="graph">
             <p style="text-align: center; font-size: 72px; margin-top: 40%;">Insert Graph</p>
+            <p style="text-align: center; font-size: 28px; margin-top: 5%;">Recurso em desenvolvimento...</p>
         </div>
 
         <!-- Results (delta, x1, x2...)-->
         <div class="formOutput" id="formOutput">
 
             <div class="headerOutput">
-
-
                 <p class="tituloOutput" id="tituloOutput">Output</p>
 
             </div>
@@ -143,14 +148,69 @@
                 <p class="resultadoDeltaTratado" id="resultadoDeltaTratado">value</p>
             </div>
 
-            <div class="outputX1Tratado">
-                <p class="headerX1Tratado" id="headerX1Tratado">Raíz 1</p>
-                <p class="valorX1Tratado" id="x1Tratado">value</p>
+            <!-- As raízes em valor bruto (número quebrado, ex: raiz de 3 ~= 1,7...)-->
+            <div class="outputRaw">
+                <div class="outputX1Tratado">
+                    <p class="headerX1Tratado" id="headerX1Tratado">Raíz 1 bruta</p>
+                    <p class="valorX1Tratado" id="x1Tratado">value</p>
+                </div>
+    
+                <div class="outputX2Tratado">
+                    <p class="headerX2Tratado" id="headerX2Tratado">Raíz 2 bruta</p>
+                    <p class="valorX2Tratado" id="x2Tratado">value</p>
+                </div>
             </div>
+            <!-- As raízes não ficam em número quebrado (ex: raíz de 3 fica como raiz de 3) -->
+            <div class="outputClean">
+                <div class="outputX1TratadoClean">
+                    <p class="headerX1TratadoClean" id="headerX1TratadoClean">Raíz 1</p>
+                    <p class="valorX1TratadoClean" id="x1TratadoClean">
+                        
+                        <a>(</a>
+                        <a id="valorX1TratadoCleanB"> </a>
+                        <a> + &#8730</a>
+                        <a id="valorX1TratadoCleanDelta"> </a>
+                        <a>)</a>
+                        <a>/</a>
+                        <a id="valorX1TratadoCleanA"> </a>
+                    </p>
+                    <!-- <p>
+                        <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                            <mfrac>
+                                <mrow>
+                                    <mtext id="valorX1TratadoCleanB">2</mtext>
+                                    <mo>&plus;</mo>
+                                    <msqrt>
+                                        <mn>2</mn>
+                                    </msqrt>
+                                </mrow>
+                                <mrow>
+                                    <mn>2</mn>
+                                </mrow>
+                            </mfrac>
+                        </math>
+                    </p> -->
 
-            <div class="outputX2Tratado">
-                <p class="headerX2Tratado" id="headerX2Tratado">Raíz 2</p>
-                <p class="valorX2Tratado" id="x2Tratado">value</p>
+
+
+
+
+
+                    
+                </div>
+    
+                <div class="outputX2TratadoClean">
+                    <p class="headerX2TratadoClean" id="headerX2TratadoClean">Raíz 2</p>
+                    <p class="valorX2TratadoClean" id="x2TratadoClean">
+                        <a>(</a>
+                        <a id="valorX2TratadoCleanB"> </a>
+                        <a> + &#8730</a>
+                        <a id="valorX2TratadoCleanDelta"> </a>
+                        <a>) /</a>
+                        <a id="valorX2TratadoCleanA">
+                    </p>
+                    
+                </div>
             </div>
 
             <div class="outputConjuntoSolucaoTratado">
