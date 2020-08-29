@@ -6,8 +6,8 @@ function calcularDelta(a, b, c) {
     const valorDelta = (b ** 2) - 4 * (a * c);
 
     if (valorDelta < 0) {
-        throw new Error("Não existe raizes reais para esses coeficientes... (Delta < 0)");
-    };  
+        throw new Error("Não existe raizes reais para esses coeficientes...");
+    };
 
     return valorDelta;
 };
@@ -52,19 +52,13 @@ function calcularResultado() {
 
 
         document.getElementById("resultadoDeltaTratado").innerHTML = calcularDelta(A, B, C).toFixed(2);
-        document.getElementById("x1Tratado").innerHTML = x1
-        document.getElementById("x2Tratado").innerHTML = x2
+        document.getElementById("x1Tratado").innerHTML = x1.toFixed(2);
+        document.getElementById("x2Tratado").innerHTML = x2.toFixed(2);
 
-        document.getElementById("resCS1Tratado").innerHTML = x1
-        document.getElementById("resCS2Tratado").innerHTML = x2
+        document.getElementById("resCS1Tratado").innerHTML = x1.toFixed(2);
+        document.getElementById("resCS2Tratado").innerHTML = x2.toFixed(2);
 
-        document.getElementById("valorX1TratadoCleanB").innerHTML = B * -1
-        document.getElementById("valorX1TratadoCleanDelta").innerHTML = calcularDelta(A, B, C);
-        document.getElementById("valorX1TratadoCleanA").innerHTML = A * 2
 
-        document.getElementById("valorX2TratadoCleanB").innerHTML = B * -1
-        document.getElementById("valorX2TratadoCleanDelta").innerHTML = calcularDelta(A, B, C);
-        document.getElementById("valorX2TratadoCleanA").innerHTML = A * 2
 
     } catch (e) {
         alert(e.message);
