@@ -29,7 +29,7 @@ LINK: https://ruymon.github.io/bhaskalc
 ### ⚙️ Instalação via 💾 Git Bash
 
 ```bash
-git clone https://github.com/ruymon/mat
+git clone https://github.com/ruymon/bhaskalc
 ```
 
 
