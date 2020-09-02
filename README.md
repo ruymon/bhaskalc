@@ -6,7 +6,10 @@
 
 ### 💻 Abrir no navegador
 
-Abra uma nova guia do seu navegador (de preferência Google Chrome), e digite o link abaixo.
+Abra uma nova guia do seu navegador (de preferência Google Chrome), e clique ou digite o link abaixo.
+
+https://ruymon.github.io/bhaskalc - Testar!
+[Bhaskalc](https://ruymon.github.io/bhaskalc)
 
 ```link
 LINK: https://ruymon.github.io/bhaskalc
