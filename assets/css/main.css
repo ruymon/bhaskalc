@@ -16,8 +16,58 @@ body {
     line-height: 30px;
 }
 
+
+/* Theme Colors Vars */
+
+
+/*
+======================
+======================
+======-TEMA DARK-=====
+======================
+======================
+*/
+
+:root {
+    /* MAIN SECTION */
+    --main-bg-color-dark: rgb(36, 36, 36);
+    --main-bg-input-dark: rgb(48, 59, 64);
+    /* INPUT FORM SECTION */
+    --input-title-dark: rgb(242, 251, 255);
+    --input-formula-dark: rgb(158, 173, 184);
+    --input-input-dark: rgb(34, 42, 46);
+    --input-color-dark: rgb(158, 173, 184);
+    --input-botao-bg-dark: rgb(36, 36, 36);
+    --dev-credit-color-dark: rgb(170, 170, 170);
+    /*GRAPH SECTION */
+    --graph-bg-dark: rgb(79, 98, 107);
+    --graph-color-dark: #292929;
+    /* OUTPUT SECTION */
+    --form-output-bg-dark: rgb(48, 59, 64);
+    --title-output-color-dark: rgb(170, 170, 170);
+    /* OUTPUT DELTA SECTION */
+    --output-delta-tratado-color-dark: rgb(209, 13, 209);
+    --output-header-delta-tratado-color-dark: rgb(158, 173, 184);
+    --output-delta-tratado-bg-dark: #292929;
+    /* OUTPUT X1 SECTION */
+    --output-header-x1-tratado-color-dark: rgb(158, 173, 184);
+    --output-x1-tratado-color-dark: rgb(0, 255, 34);
+    --output-x1-tratado-bg-dark: #292929;
+    /* OUTPUT X2 SECTION */
+    --output-header-x2-tratado-color-dark: rgb(158, 173, 184);
+    --output-x2-tratado-color-dark: rgb(0, 255, 34);
+    --output-x2-tratado-bg-dark: #292929;
+    /* OUTPUT CONJUNTO SOLUÇÃO */
+    --output-header-conjuntoSolucao-tratado-color-dark: rgb(158, 173, 184);
+    --output-conjuntoSolucao-tratado-color-dark: rgb(0, 238, 255);
+    --output-conjuntoSolucao-tratado-bg-dark: #292929;
+}
+
+
+/* END THEMES VAR */
+
 .bodyStyle {
-    background-color: rgb(36, 36, 36);
+    background-color: var(--main-bg-color-dark);
 }
 
 
@@ -31,12 +81,12 @@ body {
     position: absolute;
     text-align: center;
     border-radius: 5px;
-    background-color: rgb(48, 59, 64);
+    background-color: var(--main-bg-input-dark);
     box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
 }
 
 .inputTittle {
-    color: rgb(242, 251, 255);
+    color: var(--input-title-dark);
     font-family: 'Titillium Web', sans-serif;
     font-weight: 500;
     margin-top: 25px;
@@ -45,7 +95,7 @@ body {
 }
 
 .formula {
-    color: rgb(158, 173, 184);
+    color: var(--input-formula-dark);
     font-family: 'Crimson Text', serif;
     font-size: 22px;
     letter-spacing: 3px;
@@ -62,9 +112,9 @@ body {
 }
 
 .input {
-    background-color: rgb(34, 42, 46);
+    background-color: var(--input-input-dark);
     border: 2px solid rgb(34, 42, 46);
-    color: rgb(158, 173, 184);
+    color: var(--input-color-dark);
     width: 250px;
     height: 40px;
     font-weight: 200;
@@ -99,7 +149,7 @@ body {
     padding: 3px;
     width: 250px;
     height: 40px;
-    background-color: rgb(36, 36, 36);
+    background-color: var(--input-botao-bg-dark);
     color: white;
     border-radius: 5px;
     border: none;
@@ -115,7 +165,7 @@ body {
     padding: 3px;
     width: 250px;
     height: 40px;
-    background-color: rgb(36, 36, 36);
+    background-color: var(--input-botao-bg-dark);
     color: white;
     border-radius: 5px;
     border: none;
@@ -144,7 +194,7 @@ body {
     letter-spacing: 0.8px;
     font-size: 12px;
     font-weight: 100;
-    color: rgb(170, 170, 170);
+    color: var(--dev-credit-color-dark);
 }
 
 
@@ -168,120 +218,28 @@ body {
     height: 100%;
     text-align: center;
     font-size: 72px;
-    background-color: rgb(79, 98, 107);
-    color: #292929;
+    background-color: var(--graph-bg-dark);
+    color: var(--graph-color-dark);
     width: 66%;
 }
 
 .formOutput {
     float: right;
     height: 100%;
-    background-color: rgb(48, 59, 64);
+    background-color: var(--form-output-bg-dark);
     width: 34%;
 }
 
 .tituloOutput {
     padding: 5px;
     margin-top: 20px;
-    color: rgb(170, 170, 170);
+    color: var(--title-output-color-dark);
     font-size: 30px;
     text-align: center;
 }
-
-
-/* Output Delta */
-
-
-/*
-.outputDelta {
-    margin-top: 30px;
-    font-size: 30px;
-    text-align: center;
-}
-
-.headerDelta {*
-    display: inline;
-    padding: 5px;
-    border-radius: 5px;
-    border: 2px solid tomato;
-}
-
-.resultadoDelta {
-    width: 100%;
-    height: 500px;
-    color: rgb(0, 255, 34);
-    background-color: #292929;
-    border-radius: 4px;
-    font-size: 16px;
-    padding: 15px;
-    margin: 5px;
-}
-
-
-.outputX1 {}
-
-.headerX1 {
-    display: inline;
-    padding: 5px;
-    border-radius: 5px;
-    border: 2px solid rgb(255, 0, 200);
-    background-color: rgba(255, 0, 0, 0.219);
-    color: greenyellow;
-}
-
-.valorX1 {
-    color: rgb(0, 255, 34);
-    background-color: #292929;
-    border-radius: 4px;
-    font-size: 16px;
-    padding: 15px;
-    margin: 5px;
-}
-
-.outputX2 {}
-
-.headerX2 {
-    display: inline;
-    padding: 5px;
-    border-radius: 5px;
-    background-color: rgba(255, 0, 0, 0.219);
-    border: 2px solid rgb(255, 0, 157);
-    color: greenyellow;
-}
-
-.valorX2 {
-    color: rgb(0, 255, 34);
-    background-color: #292929;
-    border-radius: 4px;
-    font-size: 16px;
-    padding: 15px;
-    margin: 5px;
-}
-
-.outputConjuntoSolucao {}
-
-.headerConjuntoSolucao {
-    color: rgb(0, 238, 255);
-    font-size: 25px;
-}
-
-.valorConjuntoSolucao {
-    color: rgb(0, 238, 255);
-    border: 3px solid yellow;
-    height: 40px;
-    width: 500px;
-    background-color: #292929;
-    border-radius: 4px;
-    font-size: 20px;
-    padding: 20px;
-    text-align: center;
-} */
-
-
-/* .resultadoDeltaTratado {} */
 
 .headerDeltaTratado {
-    color: rgb(158, 173, 184);
+    color: var(--output-header-delta-tratado-color-dark);
     display: inline;
     padding: 5px;
     border-radius: 5px;
@@ -293,8 +251,8 @@ body {
 }
 
 .resultadoDeltaTratado {
-    color: rgb(209, 13, 209);
-    background-color: #292929;
+    color: var(--output-delta-tratado-color-dark);
+    background-color: var(--output-delta-tratado-bg-dark);
     font-size: 16px;
     padding: 20px;
     border-radius: 5px;
@@ -305,7 +263,7 @@ body {
 }
 
 .headerX1Tratado {
-    color: rgb(158, 173, 184);
+    color: var(--output-header-x1-tratado-color-dark);
     display: inline;
     padding: 5px;
     border-radius: 5px;
@@ -313,8 +271,8 @@ body {
 }
 
 .valorX1Tratado {
-    color: rgb(0, 255, 34);
-    background-color: #292929;
+    color: var(--output-x1-tratado-color-dark);
+    background-color: var(--output-x1-tratado-bg-dark);
     font-size: 16px;
     padding: 20px;
     border-radius: 5px;
@@ -325,7 +283,7 @@ body {
 }
 
 .headerX2Tratado {
-    color: rgb(158, 173, 184);
+    color: var(--output-header-x2-tratado-color-dark);
     display: inline;
     padding: 5px;
     border-radius: 5px;
@@ -333,8 +291,8 @@ body {
 }
 
 .valorX2Tratado {
-    color: rgb(0, 255, 34);
-    background-color: #292929;
+    color: var(--output-x2-tratado-color-dark);
+    background-color: var(--output-x2-tratado-bg-dark);
     font-size: 16px;
     padding: 20px;
     border-radius: 5px;
@@ -345,7 +303,7 @@ body {
 }
 
 .headerConjuntoSolucaoTratado {
-    color: rgb(158, 173, 184);
+    color: var(--output-header-conjuntoSolucao-tratado-color-dark);
     font-size: 25px;
     margin-top: 50px;
     margin-bottom: 10px;
@@ -353,9 +311,9 @@ body {
 
 .valorConjuntoSolucaoTratado {
     padding: 10px;
-    color: rgb(0, 238, 255);
+    color: var(--output-conjuntoSolucao-tratado-color-dark);
     height: 40px;
-    background-color: #292929;
+    background-color: var(--output-delta-tratado-bg-dark);
     border-radius: 5px;
     font-size: 20px;
     text-align: center;

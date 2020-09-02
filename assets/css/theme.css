@@ -6,8 +6,43 @@
 =======================
  */
 
+ :root {
+    /* MAIN SECTION */
+    --main-bg-color-light: rgb(87, 152, 158);
+    --main-bg-input-light: rgb(255, 255, 255);
+    /* INPUT FORM SECTION */
+    --input-title-light: rgb(46, 46, 46);
+    --input-formula-light: rgb(69, 69, 69);
+    --input-input-light: rgb(245, 245, 245);
+    --input-color-light: rgb(41, 41, 41);
+    --input-botao-bg-light: rgb(87, 152, 158);
+    --dev-credit-color-light: rgb(46, 46, 46);
+    /*GRAPH SECTION */
+    --graph-bg-light: rgb(141, 196, 201);
+    --graph-color-light: rgb(69, 69, 69);
+    /* OUTPUT SECTION */
+    --form-output-bg-light: white;
+    --title-output-color-light: rgb(0, 0, 0);
+    /* OUTPUT DELTA SECTION */
+    --output-delta-tratado-color-light: rgb(209, 13, 209);
+    --output-header-delta-tratado-color-light: rgb(0, 0, 0);
+    --output-delta-tratado-bg-light: #292929;
+    /* OUTPUT X1 SECTION */
+    --output-header-x1-tratado-color-light: rgb(0, 0, 0);
+    --output-x1-tratado-color-light: rgb(0, 255, 34);
+    --output-x1-tratado-bg-light: #292929;
+    /* OUTPUT X2 SECTION */
+    --output-header-x2-tratado-color-light: rgb(0, 0, 0);
+    --output-x2-tratado-color-light: rgb(0, 255, 34);
+    --output-x2-tratado-bg-light: #292929;
+    /* OUTPUT CONJUNTO SOLUÇÃO */
+    --output-header-conjuntoSolucao-tratado-color-light: rgb(0, 0, 0);
+    --output-conjuntoSolucao-tratado-color-light: rgb(0, 238, 255);
+    --output-conjuntoSolucao-tratado-bg-light: #292929;
+}
+
 .lightBodyStyle {
-    background-color: rgb(87, 152, 158);
+    background-color: var(--main-bg-color-light);
 }
 
 .lightFormInput {
@@ -18,12 +53,12 @@
     position: absolute;
     text-align: center;
     border-radius: 5px;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--main-bg-input-light);
     box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
 }
 
 .lightInputTittle {
-    color: rgb(46, 46, 46);
+    color: var(--input-title-light);
     font-family: 'Titillium Web', sans-serif;
     font-weight: 500;
     margin-top: 25px;
@@ -32,7 +67,7 @@
 }
 
 .lightFormula {
-    color: rgb(69, 69, 69);
+    color: var(--input-formula-light);
     font-family: 'Crimson Text', serif;
     font-size: 22px;
     letter-spacing: 3px;
@@ -40,9 +75,9 @@
 }
 
 .lightInput {
-    background-color: rgb(245, 245, 245);
+    background-color: var(--input-input-light);
     border: 2px solid rgb(255, 255, 255);
-    color: rgb(41, 41, 41);
+    color: var(--input-color-light);
     width: 250px;
     height: 40px;
     font-weight: 200;
@@ -65,7 +100,7 @@
     padding: 3px;
     width: 250px;
     height: 40px;
-    background-color: rgb(87, 152, 158);
+    background-color: var(--input-botao-bg-light);
     color: white;
     border-radius: 5px;
     border: none;
@@ -81,7 +116,7 @@
     padding: 3px;
     width: 250px;
     height: 40px;
-    background-color: rgb(87, 152, 158);
+    background-color: var(--input-botao-bg-light);
     color: white;
     border-radius: 5px;
     border: none;
@@ -104,7 +139,7 @@
     letter-spacing: 0.8px;
     font-size: 12px;
     font-weight: 100;
-    color: rgb(46, 46, 46);
+    color: var(--dev-credit-color-light);
 }
 
 .lightGraph {
@@ -112,8 +147,8 @@
     height: 100%;
     text-align: center;
     font-size: 72px;
-    background-color: rgb(141, 196, 201);
-    color: rgb(69, 69, 69);
+    background-color: var(--graph-bg-light);
+    color: var(--graph-color-light);
     width: 66%;
 }
 
@@ -121,19 +156,19 @@
     float: right;
     height: 100%;
     width: 34%;
-    background-color: white;
+    background-color: var(--form-output-bg-light);
 }
 
 .lightTituloOutput {
     padding: 5px;
     margin-top: 20px;
-    color: rgb(0, 0, 0);
+    color: var(--title-output-color-light);
     font-size: 30px;
     text-align: center;
 }
 
 .lightHeaderDeltaTratado {
-    color: rgb(0, 0, 0);
+    color: var(--output-header-delta-tratado-color-light);
     display: inline;
     padding: 5px;
     border-radius: 5px;
@@ -141,7 +176,7 @@
 }
 
 .lightHeaderX1Tratado {
-    color: rgb(0, 0, 0);
+    color: var(--output-header-x1-tratado-color-light);
     display: inline;
     padding: 5px;
     border-radius: 5px;
@@ -149,7 +184,7 @@
 }
 
 .lightHeaderX2Tratado {
-    color: rgb(0, 0, 0);
+    color: var(--output-header-x2-tratado-color-light);
     display: inline;
     padding: 5px;
     border-radius: 5px;
@@ -157,7 +192,7 @@
 }
 
 .lightHeaderConjuntoSolucaoTratado {
-    color: rgb(0, 0, 0);
+    color: var(--output-header-conjuntoSolucao-tratado-color-light);
     font-size: 25px;
     margin-top: 50px;
     margin-bottom: 10px;
