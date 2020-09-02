@@ -1,8 +1,16 @@
-# MaT BhasKalc 
+#  Bhaskalc 
 
 **BhasKalc** é uma calculadora de Equações do 1° e 2° Grau com o plano cartesiano. Desenvolvido em **JS** ; **HTML**; **CSS**.
 
-##  📌 Instalação
+##  📌 Instalação / Como usar
+
+### 💻 Abrir no navegador
+
+Abra uma nova guia do seu navegador (de preferência Google Chrome), e digite o link abaixo.
+
+```link
+LINK: https://ruymon.github.io/bhaskalc/bhaskara.html
+```
 
 ###  📁 Instalação .Zip 
 
