@@ -9,7 +9,7 @@
 Abra uma nova guia do seu navegador (de preferência Google Chrome), e digite o link abaixo.
 
 ```link
-LINK: https://ruymon.github.io/bhaskalc/bhaskara.html
+LINK: https://ruymon.github.io/bhaskalc
 ```
 
 ###  📁 Instalação .Zip 
