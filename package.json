@@ -2,7 +2,7 @@
     "name": "bhaskalc",
     "version": "1.0.0",
     "description": "BhasKalc é uma calculadora de Equações do 1° e 2° Grau com o plano cartesiano. Desenvolvido em JS; HTML; CSS.",
-    "main": "./bhaskara.html",
+    "main": "./index.html",
     "directories": {
         "doc": "docs"
     },
@@ -11,13 +11,13 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/ruymon/BhasKalc.git"
+        "url": "git+https://github.com/ruymon/bhaskalc.git"
     },
     "author": "Ruy Monteiro, Kenzo Arakawa",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/ruymon/BhasKalc/issues"
+        "url": "https://github.com/ruymon/bhaskalc/issues"
     },
-    "homepage": "https://github.com/ruymon/BhasKalc#readme",
+    "homepage": "https://github.com/ruymon/bhaskalc#readme",
     "dependencies": {}
 }
