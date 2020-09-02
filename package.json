@@ -13,7 +13,7 @@
         "type": "git",
         "url": "git+https://github.com/ruymon/bhaskalc.git"
     },
-    "author": "Ruy Monteiro",
+    "author": "Ruy Monteiro, Kenzo Arakawa",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/ruymon/bhaskalc/issues"
