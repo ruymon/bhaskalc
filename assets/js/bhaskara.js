@@ -7,15 +7,15 @@ function calcularDelta(a, b, c) {
 
     if (valorDelta < 0) {
         throw new Error("Não existe raizes reais para esses coeficientes... (Delta < 0)");
-    };  
+    }
 
     return valorDelta;
 };
 
 function calcularBhaskara(a, b, c) {
     const delta = calcularDelta(a, b, c);
-    const raizDelta = Math.sqrt(Math.abs(delta)); // V1.1 - Add Math.abs para tornar delta um valor POSITIVO para calcular a Raiz
-    const x1 = (-b + raizDelta) / (2 * a); // V1.1 - Bug Fix 
+    const raizDelta = Math.sqrt(Math.abs(delta));
+    const x1 = (-b + raizDelta) / (2 * a);
     const x2 = (-b - raizDelta) / (2 * a);
 
     return {
@@ -30,10 +30,16 @@ function calcularResultado() {
     const B = parseInt($('#coeficienteB').val());
     const C = parseInt($('#coeficienteC').val());
 
+
     if (isNaN(A) === true || isNaN(B) === true || isNaN(C) === true) {
         alert("Faltando Parametros")
         return;
-    }
+    };
+
+    if (A == 0) {
+        alert("TESTE");
+        return;
+    };
 
     try {
         const { x1, x2 } = calcularBhaskara(A, B, C);
@@ -70,30 +76,3 @@ function calcularResultado() {
         alert(e.message);
     }
 };
-
-
-
-
-/**     Version Logs
- 
-
-        ***********************
-        *=====================*
-        *--------V1.0---------*
-        *=====================*
-        ***********************
-
-        => Source Code 
-
-        ***********************
-        *=====================*
-        *--------V1.1---------*
-        *=====================*
-        ***********************
-
-        => [Line 17] || Add Math.abs para tornar o resultado(return) da Function calcularDelta para um valor POSITIVO para calcular a Raiz.
-
-        => [Line 18 & 19] || Typographical Error / Bug Fix x1 = (-b + raizDelta) & x2 = (-b - raizDelta)
-
-
-*/
