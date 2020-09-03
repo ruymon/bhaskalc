@@ -26,11 +26,23 @@ function calcularBhaskara(a, b, c) {
 };
 
 function calcularResultado() {
-    const A = parseInt($('#coeficienteA').val());
-    const B = parseInt($('#coeficienteB').val());
-    const C = parseInt($('#coeficienteC').val());
+    let A = parseInt($('#coeficienteA').val());
+    let B = parseInt($('#coeficienteB').val());
+    let C = parseInt($('#coeficienteC').val());
+    
+    if(A == null) {
+        A = 1;
+    }
+    
+    if(B == null) {
+        B = 1;
+    }
+    
+    if(C == null) {
+        C = 1;
+    }
 
-    if (isNaN(A) === true || isNaN(B) === true || isNaN(C) === true) {
+    if (isNaN(A) || isNaN(B) || isNaN(C)) {
         alert("Faltando Parametros")
         return;
     }
