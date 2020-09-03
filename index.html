@@ -50,106 +50,98 @@
 
 <body id="bodyStyle" class="bodyStyle">
     <!-- Start of User Input Content -->
+    <div class="enblobarTudo">
+        <div class="formInput" id="formInput">
+            <form>
+                <!-- Interface Header -->
+                <h2 class="inputTittle" id="inputTittle">Bhaskara Calculator</h2>
+                <p class="formula" id="formula">f(x) = ax&#178 + bx + c</p>
+                <!-- End of Interface Header -->
 
-    <div class="formInput" id="formInput">
-        <form>
 
-            <!-- Interface Header -->
-            <h2 class="inputTittle" id="inputTittle">Bhaskara Calculator</h2>
-            <p class="formula" id="formula">f(x) = ax&#178 + bx + c</p>
-            <!-- End of Interface Header -->
+                <div class="inputPH" id="inputPH">
+                    <!-- Start User Input -->
+                    <div class="divInputPH">
+                        <p class="inputText">Coeficiente A</p>
+                        <input class="input inputDefault" placeholder="" id="coeficienteA" autocomplete="off" />
+                    </div>
 
-            <!-- Start User Input -->
-            <div class="inputPH" id="inputPH">
-                <div style="padding: 7px;">
-                    <div class="inputAText">Coeficiente A</div>
-                    <input class="input inputDefault" placeholder="" id="coeficienteA" autocomplete="off" />
+                    <div class="divInputPH">
+                        <p class="inputText">Coeficiente B</p>
+                        <input class="input inputDefault" placeholder="" id="coeficienteB" autocomplete="off" />
+                    </div>
+
+                    <div class="divInputPH">
+                        <p class="inputText">Coeficiente C</p>
+                        <input class="input inputDefault" placeholder="" id="coeficienteC" autocomplete="off" />
+                    </div>
+                </div>
+                <!-- End of User Input -->
+
+                <div>
+                    <!-- Interface Buttons -->
+                    <button type="button" class="botaoCalcular buttonEqualsPropy" id="botaoCalcular" onclick='calcularResultado()'>Calcular</button>
+                    <button type="button" class="botaoLimpar buttonEqualsPropy" id="botaoLimpar" onclick="window.location.href=window.location.href">Reset</button>
                 </div>
 
-                <div style="padding: 7px;">
-                    <div class="inputBText">Coeficiente B</div>
-                    <input class="input inputDefault" placeholder="" id="coeficienteB" autocomplete="off" />
+                <div class="modoNoturno" id="modoNoturno">
+                    <!-- Dark Mode Toggle-->
+                    <input class="themeToggle" type="checkbox" id="switch" onclick='mudarCor()' /><label for="switch"></label>
                 </div>
+                <!--  End Color Mode-->
 
-                <div style="padding: 7px;">
-                    <div class="inputCText">Coeficiente C</div>
-                    <input class="input inputDefault" placeholder="" id="coeficienteC" autocomplete="off" />
+                <!-- Developer Details => Do not Remove! -->
+                <p class="devCredits" id="devCredits">Feito com ❤️ por Ruy Monteiro e Kenzo Arakawa</p>
+            </form>
+        </div>
+        <!-- End of User Content-->
+
+        <!-- Start of Output Content-->
+        <div class="outputDivision">
+            <!-- Parable graph display-->
+            <div class="graph" id="graph">
+                <p class="pone">Insert Graph</p>
+                <p class="ptwo">Recurso em desenvolvimento...</p>
+            </div>
+
+            <!-- Results (delta, x1, x2...)-->
+            <div class="formOutput" id="formOutput">
+                <h1 class="titleOutput">Output</h1>
+
+                <div class="endValues">
+                    <div class="outputTratado">
+                        <h1 class="titleValuesRaiz">Delta</h1>
+                        <p class="colorIndividual valuesDeltaStyle" id="resultadoDeltaTratado">value</p>
+                    </div>
+
+                    <div class="outputTratado">
+                        <h1 class="titleValuesRaiz">Raíz 1</h1>
+                        <p class="valorX1Tratado valuesDeltaStyle" id="x1Tratado">value</p>
+                    </div>
+
+                    <div class="outputTratado">
+                        <h1 class="titleValuesRaiz">Raíz 2</h1>
+                        <p class="valorX2Tratado valuesDeltaStyle" id="x2Tratado">value</p>
+                    </div>
+
+                    <div class="outputTratado">
+                        <h1 class="titleValuesRaiz"> Conjunto Solução</h1>
+
+                        <p class="colorIndividualBlue valuesDeltaStyle"> S = {
+                            <a id="resCS1Tratado"> </a>
+                            <a> ; </a>
+                            <a id="resCS2Tratado"> </a> }
+                        </p>
+                    </div>
                 </div>
             </div>
-            <!-- End of User Input -->
-
-            <div>
-                <!-- Interface Buttons -->
-                <button type="button" class="botaoLimpar" id="botaoLimpar" onclick="window.location.href=window.location.href">Reset</button>
-                <button type="button" class="botaoCalcular" id="botaoCalcular" onclick='calcularResultado()'>Calcular</button>
-            </div>
-            <!-- Dark Mode Toggle-->
-            <div class="modoNoturno" id="modoNoturno">
-                <input class="themeToggle" type="checkbox" id="switch" onclick='mudarCor()' /><label for="switch">Toggle</label>
-            </div>
-            <!--  End Color Mode-->
-
-            <!-- Developer Details => Do not Remove! -->
-            <p class="devCredits" id="devCredits">Feito com ❤️ por Ruy Monteiro e Kenzo Arakawa</p>
-            <!-- Developer Details => Do not Remove! -->
-
-
-        </form>
-    </div>
-    <!-- End of User Content-->
-
-    <!-- Start of Output Content-->
-    <div class="outputDivision">
-        <!-- Parable graph display-->
-        <div class="graph" id="graph">
-            <p style="text-align: center; font-size: 72px; margin-top: 40%;">Insert Graph</p>
-            <p style="text-align: center; font-size: 28px; margin-top: 5%;">Recurso em desenvolvimento...</p>
+            <!-- End of Output Content-->
         </div>
 
-        <!-- Results (delta, x1, x2...)-->
-        <div class="formOutput" id="formOutput">
-
-            <div class="headerOutput">
-
-
-                <p class="tituloOutput" id="tituloOutput">Output</p>
-
-            </div>
-
-
-            <div class="outputDeltaTratado">
-                <p class="headerDeltaTratado" id="headerDeltaTratado">Delta</p>
-                <p class="resultadoDeltaTratado" id="resultadoDeltaTratado">value</p>
-            </div>
-
-            <div class="outputX1Tratado">
-                <p class="headerX1Tratado" id="headerX1Tratado">Raíz 1</p>
-                <p class="valorX1Tratado" id="x1Tratado">value</p>
-            </div>
-
-            <div class="outputX2Tratado">
-                <p class="headerX2Tratado" id="headerX2Tratado">Raíz 2</p>
-                <p class="valorX2Tratado" id="x2Tratado">value</p>
-            </div>
-
-            <div class="outputConjuntoSolucaoTratado">
-                <p class="headerConjuntoSolucaoTratado" id="headerConjuntoSolucaoTratado"> Conjunto Solução</p>
-                <p class="valorConjuntoSolucaoTratado"> S = {
-                    <a id="resCS1Tratado"> </a><a> ; </a>
-                    <a id="resCS2Tratado"> </a>}</p>
-            </div>
-        </div>
-        <!-- End of Output Content-->
     </div>
-
-
     <!-- Bhaskara F(x) Script-->
 
     <!-- End of Bhaskara Script-->
-
-
-
-
 </body>
 
 </html>

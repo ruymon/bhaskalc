@@ -68,21 +68,44 @@ body {
 
 .bodyStyle {
     background-color: var(--main-bg-color-dark);
+    width: 100%;
 }
 
 
 /* INPUT TABLE FORMATING + CUSTOM INPUT COLORS */
 
+.enblobarTudo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    width: 100vw;
+    height: 100vh;
+}
+
+
+/* Input Bhaskara Calculator */
+
 .formInput {
-    left: 5%;
-    bottom: 25%;
-    width: 320px;
-    height: 570px;
-    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
     text-align: center;
+    max-width: 100%;
+    width: 320px;
+    height: 560px;
     border-radius: 5px;
     background-color: var(--main-bg-input-dark);
     box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
+    margin-right: 10%;
+}
+
+.formInput form {
+    width: 80%;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 .inputTittle {
@@ -105,11 +128,404 @@ body {
 
 /* User Input */
 
-.inputAText {
+.input {
+    background-color: var(--input-input-dark);
+    border: 2px solid rgb(34, 42, 46);
+    color: var(--input-color-dark);
+    width: 250px;
+    height: 40px;
+    font-weight: 200;
+    box-sizing: border-box;
+    border-radius: 5px;
+    padding-left: 5px;
     text-align: left;
-    margin-left: 10%;
     font-size: 16px;
+    outline: none;
 }
+
+.inputText {
+    text-align: left;
+    font-size: 16px;
+    color: white;
+    margin-top: 10px;
+}
+
+.input:focus {
+    border-radius: 10px;
+    border: 2px solid rgb(79, 98, 107);
+}
+
+.botaoLimpar {
+    margin-bottom: 10px;
+}
+
+.buttonEqualsPropy {
+    width: 250px;
+    height: 40px;
+    padding: 3px;
+    border-radius: 5px;
+    margin-top: 7px;
+    border: none;
+    outline: none;
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 200;
+    font-size: 17px;
+    letter-spacing: 1px;
+    color: white;
+    background-color: var(--input-botao-bg-dark);
+}
+
+
+/* Mudar de Cor */
+
+.formInput form .modoNoturno input,
+label {
+    background: rgba(255, 255, 255, 0.335);
+    padding: 5px 40px;
+    text-align: center;
+    display: inline-block;
+}
+
+
+/* Input Table Buttons */
+
+.devCredits {
+    margin-top: 10px;
+    letter-spacing: 0.8px;
+    font-size: 12px;
+    font-weight: 100;
+    color: var(--dev-credit-color-dark);
+}
+
+
+/* OUTPUT TABLE FORMATING + CUSTOM INPUT COLORS */
+
+.outputDivision {
+    display: grid;
+    grid-template-columns: 66% 1fr;
+    width: 800px;
+    height: 700px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
+}
+
+
+/* Output Graph */
+
+.graph {
+    text-align: center;
+    font-size: 72px;
+    flex-wrap: wrap;
+    background-color: var(--graph-bg-dark);
+    color: var(--graph-color-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.graph .pone {
+    font-size: 72px;
+}
+
+.graph .ptwo {
+    font-size: 28px;
+    margin-top: 5%;
+}
+
+
+/* Results */
+
+.formOutput {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    width: 100%;
+    height: 100%;
+    background-color: var(--form-output-bg-dark);
+}
+
+.formOutput .titleOutput {
+    margin: 20px 0;
+    color: var(--title-output-color-dark);
+    font-size: 30px;
+    text-align: center;
+    position: relative;
+}
+
+
+/* Efect no title ao fazer hover */
+
+.formOutput .titleOutput::after {
+    content: "";
+    width: 50%;
+    height: 2px;
+    left: 0;
+    bottom: -6px;
+    position: absolute;
+    background: var(--title-output-color-dark);
+}
+
+.formOutput .titleOutput:hover::after {
+    width: 70%;
+    transition: width 400ms ease-in-out;
+}
+
+.formOutput .outputTratado .titleValuesRaiz {
+    margin: 10px 0 4px;
+    color: var(--title-output-color-dark);
+    font-size: 20px;
+    text-align: left;
+}
+
+.endValues {
+    width: 80%;
+}
+
+.valuesDeltaStyle {
+    color: var(--output-x1-tratado-color-dark);
+    background-color: var(--output-x1-tratado-bg-dark);
+    font-size: 16px;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 20px;
+}
+
+
+/* Propriedades individuais, troquei a class */
+
+.colorIndividual {
+    color: var(--output-delta-tratado-color-dark);
+    background-color: var(--output-delta-tratado-bg-dark);
+}
+
+.colorIndividualBlue {
+    color: var(--output-conjuntoSolucao-tratado-color-dark);
+    background-color: var(--output-delta-tratado-bg-dark);
+}
+
+@media (max-width: 1400px) {
+    .enblobarTudo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 60px auto 100px;
+        flex-wrap: wrap-reverse;
+        height: 100%;
+        width: 80%;
+    }
+    .formInput {
+        width: 800px;
+        height: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+    .input {
+        width: 100%;
+        height: 60px;
+        font-weight: 200;
+        box-sizing: border-box;
+        border-radius: 5px;
+        text-align: left;
+        font-size: 16px;
+    }
+    .botaoLimpar {
+        margin-bottom: 0;
+    }
+    .buttonEqualsPropy {
+        margin: 20px 4px 10px;
+    }
+    .devCredits {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    .outputDivision {
+        display: grid;
+        grid-template-columns: 1fr 50%;
+        margin-bottom: 80px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .colorIndividualBlue {
+        margin-bottom: 40px;
+    }
+    .graph .pone {
+        line-height: 60px;
+    }
+    .buttonEqualsPropy {
+        width: 100%;
+    }
+    .botaoCalcular {
+        margin-bottom: 0;
+    }
+    .botaoLimpar {
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .outputDivision {
+        display: flex;
+        flex-direction: column;
+    }
+    .graph {
+        height: 100%;
+    }
+    .graph .pone {
+        padding-top: 2rem;
+    }
+    .graph .ptwo {
+        padding-bottom: 2rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .outputDivision {
+        margin-bottom: 140px;
+    }
+}
+
+
+/* Fim Output Delta */
+
+
+/* TESTE */
+
+
+/* Fim Output Conjunto Solução */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+body {
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 100;
+    font-size: 12px;
+    line-height: 30px;
+}
+
+
+/* Theme Colors Vars */
+
+
+/*
+======================
+======================
+======-TEMA DARK-=====
+======================
+======================
+*/
+
+:root {
+    /* MAIN SECTION */
+    --main-bg-color-dark: rgb(36, 36, 36);
+    --main-bg-input-dark: rgb(48, 59, 64);
+    /* INPUT FORM SECTION */
+    --input-title-dark: rgb(242, 251, 255);
+    --input-formula-dark: rgb(158, 173, 184);
+    --input-input-dark: rgb(34, 42, 46);
+    --input-color-dark: rgb(158, 173, 184);
+    --input-botao-bg-dark: rgb(36, 36, 36);
+    --dev-credit-color-dark: rgb(170, 170, 170);
+    /*GRAPH SECTION */
+    --graph-bg-dark: rgb(79, 98, 107);
+    --graph-color-dark: #292929;
+    /* OUTPUT SECTION */
+    --form-output-bg-dark: rgb(48, 59, 64);
+    --title-output-color-dark: rgb(170, 170, 170);
+    /* OUTPUT DELTA SECTION */
+    --output-delta-tratado-color-dark: rgb(209, 13, 209);
+    --output-header-delta-tratado-color-dark: rgb(158, 173, 184);
+    --output-delta-tratado-bg-dark: #292929;
+    /* OUTPUT X1 SECTION */
+    --output-header-x1-tratado-color-dark: rgb(158, 173, 184);
+    --output-x1-tratado-color-dark: rgb(0, 255, 34);
+    --output-x1-tratado-bg-dark: #292929;
+    /* OUTPUT X2 SECTION */
+    --output-header-x2-tratado-color-dark: rgb(158, 173, 184);
+    --output-x2-tratado-color-dark: rgb(0, 255, 34);
+    --output-x2-tratado-bg-dark: #292929;
+    /* OUTPUT CONJUNTO SOLUÇÃO */
+    --output-header-conjuntoSolucao-tratado-color-dark: rgb(158, 173, 184);
+    --output-conjuntoSolucao-tratado-color-dark: rgb(0, 238, 255);
+    --output-conjuntoSolucao-tratado-bg-dark: #292929;
+}
+
+
+/* END THEMES VAR */
+
+.bodyStyle {
+    background-color: var(--main-bg-color-dark);
+    width: 100%;
+}
+
+
+/* INPUT TABLE FORMATING + CUSTOM INPUT COLORS */
+
+.enblobarTudo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    width: 100vw;
+    height: 100vh;
+}
+
+
+/* Input Bhaskara Calculator */
+
+.formInput {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    text-align: center;
+    max-width: 100%;
+    width: 320px;
+    height: 560px;
+    border-radius: 5px;
+    background-color: var(--main-bg-input-dark);
+    box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
+    margin-right: 10%;
+}
+
+.formInput form {
+    width: 80%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.inputTittle {
+    color: var(--input-title-dark);
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 500;
+    margin-top: 25px;
+    margin-bottom: 9px;
+    font-size: 30px;
+}
+
+.formula {
+    color: var(--input-formula-dark);
+    font-family: 'Crimson Text', serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+
+/* User Input */
 
 .input {
     background-color: var(--input-input-dark);
@@ -126,16 +542,11 @@ body {
     outline: none;
 }
 
-.inputBText {
+.inputText {
     text-align: left;
-    margin-left: 10%;
     font-size: 16px;
-}
-
-.inputCText {
-    text-align: left;
-    margin-left: 10%;
-    font-size: 16px;
+    color: white;
+    margin-top: 10px;
 }
 
 .input:focus {
@@ -144,53 +555,41 @@ body {
 }
 
 .botaoLimpar {
-    margin-top: 10px;
     margin-bottom: 10px;
-    padding: 3px;
-    width: 250px;
-    height: 40px;
-    background-color: var(--input-botao-bg-dark);
-    color: white;
-    border-radius: 5px;
-    border: none;
-    outline: none;
-    font-family: 'Titillium Web', sans-serif;
-    font-weight: 200;
-    font-size: 17px;
-    letter-spacing: 1px;
 }
 
-.botaoCalcular {
-    margin-top: 7px;
-    padding: 3px;
+.buttonEqualsPropy {
     width: 250px;
     height: 40px;
-    background-color: var(--input-botao-bg-dark);
-    color: white;
+    padding: 3px;
     border-radius: 5px;
+    margin-top: 7px;
     border: none;
     outline: none;
     font-family: 'Titillium Web', sans-serif;
     font-weight: 200;
     font-size: 17px;
     letter-spacing: 1px;
+    color: white;
+    background-color: var(--input-botao-bg-dark);
 }
 
 
 /* Mudar de Cor */
 
-.modoNoturno {
-    display: absolute;
+.formInput form .modoNoturno input,
+label {
+    background: rgba(255, 255, 255, 0.335);
+    padding: 5px 40px;
     text-align: center;
-    align-content: center;
-    margin-left: 140px;
+    display: inline-block;
 }
 
 
 /* Input Table Buttons */
 
 .devCredits {
-    margin-top: 18px;
+    margin-top: 10px;
     letter-spacing: 0.8px;
     font-size: 12px;
     font-weight: 100;
@@ -201,11 +600,10 @@ body {
 /* OUTPUT TABLE FORMATING + CUSTOM INPUT COLORS */
 
 .outputDivision {
-    width: 1100px;
+    display: grid;
+    grid-template-columns: 66% 1fr;
+    width: 800px;
     height: 700px;
-    left: 35%;
-    bottom: 20%;
-    position: absolute;
     border-radius: 10px;
     box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
 }
@@ -214,110 +612,179 @@ body {
 /* Output Graph */
 
 .graph {
-    float: left;
-    height: 100%;
     text-align: center;
     font-size: 72px;
+    flex-wrap: wrap;
     background-color: var(--graph-bg-dark);
     color: var(--graph-color-dark);
-    width: 66%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
+
+.graph .pone {
+    font-size: 72px;
+}
+
+.graph .ptwo {
+    font-size: 28px;
+    margin-top: 5%;
+}
+
+
+/* Results */
 
 .formOutput {
-    float: right;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    width: 100%;
     height: 100%;
     background-color: var(--form-output-bg-dark);
-    width: 34%;
 }
 
-.tituloOutput {
-    padding: 5px;
-    margin-top: 20px;
+.formOutput .titleOutput {
+    margin: 20px 0;
     color: var(--title-output-color-dark);
     font-size: 30px;
     text-align: center;
+    position: relative;
 }
 
-.headerDeltaTratado {
-    color: var(--output-header-delta-tratado-color-dark);
-    display: inline;
-    padding: 5px;
-    border-radius: 5px;
+
+/* Efect no title ao fazer hover */
+
+.formOutput .titleOutput::after {
+    content: "";
+    width: 50%;
+    height: 2px;
+    left: 0;
+    bottom: -6px;
+    position: absolute;
+    background: var(--title-output-color-dark);
+}
+
+.formOutput .titleOutput:hover::after {
+    width: 70%;
+    transition: width 400ms ease-in-out;
+}
+
+.formOutput .outputTratado .titleValuesRaiz {
+    margin: 10px 0 4px;
+    color: var(--title-output-color-dark);
     font-size: 20px;
+    text-align: left;
 }
 
-.outputDeltaTratado {
-    margin: 20px;
+.endValues {
+    width: 80%;
 }
 
-.resultadoDeltaTratado {
-    color: var(--output-delta-tratado-color-dark);
-    background-color: var(--output-delta-tratado-bg-dark);
-    font-size: 16px;
-    padding: 20px;
-    border-radius: 5px;
-}
-
-.outputX1Tratado {
-    margin: 20px;
-}
-
-.headerX1Tratado {
-    color: var(--output-header-x1-tratado-color-dark);
-    display: inline;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 20px;
-}
-
-.valorX1Tratado {
+.valuesDeltaStyle {
     color: var(--output-x1-tratado-color-dark);
     background-color: var(--output-x1-tratado-bg-dark);
     font-size: 16px;
     padding: 20px;
     border-radius: 5px;
-}
-
-.outputX2Tratado {
-    margin: 20px;
-}
-
-.headerX2Tratado {
-    color: var(--output-header-x2-tratado-color-dark);
-    display: inline;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 20px;
-}
-
-.valorX2Tratado {
-    color: var(--output-x2-tratado-color-dark);
-    background-color: var(--output-x2-tratado-bg-dark);
-    font-size: 16px;
-    padding: 20px;
-    border-radius: 5px;
-}
-
-.outputConjuntoSolucaoTratado {
-    margin: 20px;
-}
-
-.headerConjuntoSolucaoTratado {
-    color: var(--output-header-conjuntoSolucao-tratado-color-dark);
-    font-size: 25px;
-    margin-top: 50px;
-    margin-bottom: 10px;
-}
-
-.valorConjuntoSolucaoTratado {
-    padding: 10px;
-    color: var(--output-conjuntoSolucao-tratado-color-dark);
-    height: 40px;
-    background-color: var(--output-delta-tratado-bg-dark);
-    border-radius: 5px;
-    font-size: 20px;
     text-align: center;
-    border-radius: 5px;
+    font-size: 20px;
+}
+
+
+/* Propriedades individuais, troquei a class */
+
+.colorIndividual {
+    color: var(--output-delta-tratado-color-dark);
+    background-color: var(--output-delta-tratado-bg-dark);
+}
+
+.colorIndividualBlue {
+    color: var(--output-conjuntoSolucao-tratado-color-dark);
+    background-color: var(--output-delta-tratado-bg-dark);
+}
+
+@media (max-width: 1400px) {
+    .enblobarTudo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 60px auto 100px;
+        flex-wrap: wrap-reverse;
+        height: 100%;
+        width: 80%;
+    }
+    .formInput {
+        width: 800px;
+        height: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+    .input {
+        width: 100%;
+        height: 60px;
+        font-weight: 200;
+        box-sizing: border-box;
+        border-radius: 5px;
+        text-align: left;
+        font-size: 16px;
+    }
+    .botaoLimpar {
+        margin-bottom: 0;
+    }
+    .buttonEqualsPropy {
+        margin: 20px 4px 10px;
+    }
+    .devCredits {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    .outputDivision {
+        display: grid;
+        grid-template-columns: 1fr 50%;
+        margin-bottom: 80px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .colorIndividualBlue {
+        margin-bottom: 40px;
+    }
+    .graph .pone {
+        line-height: 60px;
+    }
+    .buttonEqualsPropy {
+        width: 100%;
+    }
+    .botaoCalcular {
+        margin-bottom: 0;
+    }
+    .botaoLimpar {
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .outputDivision {
+        display: flex;
+        flex-direction: column;
+    }
+    .graph {
+        height: 100%;
+    }
+    .graph .pone {
+        padding-top: 2rem;
+    }
+    .graph .ptwo {
+        padding-bottom: 2rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .outputDivision {
+        margin-bottom: 140px;
+    }
 }
 
 
