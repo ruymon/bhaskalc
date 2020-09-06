@@ -12,14 +12,23 @@
 
 ### 💻 Abrir no navegador
 
-Abra uma nova guia do seu navegador (de preferência Google Chrome), e clique ou digite o link abaixo.
+<br>
+<p align="center">
+<a href="https://ruymon.github.io/bhaskalc" align="center"><img src="https://i.imgur.com/abgYAhj.png" alt="cliqueAqui"></a>
+</p>
+<br>
+<br>
 
+ou abra uma nova guia do seu navegador (de preferência Google Chrome) e digite o link abaixo.
 
-[Bhaskalc](https://ruymon.github.io/bhaskalc)
-
-```link
+```
 LINK: https://ruymon.github.io/bhaskalc
 ```
+
+
+### 📸 Demonstração
+
+![Bhaskalc Banner](https://i.imgur.com/6ofxOow.gif)
 
 ###  📁 Instalação .Zip 
 
