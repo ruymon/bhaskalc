@@ -6,6 +6,9 @@ function mudarCor() {
     $("#formula").toggleClass(["formula", "lightFormula"]);
     $(".inputDefault").toggleClass(["input", "lightInput"]);
     $("#inputPH").toggleClass(["inputPH", "lightInputPH"]);
+    $("#inputTextA").toggleClass(["inputText", "lightInputText"]);
+    $("#inputTextB").toggleClass(["inputText", "lightInputText"]);
+    $("#inputTextC").toggleClass(["inputText", "lightInputText"]);
     $("#botaoLimpar").toggleClass(["botaoLimpar", "lightBotaoLimpar"]);
     $("#botaoCalcular").toggleClass(["botaoCalcular", "lightBotaoCalcular"]);
     $("#modoNoturno").toggleClass(["modoNoturno", "lightModoNoturno"]);

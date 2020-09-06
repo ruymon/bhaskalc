@@ -30,37 +30,38 @@ body {
 
 :root {
     /* MAIN SECTION */
-    --main-bg-color-dark: rgb(36, 36, 36);
+    --main-bg-color-dark: rgb(36, 41, 46);
     --main-bg-input-dark: rgb(48, 59, 64);
     /* INPUT FORM SECTION */
     --input-title-dark: rgb(242, 251, 255);
     --input-formula-dark: rgb(158, 173, 184);
     --input-input-dark: rgb(34, 42, 46);
+    --input-text-dark: rgb(157, 165, 180);
     --input-color-dark: rgb(158, 173, 184);
     --input-botao-bg-dark: rgb(36, 36, 36);
     --dev-credit-color-dark: rgb(170, 170, 170);
     /*GRAPH SECTION */
     --graph-bg-dark: rgb(79, 98, 107);
-    --graph-color-dark: #292929;
+    --graph-color-dark: rgb(41, 41, 41);
     /* OUTPUT SECTION */
     --form-output-bg-dark: rgb(48, 59, 64);
     --title-output-color-dark: rgb(170, 170, 170);
     /* OUTPUT DELTA SECTION */
     --output-delta-tratado-color-dark: rgb(209, 13, 209);
     --output-header-delta-tratado-color-dark: rgb(158, 173, 184);
-    --output-delta-tratado-bg-dark: #292929;
+    --output-delta-tratado-bg-dark: rgb(41, 41, 41);
     /* OUTPUT X1 SECTION */
     --output-header-x1-tratado-color-dark: rgb(158, 173, 184);
     --output-x1-tratado-color-dark: rgb(0, 255, 34);
-    --output-x1-tratado-bg-dark: #292929;
+    --output-x1-tratado-bg-dark: rgb(41, 41, 41);
     /* OUTPUT X2 SECTION */
     --output-header-x2-tratado-color-dark: rgb(158, 173, 184);
     --output-x2-tratado-color-dark: rgb(0, 255, 34);
-    --output-x2-tratado-bg-dark: #292929;
+    --output-x2-tratado-bg-dark: rgb(41, 41, 41);
     /* OUTPUT CONJUNTO SOLUÇÃO */
     --output-header-conjuntoSolucao-tratado-color-dark: rgb(158, 173, 184);
     --output-conjuntoSolucao-tratado-color-dark: rgb(0, 238, 255);
-    --output-conjuntoSolucao-tratado-bg-dark: #292929;
+    --output-conjuntoSolucao-tratado-bg-dark: rgb(41, 41, 41);
 }
 
 
@@ -105,12 +106,6 @@ body {
 
 /* User Input */
 
-.inputAText {
-    text-align: left;
-    margin-left: 10%;
-    font-size: 16px;
-}
-
 .input {
     background-color: var(--input-input-dark);
     border: 2px solid rgb(34, 42, 46);
@@ -126,16 +121,11 @@ body {
     outline: none;
 }
 
-.inputBText {
+.inputText {
     text-align: left;
     margin-left: 10%;
     font-size: 16px;
-}
-
-.inputCText {
-    text-align: left;
-    margin-left: 10%;
-    font-size: 16px;
+    color: var(--input-text-dark);
 }
 
 .input:focus {
