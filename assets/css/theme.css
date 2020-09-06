@@ -14,6 +14,7 @@
     --input-title-light: rgb(46, 46, 46);
     --input-formula-light: rgb(69, 69, 69);
     --input-input-light: rgb(245, 245, 245);
+    --input-text-light: rgb(0, 0, 0);
     --input-color-light: rgb(41, 41, 41);
     --input-botao-bg-light: rgb(87, 152, 158);
     --dev-credit-color-light: rgb(46, 46, 46);
@@ -26,19 +27,19 @@
     /* OUTPUT DELTA SECTION */
     --output-delta-tratado-color-light: rgb(209, 13, 209);
     --output-header-delta-tratado-color-light: rgb(0, 0, 0);
-    --output-delta-tratado-bg-light: #292929;
+    --output-delta-tratado-bg-light: rgb(41, 41, 41);
     /* OUTPUT X1 SECTION */
     --output-header-x1-tratado-color-light: rgb(0, 0, 0);
     --output-x1-tratado-color-light: rgb(0, 255, 34);
-    --output-x1-tratado-bg-light: #292929;
+    --output-x1-tratado-bg-light: rgb(41, 41, 41);
     /* OUTPUT X2 SECTION */
     --output-header-x2-tratado-color-light: rgb(0, 0, 0);
     --output-x2-tratado-color-light: rgb(0, 255, 34);
-    --output-x2-tratado-bg-light: #292929;
+    --output-x2-tratado-bg-light: rgb(41, 41, 41);
     /* OUTPUT CONJUNTO SOLUÇÃO */
     --output-header-conjuntoSolucao-tratado-color-light: rgb(0, 0, 0);
     --output-conjuntoSolucao-tratado-color-light: rgb(0, 238, 255);
-    --output-conjuntoSolucao-tratado-bg-light: #292929;
+    --output-conjuntoSolucao-tratado-bg-light: rgb(41, 41, 41);
 }
 
 .lightBodyStyle {
@@ -87,6 +88,13 @@
     text-align: left;
     font-size: 16px;
     outline: none;
+}
+
+.lightInputText {
+    text-align: left;
+    margin-left: 10%;
+    font-size: 16px;
+    color: var(--input-text-light);
 }
 
 .lightInput:focus {
