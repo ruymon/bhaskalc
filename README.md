@@ -23,33 +23,40 @@
 
 <img align="center" alt="JavaScript" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" >
 
+</p>
 
+---
+<br>
+
+
+
+<p align="center">
+
+<h2 align="center">📌 Instalação / Como usar</h2>
 
 </p>
 
-
-##  📌 Instalação / Como usar
-
-
-
-### 💻 Abrir no navegador
-
-
-<br>
 <p align="center">
 <a href="https://ruymon.github.io/bhaskalc" align="center"><img src="https://i.imgur.com/abgYAhj.png" alt="cliqueAqui"></a>
 </p>
 <br>
 <br>
 
-ou abra uma nova guia do seu navegador (de preferência Google Chrome) e digite o link abaixo.
-
+*Se preferir abra uma nova guia do seu navegador (de preferência Google Chrome) e digite o link abaixo.*
+<br>
 ```
 LINK: https://ruymon.github.io/bhaskalc
 ```
+<br>
 
+---
 
-### 📸 Demonstração
+<p align="center">
+
+<h2 align="center">📸 Demonstração</h2>
+
+</p>
+<br>
 
 ![Bhaskalc Banner](https://i.imgur.com/6ofxOow.gif)
 
