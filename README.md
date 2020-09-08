@@ -39,11 +39,14 @@
 <br>
 <br>
 
-<p align="center">Se preferir abra uma nova guia do seu navegador (de preferência Google Chrome) e digite o link abaixo.</p>
+<p align="center"><i> Se preferir abra uma nova guia do seu navegador (de preferência Google Chrome) e digite o link abaixo.</i></p>
+
+<p align="center">
 
 ```
 LINK: https://ruymon.github.io/bhaskalc
 ```
+</p>
 <br>
 
 ---
