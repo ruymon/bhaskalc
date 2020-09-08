@@ -25,16 +25,14 @@
 
 </p>
 
----
 <br>
-
-
 
 <p align="center">
 
 <h2 align="center">📌 Instalação / Como usar</h2>
 
 </p>
+<br>
 
 <p align="center">
 <a href="https://ruymon.github.io/bhaskalc" align="center"><img src="https://i.imgur.com/abgYAhj.png" alt="cliqueAqui"></a>
