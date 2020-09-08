@@ -1,16 +1,39 @@
 ![Bhaskalc Banner](https://media.discordapp.net/attachments/640013683908673536/750801955756048424/banner_header_bhaskalc_final.png)
 
-# **Bhaskalc**
+<p align="center">
+
+<h1 align="center"><u>Bhaskalc</u></h1>
+
+</p>
+
+<p align="center">
+<img alt="GitHub stars" src="https://img.shields.io/github/stars/ruymon/bhaskalc?style=for-the-badge">
+<img alt="GitHub forks" src="https://img.shields.io/github/forks/ruymon/bhaskalc?label=fork&style=for-the-badge">
+<img src="https://img.shields.io/github/last-commit/ruymon/bhaskalc?label=last%20commit&style=for-the-badge">
+
+</p>
+<br>
+<br>
+
+**BhasKalc** é uma calculadora de Equações do 1° e 2° Grau com o plano cartesiano. Desenvolvido em: **HTML**; **CSS**; **JS**. 
+<br>
+<p align="center">
+<img align="center" alt="HTML5" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/html/html.png" />
+<img align="center" alt="CSS3" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/css/css.png" />
+
+<img align="center" alt="JavaScript" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" >
 
 
-**BhasKalc** é uma calculadora de Equações do 1° e 2° Grau com o plano cartesiano. Desenvolvido em **JS** ; **HTML**; **CSS**.
 
-
+</p>
 
 
 ##  📌 Instalação / Como usar
 
+
+
 ### 💻 Abrir no navegador
+
 
 <br>
 <p align="center">
@@ -64,4 +87,8 @@ git clone https://github.com/ruymon/bhaskalc
 
 
 ## Licença
-[MIT](https://choosealicense.com/licenses/mit/)
+
+<p align="center">
+<a href="https://choosealicense.com/licenses/mit/"><img alt="GitHub" src="https://img.shields.io/github/license/ruymon/bhaskalc?style=for-the-badge"></a>
+</p>
+
