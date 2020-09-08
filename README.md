@@ -13,9 +13,8 @@
 
 </p>
 <br>
+<p align="center" style="font-size: 50px"><b>BhasKalc</b> é uma calculadora de Equações do 1° e 2° Grau com o plano cartesiano. Desenvolvido em: <b>HTML</b>; <b>CSS</b>; <b>JS</b>.</p>
 <br>
-
-**BhasKalc** é uma calculadora de Equações do 1° e 2° Grau com o plano cartesiano. Desenvolvido em: **HTML**; **CSS**; **JS**. 
 <br>
 <p align="center">
 <img align="center" alt="HTML5" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/html/html.png" />
