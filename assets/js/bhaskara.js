@@ -35,6 +35,11 @@ function calcularResultado() {
         return;
     }
 
+    if (A == 0) {
+        alert("O coeficiente A não pode ser 0!");
+        return;
+    };
+
     try {
         const { x1, x2 } = calcularBhaskara(A, B, C);
 
