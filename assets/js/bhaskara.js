@@ -69,30 +69,3 @@ function calcularResultado() {
         alert(e.message);
     }
 };
-
-
-
-
-/**     Version Logs
- 
-
-        ***********************
-        *=====================*
-        *--------V1.0---------*
-        *=====================*
-        ***********************
-
-        => Source Code 
-
-        ***********************
-        *=====================*
-        *--------V1.1---------*
-        *=====================*
-        ***********************
-
-        => [Line 17] || Add Math.abs para tornar o resultado(return) da Function calcularDelta para um valor POSITIVO para calcular a Raiz.
-
-        => [Line 18 & 19] || Typographical Error / Bug Fix x1 = (-b + raizDelta) & x2 = (-b - raizDelta)
-
-
-*/
