@@ -31,30 +31,43 @@ function calcularResultado() {
     const C = parseInt($('#coeficienteC').val());
 
     if (isNaN(A) === true || isNaN(B) === true || isNaN(C) === true) {
-        alert("Faltando Parametros")
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Faltando parametros.',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+            customClass: {
+                popup: 'popup-class',
+                header: 'header-class',
+                title: 'title-class',
+                content: 'content-class',
+            },
+        })
         return;
     }
 
     if (A == 0) {
-        alert("O coeficiente A não pode ser 0!");
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'O Coeficiente A não pode ser 0.',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+            customClass: {
+                popup: 'popup-class',
+                header: 'header-class',
+                title: 'title-class',
+                content: 'content-class',
+            },
+        })
         return;
     };
 
     try {
         const { x1, x2 } = calcularBhaskara(A, B, C);
-
-        // Dados Cru
-        /*
-                document.getElementById("resultadoDeltaRaw").innerHTML = calcularDelta(A, B, C)
-                document.getElementById("x1Raw").innerHTML = x1
-                document.getElementById("x2Raw").innerHTML = x2
-
-                document.getElementById("resCS1Raw").innerHTML = x1
-                document.getElementById("resCS2Raw").innerHTML = x2
-
-        */
-        // Dados Tratados
-
 
         document.getElementById("resultadoDeltaTratado").innerHTML = calcularDelta(A, B, C).toFixed(2);
         document.getElementById("x1Tratado").innerHTML = x1.toFixed(2);
