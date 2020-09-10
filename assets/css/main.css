@@ -314,7 +314,27 @@ body {
 /* Fim Output Delta */
 
 
-/* TESTE */
+/* Modal ALERT */
+
+.popup-class {
+    background-color: var(--main-bg-color-dark);
+}
+
+.header-class {
+    color: var(-input-formula-dark);
+}
+
+.title-class {
+    color: var(--input-title-dark);
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 500;
+}
+
+.content-class {
+    color: var(--input-title-dark);
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 500;
+}
 
 
 /* Fim Output Conjunto Solução */
