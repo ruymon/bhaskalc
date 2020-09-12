@@ -1,24 +1,24 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-    height: 100%;
-    background-size: cover;
-    background-repeat: no-repeat;
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 body {
-    font-family: 'Titillium Web', sans-serif;
-    font-weight: 100;
-    font-size: 12px;
-    line-height: 30px;
+  font-family: "Titillium Web", sans-serif;
+  font-weight: 100;
+  font-size: 12px;
+  line-height: 30px;
+  display: flex;
+  align-items: center;
 }
 
-
 /* Theme Colors Vars */
-
 
 /*
 ======================
@@ -29,312 +29,318 @@ body {
 */
 
 :root {
-    /* MAIN SECTION */
-    --main-bg-color-dark: rgb(36, 41, 46);
-    --main-bg-input-dark: rgb(48, 59, 64);
-    /* INPUT FORM SECTION */
-    --input-title-dark: rgb(242, 251, 255);
-    --input-formula-dark: rgb(158, 173, 184);
-    --input-input-dark: rgb(34, 42, 46);
-    --input-text-dark: rgb(157, 165, 180);
-    --input-color-dark: rgb(158, 173, 184);
-    --input-botao-bg-dark: rgb(36, 36, 36);
-    --dev-credit-color-dark: rgb(170, 170, 170);
-    /*GRAPH SECTION */
-    --graph-bg-dark: rgb(79, 98, 107);
-    --graph-color-dark: rgb(41, 41, 41);
-    /* OUTPUT SECTION */
-    --form-output-bg-dark: rgb(48, 59, 64);
-    --title-output-color-dark: rgb(170, 170, 170);
-    /* OUTPUT DELTA SECTION */
-    --output-delta-tratado-color-dark: rgb(209, 13, 209);
-    --output-header-delta-tratado-color-dark: rgb(158, 173, 184);
-    --output-delta-tratado-bg-dark: rgb(41, 41, 41);
-    /* OUTPUT X1 SECTION */
-    --output-header-x1-tratado-color-dark: rgb(158, 173, 184);
-    --output-x1-tratado-color-dark: rgb(0, 255, 34);
-    --output-x1-tratado-bg-dark: rgb(41, 41, 41);
-    /* OUTPUT X2 SECTION */
-    --output-header-x2-tratado-color-dark: rgb(158, 173, 184);
-    --output-x2-tratado-color-dark: rgb(0, 255, 34);
-    --output-x2-tratado-bg-dark: rgb(41, 41, 41);
-    /* OUTPUT CONJUNTO SOLUÇÃO */
-    --output-header-conjuntoSolucao-tratado-color-dark: rgb(158, 173, 184);
-    --output-conjuntoSolucao-tratado-color-dark: rgb(0, 238, 255);
-    --output-conjuntoSolucao-tratado-bg-dark: rgb(41, 41, 41);
+  /* MAIN SECTION */
+  --main-bg-color-dark: rgb(36, 41, 46);
+  --main-bg-input-dark: rgb(48, 59, 64);
+  /* INPUT FORM SECTION */
+  --input-title-dark: rgb(242, 251, 255);
+  --input-formula-dark: rgb(158, 173, 184);
+  --input-input-dark: rgb(34, 42, 46);
+  --input-text-dark: rgb(157, 165, 180);
+  --input-color-dark: rgb(158, 173, 184);
+  --input-botao-bg-dark: rgb(36, 36, 36);
+  --dev-credit-color-dark: rgb(170, 170, 170);
+  /*GRAPH SECTION */
+  --graph-bg-dark: rgb(79, 98, 107);
+  --graph-color-dark: rgb(41, 41, 41);
+  /* OUTPUT SECTION */
+  --form-output-bg-dark: rgb(48, 59, 64);
+  --title-output-color-dark: rgb(170, 170, 170);
+  /* OUTPUT DELTA SECTION */
+  --output-delta-tratado-color-dark: rgb(209, 13, 209);
+  --output-header-delta-tratado-color-dark: rgb(158, 173, 184);
+  --output-delta-tratado-bg-dark: rgb(41, 41, 41);
+  /* OUTPUT X1 SECTION */
+  --output-header-x1-tratado-color-dark: rgb(158, 173, 184);
+  --output-x1-tratado-color-dark: rgb(0, 255, 34);
+  --output-x1-tratado-bg-dark: rgb(41, 41, 41);
+  /* OUTPUT X2 SECTION */
+  --output-header-x2-tratado-color-dark: rgb(158, 173, 184);
+  --output-x2-tratado-color-dark: rgb(0, 255, 34);
+  --output-x2-tratado-bg-dark: rgb(41, 41, 41);
+  /* OUTPUT CONJUNTO SOLUÇÃO */
+  --output-header-conjuntoSolucao-tratado-color-dark: rgb(158, 173, 184);
+  --output-conjuntoSolucao-tratado-color-dark: rgb(0, 238, 255);
+  --output-conjuntoSolucao-tratado-bg-dark: rgb(41, 41, 41);
 }
-
 
 /* END THEMES VAR */
 
 .bodyStyle {
-    background-color: var(--main-bg-color-dark);
+  background-color: var(--main-bg-color-dark);
 }
-
 
 /* INPUT TABLE FORMATING + CUSTOM INPUT COLORS */
 
+.formLeft {
+  padding: 30px 15px;
+}
+
 .formInput {
-    left: 5%;
-    bottom: 25%;
-    width: 320px;
-    height: 570px;
-    position: absolute;
-    text-align: center;
-    border-radius: 5px;
-    background-color: var(--main-bg-input-dark);
-    box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
+  margin: 0 50px;
+  width: 320px;
+  text-align: center;
+  border-radius: 5px;
+  background-color: var(--main-bg-input-dark);
+  box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.3);
+}
+
+.formInput form {
+  padding: 30px 15px;
 }
 
 .inputTittle {
-    color: var(--input-title-dark);
-    font-family: 'Titillium Web', sans-serif;
-    font-weight: 500;
-    margin-top: 25px;
-    margin-bottom: 9px;
-    font-size: 30px;
+  color: var(--input-title-dark);
+  font-family: "Titillium Web", sans-serif;
+  font-weight: 500;
+  margin-bottom: 9px;
+  font-size: 30px;
 }
 
 .formula {
-    color: var(--input-formula-dark);
-    font-family: 'Crimson Text', serif;
-    font-size: 22px;
-    letter-spacing: 3px;
-    margin-bottom: 10px;
+  color: var(--input-formula-dark);
+  font-family: "Crimson Text", serif;
+  font-size: 22px;
+  letter-spacing: 3px;
+  margin-bottom: 10px;
 }
-
 
 /* User Input */
 
 .input {
-    background-color: var(--input-input-dark);
-    border: 2px solid rgb(34, 42, 46);
-    color: var(--input-color-dark);
-    width: 250px;
-    height: 40px;
-    font-weight: 200;
-    box-sizing: border-box;
-    border-radius: 5px;
-    padding-left: 5px;
-    text-align: left;
-    font-size: 16px;
-    outline: none;
+  background-color: var(--input-input-dark);
+  border: 2px solid rgb(34, 42, 46);
+  color: var(--input-color-dark);
+  width: 250px;
+  height: 40px;
+  font-weight: 200;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding-left: 5px;
+  text-align: left;
+  font-size: 16px;
+  outline: none;
 }
 
 .inputText {
-    text-align: left;
-    margin-left: 10%;
-    font-size: 16px;
-    color: var(--input-text-dark);
+  text-align: left;
+  margin-left: 10%;
+  font-size: 16px;
+  color: var(--input-text-dark);
 }
 
 .input:focus {
-    border-radius: 10px;
-    border: 2px solid rgb(79, 98, 107);
+  border-radius: 10px;
+  border: 2px solid rgb(79, 98, 107);
 }
 
 .botaoLimpar {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding: 3px;
-    width: 250px;
-    height: 40px;
-    background-color: var(--input-botao-bg-dark);
-    color: white;
-    border-radius: 5px;
-    border: none;
-    outline: none;
-    font-family: 'Titillium Web', sans-serif;
-    font-weight: 200;
-    font-size: 17px;
-    letter-spacing: 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 3px;
+  width: 250px;
+  height: 40px;
+  background-color: var(--input-botao-bg-dark);
+  color: white;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  font-family: "Titillium Web", sans-serif;
+  font-weight: 200;
+  font-size: 17px;
+  letter-spacing: 1px;
 }
 
 .botaoCalcular {
-    margin-top: 7px;
-    padding: 3px;
-    width: 250px;
-    height: 40px;
-    background-color: var(--input-botao-bg-dark);
-    color: white;
-    border-radius: 5px;
-    border: none;
-    outline: none;
-    font-family: 'Titillium Web', sans-serif;
-    font-weight: 200;
-    font-size: 17px;
-    letter-spacing: 1px;
+  margin-top: 7px;
+  padding: 3px;
+  width: 250px;
+  height: 40px;
+  background-color: var(--input-botao-bg-dark);
+  color: white;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  font-family: "Titillium Web", sans-serif;
+  font-weight: 200;
+  font-size: 17px;
+  letter-spacing: 1px;
 }
-
 
 /* Mudar de Cor */
 
 .modoNoturno {
-    display: absolute;
-    text-align: center;
-    align-content: center;
-    margin-left: 140px;
+  display: absolute;
+  text-align: center;
+  align-content: center;
+  margin-left: 140px;
 }
-
 
 /* Input Table Buttons */
 
 .devCredits {
-    margin-top: 18px;
-    letter-spacing: 0.8px;
-    font-size: 12px;
-    font-weight: 100;
-    color: var(--dev-credit-color-dark);
+  margin-top: 18px;
+  letter-spacing: 0.8px;
+  font-size: 12px;
+  color: var(--dev-credit-color-dark);
 }
-
 
 /* OUTPUT TABLE FORMATING + CUSTOM INPUT COLORS */
 
 .outputDivision {
-    width: 1100px;
-    height: 700px;
-    left: 35%;
-    bottom: 20%;
-    position: absolute;
-    border-radius: 10px;
-    box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
+  margin: 25px;
+  border-radius: 10px 0 0 10px;
+  width: 1100px;
+  height: 700px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.3);
 }
-
 
 /* Output Graph */
 
 .graph {
-    float: left;
-    height: 100%;
-    text-align: center;
-    font-size: 72px;
-    background-color: var(--graph-bg-dark);
-    color: var(--graph-color-dark);
-    width: 66%;
+  border-radius: 10px 0 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  float: left;
+  height: 100%;
+  text-align: center;
+  font-size: 72px;
+  background-color: var(--graph-bg-dark);
+  color: var(--graph-color-dark);
+  width: 66%;
+}
+
+.graphText .graphText p {
+  font-size: 72px;
+}
+
+.graphText p:last-child {
+  margin-top: 30px;
+  font-size: 28px;
 }
 
 .formOutput {
-    float: right;
-    height: 100%;
-    background-color: var(--form-output-bg-dark);
-    width: 34%;
+  border-radius: 0 10px 10px 0;
+  float: right;
+  height: 100%;
+  background-color: var(--form-output-bg-dark);
+  width: 34%;
 }
 
 .tituloOutput {
-    padding: 5px;
-    margin-top: 20px;
-    color: var(--title-output-color-dark);
-    font-size: 30px;
-    text-align: center;
+  padding: 5px;
+  margin-top: 20px;
+  color: var(--title-output-color-dark);
+  font-size: 30px;
+  text-align: center;
 }
 
 .headerDeltaTratado {
-    color: var(--output-header-delta-tratado-color-dark);
-    display: inline;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 20px;
+  color: var(--output-header-delta-tratado-color-dark);
+  display: inline;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 20px;
 }
 
 .outputDeltaTratado {
-    margin: 20px;
+  margin: 20px;
 }
 
 .resultadoDeltaTratado {
-    color: var(--output-delta-tratado-color-dark);
-    background-color: var(--output-delta-tratado-bg-dark);
-    font-size: 16px;
-    padding: 20px;
-    border-radius: 5px;
+  color: var(--output-delta-tratado-color-dark);
+  background-color: var(--output-delta-tratado-bg-dark);
+  font-size: 16px;
+  padding: 20px;
+  border-radius: 5px;
 }
 
 .outputX1Tratado {
-    margin: 20px;
+  margin: 20px;
 }
 
 .headerX1Tratado {
-    color: var(--output-header-x1-tratado-color-dark);
-    display: inline;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 20px;
+  color: var(--output-header-x1-tratado-color-dark);
+  display: inline;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 20px;
 }
 
 .valorX1Tratado {
-    color: var(--output-x1-tratado-color-dark);
-    background-color: var(--output-x1-tratado-bg-dark);
-    font-size: 16px;
-    padding: 20px;
-    border-radius: 5px;
+  color: var(--output-x1-tratado-color-dark);
+  background-color: var(--output-x1-tratado-bg-dark);
+  font-size: 16px;
+  padding: 20px;
+  border-radius: 5px;
 }
 
 .outputX2Tratado {
-    margin: 20px;
+  margin: 20px;
 }
 
 .headerX2Tratado {
-    color: var(--output-header-x2-tratado-color-dark);
-    display: inline;
-    padding: 5px;
-    border-radius: 5px;
-    font-size: 20px;
+  color: var(--output-header-x2-tratado-color-dark);
+  display: inline;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 20px;
 }
 
 .valorX2Tratado {
-    color: var(--output-x2-tratado-color-dark);
-    background-color: var(--output-x2-tratado-bg-dark);
-    font-size: 16px;
-    padding: 20px;
-    border-radius: 5px;
+  color: var(--output-x2-tratado-color-dark);
+  background-color: var(--output-x2-tratado-bg-dark);
+  font-size: 16px;
+  padding: 20px;
+  border-radius: 5px;
 }
 
 .outputConjuntoSolucaoTratado {
-    margin: 20px;
+  margin: 20px;
 }
 
 .headerConjuntoSolucaoTratado {
-    color: var(--output-header-conjuntoSolucao-tratado-color-dark);
-    font-size: 25px;
-    margin-top: 50px;
-    margin-bottom: 10px;
+  color: var(--output-header-conjuntoSolucao-tratado-color-dark);
+  font-size: 25px;
+  margin-top: 50px;
+  margin-bottom: 10px;
 }
 
 .valorConjuntoSolucaoTratado {
-    padding: 10px;
-    color: var(--output-conjuntoSolucao-tratado-color-dark);
-    height: 40px;
-    background-color: var(--output-delta-tratado-bg-dark);
-    border-radius: 5px;
-    font-size: 20px;
-    text-align: center;
-    border-radius: 5px;
+  padding: 10px;
+  color: var(--output-conjuntoSolucao-tratado-color-dark);
+  height: 40px;
+  background-color: var(--output-delta-tratado-bg-dark);
+  border-radius: 5px;
+  font-size: 20px;
+  text-align: center;
+  border-radius: 5px;
 }
 
-
 /* Fim Output Delta */
-
 
 /* Modal ALERT */
 
 .popup-class {
-    background-color: var(--main-bg-color-dark);
+  background-color: var(--main-bg-color-dark);
 }
 
 .header-class {
-    color: var(-input-formula-dark);
+  color: var(-input-formula-dark);
 }
 
 .title-class {
-    color: var(--input-title-dark);
-    font-family: 'Titillium Web', sans-serif;
-    font-weight: 500;
+  color: var(--input-title-dark);
+  font-family: "Titillium Web", sans-serif;
+  font-weight: 500;
 }
 
 .content-class {
-    color: var(--input-title-dark);
-    font-family: 'Titillium Web', sans-serif;
-    font-weight: 500;
+  color: var(--input-title-dark);
+  font-family: "Titillium Web", sans-serif;
+  font-weight: 500;
 }
-
 
 /* Fim Output Conjunto Solução */
