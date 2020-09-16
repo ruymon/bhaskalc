@@ -150,6 +150,12 @@ body {
     letter-spacing: 1px;
 }
 
+.botaoLimpar:hover {
+    transform: scale(1.02);
+    transition-duration: 200ms;
+    cursor: pointer;
+}
+
 .botaoCalcular {
     margin-top: 7px;
     padding: 3px;
@@ -164,6 +170,12 @@ body {
     font-weight: 200;
     font-size: 17px;
     letter-spacing: 1px;
+}
+
+.botaoCalcular:hover {
+    transform: scale(1.02);
+    transition-duration: 200ms;
+    cursor: pointer;
 }
 
 
@@ -211,6 +223,9 @@ body {
     background-color: var(--graph-bg-dark);
     color: var(--graph-color-dark);
     width: 66%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .formOutput {

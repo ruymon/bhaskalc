@@ -1,2367 +1,943 @@
-(function(f) {
-    if (typeof exports === "object" && typeof module !== "undefined") {
-        module.exports = f()
-    } else if (typeof define === "function" && define.amd) {
-        define([], f)
-    } else {
-        var g;
-        if (typeof window !== "undefined") {
-            g = window
-        } else if (typeof global !== "undefined") {
-            g = global
-        } else if (typeof self !== "undefined") {
-            g = self
-        } else {
-            g = this
-        }
-        g.functionPlot = f()
-    }
-})(function() {
-    var define, module, exports;
-    return function() {
-        function r(e, n, t) {
-            function o(i, f) {
-                if (!n[i]) {
-                    if (!e[i]) {
-                        var c = "function" == typeof require && require;
-                        if (!f && c) return c(i, !0);
-                        if (u) return u(i, !0);
-                        var a = new Error("Cannot find module '" + i + "'");
-                        throw a.code = "MODULE_NOT_FOUND", a
+! function(t, n) { "object" == typeof exports && "object" == typeof module ? module.exports = n() : "function" == typeof define && define.amd ? define([], n) : "object" == typeof exports ? exports.functionPlot = n() : t.functionPlot = n() }(window, (function() {
+    return function(t) {
+        var n = {};
+
+        function e(r) { if (n[r]) return n[r].exports; var i = n[r] = { i: r, l: !1, exports: {} }; return t[r].call(i.exports, i, i.exports, e), i.l = !0, i.exports }
+        return e.m = t, e.c = n, e.d = function(t, n, r) { e.o(t, n) || Object.defineProperty(t, n, { enumerable: !0, get: r }) }, e.r = function(t) { "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(t, Symbol.toStringTag, { value: "Module" }), Object.defineProperty(t, "__esModule", { value: !0 }) }, e.t = function(t, n) {
+            if (1 & n && (t = e(t)), 8 & n) return t;
+            if (4 & n && "object" == typeof t && t && t.__esModule) return t;
+            var r = Object.create(null);
+            if (e.r(r), Object.defineProperty(r, "default", { enumerable: !0, value: t }), 2 & n && "string" != typeof t)
+                for (var i in t) e.d(r, i, function(n) { return t[n] }.bind(null, i));
+            return r
+        }, e.n = function(t) { var n = t && t.__esModule ? function() { return t.default } : function() { return t }; return e.d(n, "a", n), n }, e.o = function(t, n) { return Object.prototype.hasOwnProperty.call(t, n) }, e.p = "", e(e.s = 75)
+    }([function(t, n, e) {
+        "use strict";
+        e.r(n),
+            function(t) {
+                e.d(n, "builtIn", (function() { return u })), e.d(n, "interval", (function() { return c }));
+                var r = e(37),
+                    i = e.n(r),
+                    o = e(10);
+                const a = { interval: e.n(o).a, builtIn: i.a };
+
+                function s(n) {
+                    function e(e, r) {
+                        const i = e[r],
+                            o = n + "_Expression_" + r,
+                            s = n + "_Compiled_" + r;
+                        i !== e[o] && (e[o] = i, e[s] = function(e) { if ("string" == typeof e) { const r = a[n](e); return t.math && "builtIn" === n ? { eval: r.evaluate || r.eval } : r } if ("function" == typeof e) return { eval: e }; throw Error("expression must be a string or a function") }(i))
                     }
-                    var p = n[i] = {
-                        exports: {}
-                    };
-                    e[i][0].call(p.exports, function(r) {
-                        var n = e[i][1][r];
-                        return o(n || r)
-                    }, p, p.exports, r, e, n, t)
-                }
-                return n[i].exports
-            }
-            for (var u = "function" == typeof require && require, i = 0; i < t.length; i++) o(t[i]);
-            return o
-        }
-        return r
-    }()({
-        1: [function(require, module, exports) {
-            module.exports = require("./lib/")
-        }, {
-            "./lib/": 14
-        }],
-        2: [function(require, module, exports) {
-            var isObject = require("is-object");
-            module.exports = function(d) {
-                if (!isObject(d)) {
-                    throw Error("datum is not an object")
-                }
-                if (!d.hasOwnProperty("graphType")) {
-                    d.graphType = "interval"
-                }
-                if (!d.hasOwnProperty("sampler")) {
-                    d.sampler = d.graphType !== "interval" ? "builtIn" : "interval"
-                }
-                if (!d.hasOwnProperty("fnType")) {
-                    d.fnType = "linear"
-                }
-                return d
-            }
-        }, {
-            "is-object": 50
-        }],
-        3: [function(require, module, exports) {
-            "use strict";
-            var globals = require("./globals");
-            var evalTypeFn = {
-                interval: require("./samplers/interval"),
-                builtIn: require("./samplers/builtIn")
-            };
-
-            function computeEndpoints(chart, d) {
-                var range = d.range || [-Infinity, Infinity];
-                var scale = chart.meta.xScale;
-                var start = Math.max(scale.domain()[0], range[0]);
-                var end = Math.min(scale.domain()[1], range[1]);
-                return [start, end]
-            }
-
-            function evaluate(chart, d) {
-                var range = computeEndpoints(chart, d);
-                var data;
-                var evalFn = evalTypeFn[d.sampler];
-                var nSamples = d.nSamples || Math.min(globals.MAX_ITERATIONS, globals.DEFAULT_ITERATIONS || chart.meta.width * 2);
-                data = evalFn(chart, d, range, nSamples);
-                chart.emit("eval", data, d.index, d.isHelper);
-                return data
-            }
-            module.exports = evaluate
-        }, {
-            "./globals": 4,
-            "./samplers/builtIn": 19,
-            "./samplers/interval": 20
-        }],
-        4: [function(require, module, exports) {
-            "use strict";
-            var d3 = window.d3;
-            var Globals = {
-                COLORS: ["steelblue", "red", "#05b378", "orange", "#4040e8", "yellow", "brown", "magenta", "cyan"].map(function(v) {
-                    return d3.hsl(v)
-                }),
-                DEFAULT_WIDTH: 550,
-                DEFAULT_HEIGHT: 350,
-                TIP_X_EPS: 1
-            };
-            Globals.DEFAULT_ITERATIONS = null;
-            Globals.MAX_ITERATIONS = Globals.DEFAULT_WIDTH * 4;
-            module.exports = Globals
-        }, {}],
-        5: [function(require, module, exports) {
-            "use strict";
-            module.exports = {
-                polyline: require("./polyline"),
-                interval: require("./interval"),
-                scatter: require("./scatter")
-            }
-        }, {
-            "./interval": 6,
-            "./polyline": 7,
-            "./scatter": 8
-        }],
-        6: [function(require, module, exports) {
-            "use strict";
-            var d3 = window.d3;
-            var evaluate = require("../evaluate");
-            var utils = require("../utils");
-            module.exports = function(chart) {
-                var minWidthHeight;
-                var xScale = chart.meta.xScale;
-                var yScale = chart.meta.yScale;
-
-                function clampRange(vLo, vHi, gLo, gHi) {
-                    if (gLo > gHi) {
-                        var t = gLo;
-                        gLo = gHi;
-                        gHi = t
-                    }
-                    var hi = Math.min(vHi, gHi);
-                    var lo = Math.max(vLo, gLo);
-                    if (lo > hi) {
-                        return [-minWidthHeight, 0]
-                    }
-                    return [lo, hi]
-                }
-                var line = function(points, closed) {
-                    var path = "";
-                    var range = yScale.range();
-                    var minY = Math.min.apply(Math, range);
-                    var maxY = Math.max.apply(Math, range);
-                    for (var i = 0, length = points.length; i < length; i += 1) {
-                        if (points[i]) {
-                            var x = points[i][0];
-                            var y = points[i][1];
-                            var yLo = y.lo;
-                            var yHi = y.hi;
-                            if (closed) {
-                                yLo = Math.min(yLo, 0);
-                                yHi = Math.max(yHi, 0)
-                            }
-                            var moveX = xScale(x.lo) + points.scaledDx / 2;
-                            var viewportY = clampRange(minY, maxY, isFinite(yHi) ? yScale(yHi) : -Infinity, isFinite(yLo) ? yScale(yLo) : Infinity);
-                            var vLo = viewportY[0];
-                            var vHi = viewportY[1];
-                            path += " M " + moveX + " " + vLo;
-                            path += " v " + Math.max(vHi - vLo, minWidthHeight)
-                        }
-                    }
-                    return path
-                };
-
-                function plotLine(selection) {
-                    selection.each(function(d) {
-                        var el = plotLine.el = d3.select(this);
-                        var index = d.index;
-                        var closed = d.closed;
-                        var evaluatedData = evaluate(chart, d);
-                        var innerSelection = el.selectAll(":scope > path.line").data(evaluatedData);
-                        minWidthHeight = Math.max(evaluatedData[0].scaledDx, 1);
-                        innerSelection.enter().append("path").attr("class", "line line-" + index).attr("fill", "none");
-                        innerSelection.attr("stroke-width", minWidthHeight).attr("stroke", utils.color(d, index)).attr("opacity", closed ? .5 : 1).attr("d", function(d) {
-                            return line(d, closed)
-                        }).attr(d.attr);
-                        innerSelection.exit().remove()
-                    })
-                }
-                return plotLine
-            }
-        }, {
-            "../evaluate": 3,
-            "../utils": 22
-        }],
-        7: [function(require, module, exports) {
-            "use strict";
-            var d3 = window.d3;
-            var evaluate = require("../evaluate");
-            var utils = require("../utils");
-            var clamp = require("clamp");
-            module.exports = function(chart) {
-                var xScale = chart.meta.xScale;
-                var yScale = chart.meta.yScale;
-
-                function plotLine(selection) {
-                    selection.each(function(d) {
-                        var el = plotLine.el = d3.select(this);
-                        var index = d.index;
-                        var evaluatedData = evaluate(chart, d);
-                        var color = utils.color(d, index);
-                        var innerSelection = el.selectAll(":scope > path.line").data(evaluatedData);
-                        var yRange = yScale.range();
-                        var yMax = yRange[0];
-                        var yMin = yRange[1];
-                        var diff = yMax - yMin;
-                        yMax += diff * 1e6;
-                        yMin -= diff * 1e6;
-                        if (d.skipBoundsCheck) {
-                            yMax = Infinity;
-                            yMin = -Infinity
-                        }
-
-                        function y(d) {
-                            return clamp(yScale(d[1]), yMin, yMax)
-                        }
-                        var line = d3.svg.line().interpolate("linear").x(function(d) {
-                            return xScale(d[0])
-                        }).y(y);
-                        var area = d3.svg.area().x(function(d) {
-                            return xScale(d[0])
-                        }).y0(yScale(0)).y1(y);
-                        innerSelection.enter().append("path").attr("class", "line line-" + index).attr("stroke-width", 1).attr("stroke-linecap", "round");
-                        innerSelection.each(function() {
-                            var path = d3.select(this);
-                            var pathD;
-                            if (d.closed) {
-                                path.attr("fill", color);
-                                path.attr("fill-opacity", .3);
-                                pathD = area
-                            } else {
-                                path.attr("fill", "none");
-                                pathD = line
-                            }
-                            path.attr("stroke", color).attr("marker-end", function() {
-                                return d.fnType === "vector" ? "url(#" + chart.markerId + ")" : null
-                            }).attr("d", pathD)
-                        }).attr(d.attr);
-                        innerSelection.exit().remove()
-                    })
-                }
-                return plotLine
-            }
-        }, {
-            "../evaluate": 3,
-            "../utils": 22,
-            clamp: 29
-        }],
-        8: [function(require, module, exports) {
-            "use strict";
-            var d3 = window.d3;
-            var evaluate = require("../evaluate");
-            var utils = require("../utils");
-            module.exports = function(chart) {
-                var xScale = chart.meta.xScale;
-                var yScale = chart.meta.yScale;
-
-                function scatter(selection) {
-                    selection.each(function(d) {
-                        var i, j;
-                        var index = d.index;
-                        var color = utils.color(d, index);
-                        var evaluatedData = evaluate(chart, d);
-                        var joined = [];
-                        for (i = 0; i < evaluatedData.length; i += 1) {
-                            for (j = 0; j < evaluatedData[i].length; j += 1) {
-                                joined.push(evaluatedData[i][j])
-                            }
-                        }
-                        var innerSelection = d3.select(this).selectAll(":scope > circle").data(joined);
-                        innerSelection.enter().append("circle");
-                        innerSelection.attr("fill", d3.hsl(color.toString()).brighter(1.5)).attr("stroke", color).attr("opacity", .7).attr("r", 1).attr("cx", function(d) {
-                            return xScale(d[0])
-                        }).attr("cy", function(d) {
-                            return yScale(d[1])
-                        }).attr(d.attr);
-                        innerSelection.exit().remove()
-                    })
-                }
-                return scatter
-            }
-        }, {
-            "../evaluate": 3,
-            "../utils": 22
-        }],
-        9: [function(require, module, exports) {
-            "use strict";
-            var d3 = window.d3;
-            module.exports = function(options) {
-                var annotations;
-                var xScale = options.owner.meta.xScale;
-                var yScale = options.owner.meta.yScale;
-                var line = d3.svg.line().x(function(d) {
-                    return d[0]
-                }).y(function(d) {
-                    return d[1]
-                });
-                annotations = function(parentSelection) {
-                    parentSelection.each(function() {
-                        var current = d3.select(this);
-                        var selection = current.selectAll("g.annotations").data(function(d) {
-                            return d.annotations || []
-                        });
-                        selection.enter().append("g").attr("class", "annotations");
-                        var yRange = yScale.range();
-                        var xRange = xScale.range();
-                        var path = selection.selectAll("path").data(function(d) {
-                            if (d.hasOwnProperty("x")) {
-                                return [
-                                    [
-                                        [0, yRange[0]],
-                                        [0, yRange[1]]
-                                    ]
-                                ]
-                            } else {
-                                return [
-                                    [
-                                        [xRange[0], 0],
-                                        [xRange[1], 0]
-                                    ]
-                                ]
-                            }
-                        });
-                        path.enter().append("path").attr("stroke", "#eee").attr("d", line);
-                        path.exit().remove();
-                        var text = selection.selectAll("text").data(function(d) {
-                            return [{
-                                text: d.text || "",
-                                hasX: d.hasOwnProperty("x")
-                            }]
-                        });
-                        text.enter().append("text").attr("y", function(d) {
-                            return d.hasX ? 3 : 0
-                        }).attr("x", function(d) {
-                            return d.hasX ? 0 : 3
-                        }).attr("dy", function(d) {
-                            return d.hasX ? 5 : -5
-                        }).attr("text-anchor", function(d) {
-                            return d.hasX ? "end" : ""
-                        }).attr("transform", function(d) {
-                            return d.hasX ? "rotate(-90)" : ""
-                        }).text(function(d) {
-                            return d.text
-                        });
-                        text.exit().remove();
-                        selection.attr("transform", function(d) {
-                            if (d.hasOwnProperty("x")) {
-                                return "translate(" + xScale(d.x) + ", 0)"
-                            } else {
-                                return "translate(0, " + yScale(d.y) + ")"
-                            }
-                        });
-                        selection.exit().remove()
-                    })
-                };
-                return annotations
-            }
-        }, {}],
-        10: [function(require, module, exports) {
-            "use strict";
-            var d3 = window.d3;
-            var builtInEvaluator = require("./eval").builtIn;
-            var polyline = require("../graph-types/polyline");
-            var datumDefaults = require("../datum-defaults");
-            module.exports = function(chart) {
-                var derivativeDatum = datumDefaults({
-                    isHelper: true,
-                    skipTip: true,
-                    skipBoundsCheck: true,
-                    nSamples: 2,
-                    graphType: "polyline"
-                });
-                var derivative;
-
-                function computeLine(d) {
-                    if (!d.derivative) {
-                        return []
-                    }
-                    var x0 = typeof d.derivative.x0 === "number" ? d.derivative.x0 : Infinity;
-                    derivativeDatum.index = d.index;
-                    derivativeDatum.scope = {
-                        m: builtInEvaluator(d.derivative, "fn", {
-                            x: x0
-                        }),
-                        x0: x0,
-                        y0: builtInEvaluator(d, "fn", {
-                            x: x0
-                        })
-                    };
-                    derivativeDatum.fn = "m * (x - x0) + y0";
-                    return [derivativeDatum]
-                }
-
-                function checkAutoUpdate(d) {
-                    var self = this;
-                    if (!d.derivative) {
-                        return
-                    }
-                    if (d.derivative.updateOnMouseMove && !d.derivative.$$mouseListener) {
-                        d.derivative.$$mouseListener = function(x0) {
-                            if (d.derivative) {
-                                d.derivative.x0 = x0
-                            }
-                            derivative(self)
-                        };
-                        chart.on("tip:update", d.derivative.$$mouseListener)
+                    return function(t, r, i) {
+                        return e(t, r),
+                            function(t, e) { return t[n + "_Compiled_" + e] }(t, r).eval(Object.assign({}, t.scope || {}, i))
                     }
                 }
-                derivative = function(selection) {
-                    selection.each(function(d) {
-                        var el = d3.select(this);
-                        var data = computeLine.call(selection, d);
-                        checkAutoUpdate.call(selection, d);
-                        var innerSelection = el.selectAll("g.derivative").data(data);
-                        innerSelection.enter().append("g").attr("class", "derivative");
-                        innerSelection.call(polyline(chart));
-                        innerSelection.selectAll("path").attr("opacity", .5);
-                        innerSelection.exit().remove()
-                    })
-                };
-                return derivative
-            }
-        }, {
-            "../datum-defaults": 2,
-            "../graph-types/polyline": 7,
-            "./eval": 11
-        }],
-        11: [function(require, module, exports) {
-            "use strict";
-            var samplers = {
-                interval: require("interval-arithmetic-eval"),
-                builtIn: require("built-in-math-eval")
-            };
-            var extend = require("extend");
-            window.math && (samplers.builtIn = window.math.compile);
+                t.math && (a.builtIn = t.math.compile);
+                const u = s("builtIn"),
+                    c = s("interval")
+            }.call(this, e(17))
+    }, , function(t, n) {
+        function e() {}
+        e.prototype.type = "Node", t.exports = e
+    }, function(t, n, e) {
+        "use strict";
+        var r = { isInterval: function(t) { return "object" == typeof t && "number" == typeof t.lo && "number" == typeof t.hi }, isEmpty: function(t) { return t.lo > t.hi }, isWhole: function(t) { return t.lo === -1 / 0 && t.hi === 1 / 0 }, isSingleton: function(t) { return t.lo === t.hi }, zeroIn: function(t) { return r.hasValue(t, 0) }, hasValue: function(t, n) { return !r.isEmpty(t) && (t.lo <= n && n <= t.hi) }, hasInterval: function(t, n) { return !!r.isEmpty(t) || !r.isEmpty(n) && n.lo <= t.lo && t.hi <= n.hi }, intervalsOverlap: function(t, n) { return !r.isEmpty(t) && !r.isEmpty(n) && (t.lo <= n.lo && n.lo <= t.hi || n.lo <= t.lo && t.lo <= n.hi) } };
+        t.exports = r
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(61);
 
-            function generateEvaluator(samplerName) {
-                function doCompile(expression) {
-                    if (typeof expression === "string") {
-                        var compile = samplers[samplerName];
-                        return compile(expression)
-                    } else if (typeof expression === "function") {
-                        return {
-                            eval: expression
-                        }
-                    } else {
-                        throw Error("expression must be a string or a function")
-                    }
-                }
+        function i(t) { return t }
 
-                function compileIfPossible(meta, property) {
-                    var expression = meta[property];
-                    var hiddenProperty = samplerName + "_Expression_" + property;
-                    var hiddenCompiled = samplerName + "_Compiled_" + property;
-                    if (expression !== meta[hiddenProperty]) {
-                        meta[hiddenProperty] = expression;
-                        meta[hiddenCompiled] = doCompile(expression)
-                    }
-                }
+        function o(t) { return t === 1 / 0 ? t : r(t, -1 / 0) }
 
-                function getCompiledExpression(meta, property) {
-                    return meta[samplerName + "_Compiled_" + property]
-                }
+        function a(t) { return t === -1 / 0 ? t : r(t, 1 / 0) }
+        var s = { safePrev: o, safeNext: a, prev: o, next: a };
 
-                function evaluate(meta, property, variables) {
-                    compileIfPossible(meta, property);
-                    return getCompiledExpression(meta, property).eval(extend({}, meta.scope || {}, variables))
-                }
-                return evaluate
-            }
-            module.exports.builtIn = generateEvaluator("builtIn");
-            module.exports.interval = generateEvaluator("interval")
-        }, {
-            "built-in-math-eval": 26,
-            extend: 31,
-            "interval-arithmetic-eval": 34
-        }],
-        12: [function(require, module, exports) {
-            "use strict";
-            var d3 = window.d3;
-            var derivative = require("./derivative");
-            var secant = require("./secant");
-            module.exports = function(chart) {
-                function helper(selection) {
-                    selection.each(function() {
-                        var el = d3.select(this);
-                        el.call(derivative(chart));
-                        el.call(secant(chart))
-                    })
-                }
-                return helper
-            }
-        }, {
-            "./derivative": 10,
-            "./secant": 13
-        }],
-        13: [function(require, module, exports) {
-            "use strict";
-            var d3 = window.d3;
-            var extend = require("extend");
-            var builtInEvaluator = require("./eval").builtIn;
-            var datumDefaults = require("../datum-defaults");
-            var polyline = require("../graph-types/polyline");
-            module.exports = function(chart) {
-                var secantDefaults = datumDefaults({
-                    isHelper: true,
-                    skipTip: true,
-                    skipBoundsCheck: true,
-                    nSamples: 2,
-                    graphType: "polyline"
-                });
-                var secant;
+        function u(t) { return t < 0 ? Math.ceil(t) : Math.floor(t) }
+        s.addLo = function(t, n) { return this.prev(t + n) }, s.addHi = function(t, n) { return this.next(t + n) }, s.subLo = function(t, n) { return this.prev(t - n) }, s.subHi = function(t, n) { return this.next(t - n) }, s.mulLo = function(t, n) { return this.prev(t * n) }, s.mulHi = function(t, n) { return this.next(t * n) }, s.divLo = function(t, n) { return this.prev(t / n) }, s.divHi = function(t, n) { return this.next(t / n) }, s.intLo = function(t) { return u(this.prev(t)) }, s.intHi = function(t) { return u(this.next(t)) }, s.logLo = function(t) { return this.prev(Math.log(t)) }, s.logHi = function(t) { return this.next(Math.log(t)) }, s.expLo = function(t) { return this.prev(Math.exp(t)) }, s.expHi = function(t) { return this.next(Math.exp(t)) }, s.sinLo = function(t) { return this.prev(Math.sin(t)) }, s.sinHi = function(t) { return this.next(Math.sin(t)) }, s.cosLo = function(t) { return this.prev(Math.cos(t)) }, s.cosHi = function(t) { return this.next(Math.cos(t)) }, s.tanLo = function(t) { return this.prev(Math.tan(t)) }, s.tanHi = function(t) { return this.next(Math.tan(t)) }, s.asinLo = function(t) { return this.prev(Math.asin(t)) }, s.asinHi = function(t) { return this.next(Math.asin(t)) }, s.acosLo = function(t) { return this.prev(Math.acos(t)) }, s.acosHi = function(t) { return this.next(Math.acos(t)) }, s.atanLo = function(t) { return this.prev(Math.atan(t)) }, s.atanHi = function(t) { return this.next(Math.atan(t)) }, s.sinhLo = function(t) { return this.prev(Math.sinh(t)) }, s.sinhHi = function(t) { return this.next(Math.sinh(t)) }, s.coshLo = function(t) { return this.prev(Math.cosh(t)) }, s.coshHi = function(t) { return this.next(Math.cosh(t)) }, s.tanhLo = function(t) { return this.prev(Math.tanh(t)) }, s.tanhHi = function(t) { return this.next(Math.tanh(t)) }, s.powLo = function(t, n) { if (n % 1 != 0) return this.prev(Math.pow(t, n)); var e = 1 & n ? t : 1; for (n >>= 1; n > 0;) t = s.mulLo(t, t), 1 & n && (e = s.mulLo(t, e)), n >>= 1; return e }, s.powHi = function(t, n) { if (n % 1 != 0) return this.next(Math.pow(t, n)); var e = 1 & n ? t : 1; for (n >>= 1; n > 0;) t = s.mulHi(t, t), 1 & n && (e = s.mulHi(t, e)), n >>= 1; return e }, s.sqrtLo = function(t) { return this.prev(Math.sqrt(t)) }, s.sqrtHi = function(t) { return this.next(Math.sqrt(t)) }, s.disable = function() { this.next = this.prev = i }, s.enable = function() { this.next = a, this.prev = o }, t.exports = s
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(3),
+            i = e(4);
 
-                function computeSlope(scope) {
-                    scope.m = (scope.y1 - scope.y0) / (scope.x1 - scope.x0)
+        function o(t, n) {
+            if (!(this instanceof o)) return new o(t, n);
+            if (void 0 !== t && void 0 !== n) {
+                if (r.isInterval(t)) {
+                    if (!r.isSingleton(t)) throw new TypeError("Interval: interval `lo` must be a singleton");
+                    t = t.lo
                 }
-
-                function updateLine(d, secant) {
-                    if (!secant.hasOwnProperty("x0")) {
-                        throw Error("secant must have the property `x0` defined")
-                    }
-                    secant.scope = secant.scope || {};
-                    var x0 = secant.x0;
-                    var x1 = typeof secant.x1 === "number" ? secant.x1 : Infinity;
-                    extend(secant.scope, {
-                        x0: x0,
-                        x1: x1,
-                        y0: builtInEvaluator(d, "fn", {
-                            x: x0
-                        }),
-                        y1: builtInEvaluator(d, "fn", {
-                            x: x1
-                        })
-                    });
-                    computeSlope(secant.scope)
+                if (r.isInterval(n)) {
+                    if (!r.isSingleton(n)) throw TypeError("Interval: interval `hi` must be a singleton");
+                    n = n.hi
                 }
-
-                function setFn(d, secant) {
-                    updateLine(d, secant);
-                    secant.fn = "m * (x - x0) + y0"
-                }
-
-                function setMouseListener(d, secantObject) {
-                    var self = this;
-                    if (secantObject.updateOnMouseMove && !secantObject.$$mouseListener) {
-                        secantObject.$$mouseListener = function(x1) {
-                            secantObject.x1 = x1;
-                            updateLine(d, secantObject);
-                            secant(self)
-                        };
-                        chart.on("tip:update", secantObject.$$mouseListener)
-                    }
-                }
-
-                function computeLines(d) {
-                    var self = this;
-                    var data = [];
-                    d.secants = d.secants || [];
-                    for (var i = 0; i < d.secants.length; i += 1) {
-                        var secant = d.secants[i] = extend({}, secantDefaults, d.secants[i]);
-                        secant.index = d.index;
-                        if (!secant.fn) {
-                            setFn.call(self, d, secant);
-                            setMouseListener.call(self, d, secant)
-                        }
-                        data.push(secant)
-                    }
-                    return data
-                }
-                secant = function(selection) {
-                    selection.each(function(d) {
-                        var el = d3.select(this);
-                        var data = computeLines.call(selection, d);
-                        var innerSelection = el.selectAll("g.secant").data(data);
-                        innerSelection.enter().append("g").attr("class", "secant");
-                        innerSelection.call(polyline(chart));
-                        innerSelection.selectAll("path").attr("opacity", .5);
-                        innerSelection.exit().remove()
-                    })
-                };
-                return secant
-            }
-        }, {
-            "../datum-defaults": 2,
-            "../graph-types/polyline": 7,
-            "./eval": 11,
-            extend: 31
-        }],
-        14: [function(require, module, exports) {
-            "use strict";
-            require("./polyfills");
-            var d3 = window.d3;
-            var events = require("events");
-            var extend = require("extend");
-            var mousetip = require("./tip");
-            var helpers = require("./helpers/");
-            var annotations = require("./helpers/annotations");
-            var datumDefaults = require("./datum-defaults");
-            var globals;
-            var graphTypes;
-            var cache = [];
-            module.exports = function(options) {
-                options = options || {};
-                options.data = options.data || [];
-                var width, height;
-                var margin;
-                var zoomBehavior;
-                var xScale, yScale;
-                var line = d3.svg.line().x(function(d) {
-                    return xScale(d[0])
-                }).y(function(d) {
-                    return yScale(d[1])
-                });
-
-                function Chart() {
-                    var n = Math.random();
-                    var letter = String.fromCharCode(Math.floor(n * 26) + 97);
-                    this.id = options.id = letter + n.toString(16).substr(2);
-                    this.linkedGraphs = [this];
-                    this.options = options;
-                    cache[this.id] = this;
-                    this.setUpEventListeners()
-                }
-                Chart.prototype = Object.create(events.prototype);
-                Chart.prototype.build = function() {
-                    this.internalVars();
-                    this.drawGraphWrapper();
-                    return this
-                };
-                Chart.prototype.initializeAxes = function() {
-                    var integerFormat = d3.format("s");
-                    var format = function(scale) {
-                        return function(d) {
-                            var decimalFormat = scale.tickFormat(10);
-                            var isInteger = d === +d && d === (d | 0);
-                            return isInteger ? integerFormat(d) : decimalFormat(d)
-                        }
-                    };
-
-                    function computeYScale(xScale) {
-                        var xDiff = xScale[1] - xScale[0];
-                        return height * xDiff / width
-                    }
-                    options.xAxis = options.xAxis || {};
-                    options.xAxis.type = options.xAxis.type || "linear";
-                    options.yAxis = options.yAxis || {};
-                    options.yAxis.type = options.yAxis.type || "linear";
-                    var xDomain = this.meta.xDomain = function(axis) {
-                        if (axis.domain) {
-                            return axis.domain
-                        }
-                        if (axis.type === "linear") {
-                            var xLimit = 12;
-                            return [-xLimit / 2, xLimit / 2]
-                        } else if (axis.type === "log") {
-                            return [1, 10]
-                        }
-                        throw Error("axis type " + axis.type + " unsupported")
-                    }(options.xAxis);
-                    var yDomain = this.meta.yDomain = function(axis) {
-                        if (axis.domain) {
-                            return axis.domain
-                        }
-                        var yLimit = computeYScale(xDomain);
-                        if (axis.type === "linear") {
-                            return [-yLimit / 2, yLimit / 2]
-                        } else if (axis.type === "log") {
-                            return [1, 10]
-                        }
-                        throw Error("axis type " + axis.type + " unsupported")
-                    }(options.yAxis);
-                    if (xDomain[0] >= xDomain[1]) {
-                        throw Error("the pair defining the x-domain is inverted")
-                    }
-                    if (yDomain[0] >= yDomain[1]) {
-                        throw Error("the pair defining the y-domain is inverted")
-                    }
-                    xScale = this.meta.xScale = d3.scale[options.xAxis.type]().domain(xDomain).range(options.xAxis.invert ? [width, 0] : [0, width]);
-                    yScale = this.meta.yScale = d3.scale[options.yAxis.type]().domain(yDomain).range(options.yAxis.invert ? [0, height] : [height, 0]);
-                    this.meta.xAxis = d3.svg.axis().scale(xScale).tickSize(options.grid ? -height : 0).tickFormat(format(xScale)).orient("bottom");
-                    this.meta.yAxis = d3.svg.axis().scale(yScale).tickSize(options.grid ? -width : 0).tickFormat(format(yScale)).orient("left")
-                };
-                Chart.prototype.internalVars = function() {
-                    this.meta = {};
-                    margin = this.meta.margin = {
-                        left: 30,
-                        right: 30,
-                        top: 20,
-                        bottom: 20
-                    };
-                    if (options.title) {
-                        this.meta.margin.top = 40
-                    }
-                    zoomBehavior = this.meta.zoomBehavior = d3.behavior.zoom();
-                    width = this.meta.width = (options.width || globals.DEFAULT_WIDTH) - margin.left - margin.right;
-                    height = this.meta.height = (options.height || globals.DEFAULT_HEIGHT) - margin.top - margin.bottom;
-                    this.initializeAxes()
-                };
-                Chart.prototype.drawGraphWrapper = function() {
-                    var root = this.root = d3.select(options.target).selectAll("svg").data([options]);
-                    this.root.enter = root.enter().append("svg").attr("class", "function-plot").attr("font-size", this.getFontSize());
-                    root.attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom);
-                    this.buildTitle();
-                    this.buildLegend();
-                    this.buildCanvas();
-                    this.buildClip();
-                    this.buildAxis();
-                    this.buildAxisLabel();
-                    this.draw();
-                    var tip = this.tip = mousetip(extend(options.tip, {
-                        owner: this
-                    }));
-                    this.canvas.call(tip);
-                    this.buildZoomHelper();
-                    this.setUpPlugins()
-                };
-                Chart.prototype.buildTitle = function() {
-                    var selection = this.root.selectAll("text.title").data(function(d) {
-                        return [d.title].filter(Boolean)
-                    });
-                    selection.enter().append("text").attr("class", "title").attr("y", margin.top / 2).attr("x", margin.left + width / 2).attr("font-size", 25).attr("text-anchor", "middle").attr("alignment-baseline", "middle").text(options.title);
-                    selection.exit().remove()
-                };
-                Chart.prototype.buildLegend = function() {
-                    this.root.enter.append("text").attr("class", "top-right-legend").attr("text-anchor", "end");
-                    this.root.select(".top-right-legend").attr("y", margin.top / 2).attr("x", width + margin.left)
-                };
-                Chart.prototype.buildCanvas = function() {
-                    var self = this;
-                    this.meta.zoomBehavior.x(xScale).y(yScale).on("zoom", function onZoom() {
-                        self.emit("all:zoom", d3.event.translate, d3.event.scale)
-                    });
-                    var canvas = this.canvas = this.root.selectAll(".canvas").data(function(d) {
-                        return [d]
-                    });
-                    this.canvas.enter = canvas.enter().append("g").attr("class", "canvas")
-                };
-                Chart.prototype.buildClip = function() {
-                    var id = this.id;
-                    var defs = this.canvas.enter.append("defs");
-                    defs.append("clipPath").attr("id", "function-plot-clip-" + id).append("rect").attr("class", "clip static-clip");
-                    this.canvas.selectAll(".clip").attr("width", width).attr("height", height);
-                    this.markerId = this.id + "-marker";
-                    defs.append("clipPath").append("marker").attr("id", this.markerId).attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("svg:path").attr("d", "M0,-5L10,0L0,5L0,0").attr("stroke-width", "0px").attr("fill-opacity", 1).attr("fill", "#777")
-                };
-                Chart.prototype.buildAxis = function() {
-                    var canvasEnter = this.canvas.enter;
-                    canvasEnter.append("g").attr("class", "x axis");
-                    canvasEnter.append("g").attr("class", "y axis");
-                    this.canvas.select(".x.axis").attr("transform", "translate(0," + height + ")").call(this.meta.xAxis);
-                    this.canvas.select(".y.axis").call(this.meta.yAxis)
-                };
-                Chart.prototype.buildAxisLabel = function() {
-                    var xLabel, yLabel;
-                    var canvas = this.canvas;
-                    xLabel = canvas.selectAll("text.x.axis-label").data(function(d) {
-                        return [d.xAxis.label].filter(Boolean)
-                    });
-                    xLabel.enter().append("text").attr("class", "x axis-label").attr("text-anchor", "end");
-                    xLabel.attr("x", width).attr("y", height - 6).text(function(d) {
-                        return d
-                    });
-                    xLabel.exit().remove();
-                    yLabel = canvas.selectAll("text.y.axis-label").data(function(d) {
-                        return [d.yAxis.label].filter(Boolean)
-                    });
-                    yLabel.enter().append("text").attr("class", "y axis-label").attr("y", 6).attr("dy", ".75em").attr("text-anchor", "end").attr("transform", "rotate(-90)");
-                    yLabel.text(function(d) {
-                        return d
-                    });
-                    yLabel.exit().remove()
-                };
-                Chart.prototype.buildContent = function() {
-                    var self = this;
-                    var canvas = this.canvas;
-                    canvas.attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(zoomBehavior).each(function() {
-                        var el = d3.select(this);
-                        var listeners = ["mousedown", "touchstart", "onwheel" in document ? "wheel" : "ononmousewheel" in document ? "mousewheel" : "MozMousePixelScroll"].map(function(d) {
-                            return d + ".zoom"
-                        });
-                        if (!el._zoomListenersCache) {
-                            listeners.forEach(function(l) {
-                                el["_" + l] = el.on(l)
-                            });
-                            el._zoomListenersCache = true
-                        }
-
-                        function setState(state) {
-                            listeners.forEach(function(l) {
-                                state ? el.on(l, el["_" + l]) : el.on(l, null)
-                            })
-                        }
-                        setState(!options.disableZoom)
-                    });
-                    var content = this.content = canvas.selectAll(":scope > g.content").data(function(d) {
-                        return [d]
-                    });
-                    content.enter().append("g").attr("clip-path", "url(#function-plot-clip-" + this.id + ")").attr("class", "content");
-                    if (options.xAxis.type === "linear") {
-                        var yOrigin = content.selectAll(":scope > path.y.origin").data([
-                            [
-                                [0, yScale.domain()[0]],
-                                [0, yScale.domain()[1]]
-                            ]
-                        ]);
-                        yOrigin.enter().append("path").attr("class", "y origin").attr("stroke", "black").attr("opacity", .2);
-                        yOrigin.attr("d", line)
-                    }
-                    if (options.yAxis.type === "linear") {
-                        var xOrigin = content.selectAll(":scope > path.x.origin").data([
-                            [
-                                [xScale.domain()[0], 0],
-                                [xScale.domain()[1], 0]
-                            ]
-                        ]);
-                        xOrigin.enter().append("path").attr("class", "x origin").attr("stroke", "black").attr("opacity", .2);
-                        xOrigin.attr("d", line)
-                    }
-                    content.call(annotations({
-                        owner: self
-                    }));
-                    var graphs = content.selectAll(":scope > g.graph").data(function(d) {
-                        return d.data.map(datumDefaults)
-                    });
-                    graphs.enter().append("g").attr("class", "graph");
-                    graphs.each(function(d, index) {
-                        d.index = index;
-                        d3.select(this).call(graphTypes[d.graphType](self));
-                        d3.select(this).call(helpers(self))
-                    })
-                };
-                Chart.prototype.buildZoomHelper = function() {
-                    var self = this;
-                    this.draggable = this.canvas.enter.append("rect").attr("class", "zoom-and-drag").style("fill", "none").style("pointer-events", "all");
-                    this.canvas.select(".zoom-and-drag").attr("width", width).attr("height", height).on("mouseover", function() {
-                        self.emit("all:mouseover")
-                    }).on("mouseout", function() {
-                        self.emit("all:mouseout")
-                    }).on("mousemove", function() {
-                        self.emit("all:mousemove")
-                    })
-                };
-                Chart.prototype.setUpPlugins = function() {
-                    var plugins = options.plugins || [];
-                    var self = this;
-                    plugins.forEach(function(plugin) {
-                        plugin(self)
-                    })
-                };
-                Chart.prototype.addLink = function() {
-                    for (var i = 0; i < arguments.length; i += 1) {
-                        this.linkedGraphs.push(arguments[i])
-                    }
-                };
-                Chart.prototype.updateAxes = function() {
-                    var instance = this;
-                    var canvas = instance.canvas;
-                    canvas.select(".x.axis").call(instance.meta.xAxis);
-                    canvas.select(".y.axis").call(instance.meta.yAxis);
-                    canvas.selectAll(".axis path, .axis line").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispedges").attr("opacity", .1)
-                };
-                Chart.prototype.syncOptions = function() {
-                    this.options.xAxis.domain = this.meta.xScale.domain();
-                    this.options.yAxis.domain = this.meta.yScale.domain()
-                };
-                Chart.prototype.programmaticZoom = function(xDomain, yDomain) {
-                    var instance = this;
-                    d3.transition().duration(750).tween("zoom", function() {
-                        var ix = d3.interpolate(xScale.domain(), xDomain);
-                        var iy = d3.interpolate(yScale.domain(), yDomain);
-                        return function(t) {
-                            zoomBehavior.x(xScale.domain(ix(t))).y(yScale.domain(iy(t)));
-                            instance.draw()
-                        }
-                    }).each("end", function() {
-                        instance.emit("programmatic-zoom")
-                    })
-                };
-                Chart.prototype.getFontSize = function() {
-                    return Math.max(Math.max(width, height) / 50, 8)
-                };
-                Chart.prototype.draw = function() {
-                    var instance = this;
-                    instance.emit("before:draw");
-                    instance.syncOptions();
-                    instance.updateAxes();
-                    instance.buildContent();
-                    instance.emit("after:draw")
-                };
-                Chart.prototype.setUpEventListeners = function() {
-                    var instance = this;
-                    var events = {
-                        mousemove: function(coordinates) {
-                            instance.tip.move(coordinates)
-                        },
-                        mouseover: function() {
-                            instance.tip.show()
-                        },
-                        mouseout: function() {
-                            instance.tip.hide()
-                        },
-                        zoom: function(translate, scale) {
-                            zoomBehavior.translate(translate).scale(scale)
-                        },
-                        "tip:update": function(x, y, index) {
-                            var meta = instance.root.datum().data[index];
-                            var title = meta.title || "";
-                            var format = meta.renderer || function(x, y) {
-                                return x.toFixed(3) + ", " + y.toFixed(3)
-                            };
-                            var text = [];
-                            title && text.push(title);
-                            text.push(format(x, y));
-                            instance.root.select(".top-right-legend").attr("fill", globals.COLORS[index]).text(text.join(" "))
-                        }
-                    };
-                    var all = {
-                        mousemove: function() {
-                            var mouse = d3.mouse(instance.root.select("rect.zoom-and-drag").node());
-                            var coordinates = {
-                                x: xScale.invert(mouse[0]),
-                                y: yScale.invert(mouse[1])
-                            };
-                            instance.linkedGraphs.forEach(function(graph) {
-                                graph.emit("before:mousemove", coordinates);
-                                graph.emit("mousemove", coordinates)
-                            })
-                        },
-                        zoom: function(translate, scale) {
-                            instance.linkedGraphs.forEach(function(graph, i) {
-                                graph.emit("zoom", translate, scale);
-                                graph.draw()
-                            });
-                            instance.emit("all:mousemove")
-                        }
-                    };
-                    Object.keys(events).forEach(function(e) {
-                        instance.on(e, events[e]);
-                        !all[e] && instance.on("all:" + e, function() {
-                            var args = Array.prototype.slice.call(arguments);
-                            instance.linkedGraphs.forEach(function(graph) {
-                                var localArgs = args.slice();
-                                localArgs.unshift(e);
-                                graph.emit.apply(graph, localArgs)
-                            })
-                        })
-                    });
-                    Object.keys(all).forEach(function(e) {
-                        instance.on("all:" + e, all[e])
-                    })
-                };
-                var instance = cache[options.id];
-                if (!instance) {
-                    instance = new Chart
-                }
-                return instance.build()
-            };
-            globals = module.exports.globals = require("./globals");
-            graphTypes = module.exports.graphTypes = require("./graph-types/");
-            module.exports.plugins = require("./plugins/");
-            module.exports.eval = require("./helpers/eval")
-        }, {
-            "./datum-defaults": 2,
-            "./globals": 4,
-            "./graph-types/": 5,
-            "./helpers/": 12,
-            "./helpers/annotations": 9,
-            "./helpers/eval": 11,
-            "./plugins/": 16,
-            "./polyfills": 18,
-            "./tip": 21,
-            events: 24,
-            extend: 31
-        }],
-        15: [function(require, module, exports) {
-            var d3 = window.d3;
-            var extend = require("extend");
-            var pressed = require("key-pressed");
-            var keydown = require("keydown");
-            var integrateSimpson = require("integrate-adaptive-simpson");
-            module.exports = function(options) {
-                options = extend({
-                    key: "<shift>",
-                    toggle: false
-                }, options);
-                var brush = d3.svg.brush();
-                var kd = keydown(options.key);
-                var visible = false;
-                var cachedInstance;
-
-                function wrapper(datum) {
-                    return function(x) {
-                        var functionPlot = window.functionPlot;
-                        return functionPlot.eval.builtIn(datum, "fn", {
-                            x: x
-                        })
-                    }
-                }
-
-                function setBrushState(visible) {
-                    var brushEl = cachedInstance.canvas.selectAll(".definite-integral");
-                    brushEl.style("display", visible ? null : "none")
-                }
-
-                function inner(instance) {
-                    cachedInstance = instance;
-                    var oldDisableZoom;
-                    brush.x(instance.meta.xScale).on("brushstart", function() {
-                        if (!d3.event.sourceEvent) return;
-                        oldDisableZoom = !!instance.options.disableZoom;
-                        instance.options.disableZoom = true;
-                        instance.emit("draw")
-                    }).on("brushend", function() {
-                        if (!d3.event.sourceEvent) return;
-                        instance.options.disableZoom = oldDisableZoom;
-                        if (!brush.empty()) {
-                            var a = brush.extent()[0];
-                            var b = brush.extent()[1];
-                            instance.options.data.forEach(function(datum, i) {
-                                var value = integrateSimpson(wrapper(datum), a, b, options.tol, options.maxdepth);
-                                instance.emit("definite-integral", datum, i, value, a, b)
-                            })
-                        }
-                        instance.draw()
-                    });
-                    var brushEl = instance.canvas.append("g").attr("class", "brush definite-integral");
-                    brushEl.call(brush).call(brush.event);
-                    instance.canvas.selectAll(".brush .extent").attr("stroke", "#fff").attr("fill-opacity", .125).attr("shape-rendering", "crispEdges");
-                    brushEl.selectAll("rect").attr("height", instance.meta.height);
-                    instance.canvas.on("mousemove.definiteIntegral", function() {
-                        if (!options.toggle) {
-                            inner.visible(pressed(options.key))
-                        }
-                    });
-                    kd.on("pressed", function() {
-                        inner.visible(options.toggle ? !inner.visible() : true)
-                    });
-                    inner.visible(false)
-                }
-                inner.visible = function(_) {
-                    if (!arguments.length) {
-                        return visible
-                    }
-                    visible = _;
-                    setBrushState(_);
-                    return inner
-                };
-                return inner
-            }
-        }, {
-            extend: 31,
-            "integrate-adaptive-simpson": 33,
-            "key-pressed": 52,
-            keydown: 53
-        }],
-        16: [function(require, module, exports) {
-            module.exports = {
-                zoomBox: require("./zoom-box"),
-                definiteIntegral: require("./definite-integral")
-            }
-        }, {
-            "./definite-integral": 15,
-            "./zoom-box": 17
-        }],
-        17: [function(require, module, exports) {
-            var d3 = window.d3;
-            var extend = require("extend");
-            var pressed = require("key-pressed");
-            var keydown = require("keydown");
-            module.exports = function(options) {
-                options = extend({
-                    key: "<shift>",
-                    toggle: false
-                }, options);
-                var brush = d3.svg.brush();
-                var kd = keydown(options.key);
-                var cachedInstance;
-                var visible = false;
-
-                function setBrushState(visible) {
-                    var brushEl = cachedInstance.canvas.selectAll(".zoom-box");
-                    brushEl.style("display", visible ? null : "none")
-                }
-
-                function inner(instance) {
-                    cachedInstance = instance;
-                    var oldDisableZoom;
-                    brush.x(instance.meta.xScale).y(instance.meta.yScale).on("brushstart", function() {
-                        if (!d3.event.sourceEvent) return;
-                        oldDisableZoom = !!instance.options.disableZoom;
-                        instance.options.disableZoom = true;
-                        instance.draw()
-                    }).on("brushend", function() {
-                        if (!d3.event.sourceEvent) return;
-                        instance.options.disableZoom = oldDisableZoom;
-                        if (!brush.empty()) {
-                            var lo = brush.extent()[0];
-                            var hi = brush.extent()[1];
-                            var x = [lo[0], hi[0]];
-                            var y = [lo[1], hi[1]];
-                            instance.programmaticZoom(x, y)
-                        }
-                        d3.select(this).transition().duration(1).call(brush.clear()).call(brush.event)
-                    });
-                    var brushEl = instance.canvas.append("g").attr("class", "brush zoom-box");
-                    brushEl.call(brush).call(brush.event);
-                    instance.canvas.selectAll(".brush .extent").attr("stroke", "#fff").attr("fill-opacity", .125).attr("shape-rendering", "crispEdges");
-                    instance.canvas.on("mousemove.zoombox", function() {
-                        if (!options.toggle) {
-                            inner.visible(pressed(options.key))
-                        }
-                    });
-                    kd.on("pressed", function() {
-                        inner.visible(options.toggle ? !inner.visible() : true)
-                    });
-                    inner.visible(false)
-                }
-                inner.visible = function(_) {
-                    if (!arguments.length) {
-                        return visible
-                    }
-                    visible = _;
-                    setBrushState(_);
-                    return inner
-                };
-                return inner
-            }
-        }, {
-            extend: 31,
-            "key-pressed": 52,
-            keydown: 53
-        }],
-        18: [function(require, module, exports) {
-            (function(doc, proto) {
-                try {
-                    doc.querySelector(":scope body")
-                } catch (err) {
-                    ["querySelector", "querySelectorAll"].forEach(function(method) {
-                        var native = proto[method];
-                        proto[method] = function(selectors) {
-                            if (/(^|,)\s*:scope/.test(selectors)) {
-                                var id = this.id;
-                                this.id = "ID_" + Date.now();
-                                selectors = selectors.replace(/((^|,)\s*):scope/g, "$1#" + this.id);
-                                var result = doc[method](selectors);
-                                this.id = id;
-                                return result
-                            } else {
-                                return native.call(this, selectors)
-                            }
-                        }
-                    })
-                }
-            })(window.document, Element.prototype)
-        }, {}],
-        19: [function(require, module, exports) {
-            "use strict";
-            var clamp = require("clamp");
-            var linspace = require("linspace");
-            var utils = require("../utils");
-            var evaluate = require("../helpers/eval").builtIn;
-
-            function checkAsymptote(d0, d1, meta, sign, level) {
-                if (!level) {
-                    return {
-                        asymptote: true,
-                        d0: d0,
-                        d1: d1
-                    }
-                }
-                var i;
-                var n = 10;
-                var x0 = d0[0];
-                var x1 = d1[0];
-                var samples = linspace(x0, x1, n);
-                var oldY, oldX;
-                for (i = 0; i < n; i += 1) {
-                    var x = samples[i];
-                    var y = evaluate(meta, "fn", {
-                        x: x
-                    });
-                    if (i) {
-                        var deltaY = y - oldY;
-                        var newSign = utils.sgn(deltaY);
-                        if (newSign === sign) {
-                            return checkAsymptote([oldX, oldY], [x, y], meta, sign, level - 1)
-                        }
-                    }
-                    oldY = y;
-                    oldX = x
-                }
-                return {
-                    asymptote: false,
-                    d0: d0,
-                    d1: d1
-                }
-            }
-
-            function split(chart, meta, data) {
-                var i, oldSign;
-                var deltaX;
-                var st = [];
-                var sets = [];
-                var domain = chart.meta.yScale.domain();
-                var zoomScale = chart.meta.zoomBehavior.scale();
-                var yMin = domain[0];
-                var yMax = domain[1];
-                if (data[0]) {
-                    st.push(data[0]);
-                    deltaX = data[1][0] - data[0][0];
-                    oldSign = utils.sgn(data[1][1] - data[0][1])
-                }
-
-                function updateY(d) {
-                    d[1] = Math.min(d[1], yMax);
-                    d[1] = Math.max(d[1], yMin);
-                    return d
-                }
-                i = 1;
-                while (i < data.length) {
-                    var y0 = data[i - 1][1];
-                    var y1 = data[i][1];
-                    var deltaY = y1 - y0;
-                    var newSign = utils.sgn(deltaY);
-                    if (oldSign !== newSign && Math.abs(deltaY / deltaX) > 1 / zoomScale) {
-                        var check = checkAsymptote(data[i - 1], data[i], meta, newSign, 3);
-                        if (check.asymptote) {
-                            st.push(updateY(check.d0));
-                            sets.push(st);
-                            st = [updateY(check.d1)]
-                        }
-                    }
-                    oldSign = newSign;
-                    st.push(data[i]);
-                    ++i
-                }
-                if (st.length) {
-                    sets.push(st)
-                }
-                return sets
-            }
-
-            function linear(chart, meta, range, n) {
-                var allX = utils.space(chart, range, n);
-                var yDomain = chart.meta.yScale.domain();
-                var yDomainMargin = yDomain[1] - yDomain[0];
-                var yMin = yDomain[0] - yDomainMargin * 1e5;
-                var yMax = yDomain[1] + yDomainMargin * 1e5;
-                var data = [];
-                var i;
-                for (i = 0; i < allX.length; i += 1) {
-                    var x = allX[i];
-                    var y = evaluate(meta, "fn", {
-                        x: x
-                    });
-                    if (utils.isValidNumber(x) && utils.isValidNumber(y)) {
-                        data.push([x, clamp(y, yMin, yMax)])
-                    }
-                }
-                data = split(chart, meta, data);
-                return data
-            }
-
-            function parametric(chart, meta, range, nSamples) {
-                var parametricRange = meta.range || [0, 2 * Math.PI];
-                var tCoords = utils.space(chart, parametricRange, nSamples);
-                var samples = [];
-                for (var i = 0; i < tCoords.length; i += 1) {
-                    var t = tCoords[i];
-                    var x = evaluate(meta, "x", {
-                        t: t
-                    });
-                    var y = evaluate(meta, "y", {
-                        t: t
-                    });
-                    samples.push([x, y])
-                }
-                return [samples]
-            }
-
-            function polar(chart, meta, range, nSamples) {
-                var polarRange = meta.range || [-Math.PI, Math.PI];
-                var thetaSamples = utils.space(chart, polarRange, nSamples);
-                var samples = [];
-                for (var i = 0; i < thetaSamples.length; i += 1) {
-                    var theta = thetaSamples[i];
-                    var r = evaluate(meta, "r", {
-                        theta: theta
-                    });
-                    var x = r * Math.cos(theta);
-                    var y = r * Math.sin(theta);
-                    samples.push([x, y])
-                }
-                return [samples]
-            }
-
-            function points(chart, meta, range, nSamples) {
-                return [meta.points]
-            }
-
-            function vector(chart, meta, range, nSamples) {
-                meta.offset = meta.offset || [0, 0];
-                return [
-                    [meta.offset, [meta.vector[0] + meta.offset[0], meta.vector[1] + meta.offset[1]]]
-                ]
-            }
-            var sampler = function(chart, d, range, nSamples) {
-                var fnTypes = {
-                    parametric: parametric,
-                    polar: polar,
-                    points: points,
-                    vector: vector,
-                    linear: linear
-                };
-                if (!(d.fnType in fnTypes)) {
-                    throw Error(d.fnType + " is not supported in the `builtIn` sampler")
-                }
-                return fnTypes[d.fnType].apply(null, arguments)
-            };
-            module.exports = sampler
-        }, {
-            "../helpers/eval": 11,
-            "../utils": 22,
-            clamp: 29,
-            linspace: 54
-        }],
-        20: [function(require, module, exports) {
-            "use strict";
-            var intervalArithmeticEval = require("interval-arithmetic-eval");
-            var Interval = intervalArithmeticEval.Interval;
-            var evaluate = require("../helpers/eval").interval;
-            var utils = require("../utils");
-            intervalArithmeticEval.policies.disableRounding();
-
-            function interval1d(chart, meta, range, nSamples) {
-                var xCoords = utils.space(chart, range, nSamples);
-                var xScale = chart.meta.xScale;
-                var yScale = chart.meta.yScale;
-                var yMin = yScale.domain()[0];
-                var yMax = yScale.domain()[1];
-                var samples = [];
-                var i;
-                for (i = 0; i < xCoords.length - 1; i += 1) {
-                    var x = {
-                        lo: xCoords[i],
-                        hi: xCoords[i + 1]
-                    };
-                    var y = evaluate(meta, "fn", {
-                        x: x
-                    });
-                    if (!Interval.isEmpty(y) && !Interval.isWhole(y)) {
-                        samples.push([x, y])
-                    }
-                    if (Interval.isWhole(y)) {
-                        samples.push(null)
-                    }
-                }
-                for (i = 1; i < samples.length - 1; i += 1) {
-                    if (!samples[i]) {
-                        var prev = samples[i - 1];
-                        var next = samples[i + 1];
-                        if (prev && next && !Interval.intervalsOverlap(prev[1], next[1])) {
-                            if (prev[1].lo > next[1].hi) {
-                                prev[1].hi = Math.max(yMax, prev[1].hi);
-                                next[1].lo = Math.min(yMin, next[1].lo)
-                            }
-                            if (prev[1].hi < next[1].lo) {
-                                prev[1].lo = Math.min(yMin, prev[1].lo);
-                                next[1].hi = Math.max(yMax, next[1].hi)
-                            }
-                        }
-                    }
-                }
-                samples.scaledDx = xScale(xCoords[1]) - xScale(xCoords[0]);
-                return [samples]
-            }
-            var rectEps;
-
-            function smallRect(x, y) {
-                return Interval.width(x) < rectEps
-            }
-
-            function quadTree(x, y, meta) {
-                var sample = evaluate(meta, "fn", {
-                    x: x,
-                    y: y
-                });
-                var fulfills = Interval.zeroIn(sample);
-                if (!fulfills) {
-                    return this
-                }
-                if (smallRect(x, y)) {
-                    this.push([x, y]);
-                    return this
-                }
-                var midX = x.lo + (x.hi - x.lo) / 2;
-                var midY = y.lo + (y.hi - y.lo) / 2;
-                var east = {
-                    lo: midX,
-                    hi: x.hi
-                };
-                var west = {
-                    lo: x.lo,
-                    hi: midX
-                };
-                var north = {
-                    lo: midY,
-                    hi: y.hi
-                };
-                var south = {
-                    lo: y.lo,
-                    hi: midY
-                };
-                quadTree.call(this, east, north, meta);
-                quadTree.call(this, east, south, meta);
-                quadTree.call(this, west, north, meta);
-                quadTree.call(this, west, south, meta)
-            }
-
-            function interval2d(chart, meta) {
-                var xScale = chart.meta.xScale;
-                var xDomain = chart.meta.xScale.domain();
-                var yDomain = chart.meta.yScale.domain();
-                var x = {
-                    lo: xDomain[0],
-                    hi: xDomain[1]
-                };
-                var y = {
-                    lo: yDomain[0],
-                    hi: yDomain[1]
-                };
-                var samples = [];
-                rectEps = xScale.invert(1) - xScale.invert(0);
-                quadTree.call(samples, x, y, meta);
-                samples.scaledDx = 1;
-                return [samples]
-            }
-            var sampler = function(chart, d, range, nSamples) {
-                var fnTypes = {
-                    implicit: interval2d,
-                    linear: interval1d
-                };
-                if (!fnTypes.hasOwnProperty(d.fnType)) {
-                    throw Error(d.fnType + " is not supported in the `interval` sampler")
-                }
-                return fnTypes[d.fnType].apply(null, arguments)
-            };
-            module.exports = sampler
-        }, {
-            "../helpers/eval": 11,
-            "../utils": 22,
-            "interval-arithmetic-eval": 34
-        }],
-        21: [function(require, module, exports) {
-            "use strict";
-            var d3 = window.d3;
-            var extend = require("extend");
-            var utils = require("./utils");
-            var clamp = require("clamp");
-            var globals = require("./globals");
-            var builtInEvaluator = require("./helpers/eval").builtIn;
-            module.exports = function(config) {
-                config = extend({
-                    xLine: false,
-                    yLine: false,
-                    renderer: function(x, y, index) {
-                        return "(" + x.toFixed(3) + ", " + y.toFixed(3) + ")"
-                    },
-                    owner: null
-                }, config);
-                var MARGIN = 20;
-                var line = d3.svg.line().x(function(d) {
-                    return d[0]
-                }).y(function(d) {
-                    return d[1]
-                });
-
-                function lineGenerator(el, data) {
-                    return el.append("path").datum(data).attr("stroke", "grey").attr("stroke-dasharray", "5,5").attr("opacity", .5).attr("d", line)
-                }
-
-                function tip(selection) {
-                    var innerSelection = selection.selectAll("g.tip").data(function(d) {
-                        return [d]
-                    });
-                    innerSelection.enter().append("g").attr("class", "tip").attr("clip-path", "url(#function-plot-clip-" + config.owner.id + ")");
-                    tip.el = innerSelection.selectAll("g.inner-tip").data(function(d) {
-                        return [d]
-                    });
-                    tip.el.enter().append("g").attr("class", "inner-tip").style("display", "none").each(function() {
-                        var el = d3.select(this);
-                        lineGenerator(el, [
-                            [0, -config.owner.meta.height - MARGIN],
-                            [0, config.owner.meta.height + MARGIN]
-                        ]).attr("class", "tip-x-line").style("display", "none");
-                        lineGenerator(el, [
-                            [-config.owner.meta.width - MARGIN, 0],
-                            [config.owner.meta.width + MARGIN, 0]
-                        ]).attr("class", "tip-y-line").style("display", "none");
-                        el.append("circle").attr("r", 3);
-                        el.append("text").attr("transform", "translate(5,-5)")
-                    });
-                    selection.selectAll(".tip-x-line").style("display", config.xLine ? null : "none");
-                    selection.selectAll(".tip-y-line").style("display", config.yLine ? null : "none")
-                }
-                tip.move = function(coordinates) {
-                    var i;
-                    var minDist = Infinity;
-                    var closestIndex = -1;
-                    var x, y;
-                    var el = tip.el;
-                    var inf = 1e8;
-                    var meta = config.owner.meta;
-                    var data = el.data()[0].data;
-                    var xScale = meta.xScale;
-                    var yScale = meta.yScale;
-                    var width = meta.width;
-                    var height = meta.height;
-                    var x0 = coordinates.x;
-                    var y0 = coordinates.y;
-                    for (i = 0; i < data.length; i += 1) {
-                        if (data[i].skipTip || data[i].fnType !== "linear") {
-                            continue
-                        }
-                        var range = data[i].range || [-inf, inf];
-                        if (x0 > range[0] - globals.TIP_X_EPS && x0 < range[1] + globals.TIP_X_EPS) {
-                            try {
-                                var candidateY = builtInEvaluator(data[i], "fn", {
-                                    x: x0
-                                })
-                            } catch (e) {}
-                            if (utils.isValidNumber(candidateY)) {
-                                var tDist = Math.abs(candidateY - y0);
-                                if (tDist < minDist) {
-                                    minDist = tDist;
-                                    closestIndex = i
-                                }
-                            }
-                        }
-                    }
-                    if (closestIndex !== -1) {
-                        x = x0;
-                        if (data[closestIndex].range) {
-                            x = Math.max(x, data[closestIndex].range[0]);
-                            x = Math.min(x, data[closestIndex].range[1])
-                        }
-                        y = builtInEvaluator(data[closestIndex], "fn", {
-                            x: x
-                        });
-                        tip.show();
-                        config.owner.emit("tip:update", x, y, closestIndex);
-                        var clampX = clamp(x, xScale.invert(-MARGIN), xScale.invert(width + MARGIN));
-                        var clampY = clamp(y, yScale.invert(height + MARGIN), yScale.invert(-MARGIN));
-                        var color = utils.color(data[closestIndex], closestIndex);
-                        el.attr("transform", "translate(" + xScale(clampX) + "," + yScale(clampY) + ")");
-                        el.select("circle").attr("fill", color);
-                        el.select("text").attr("fill", color).text(config.renderer(x, y, closestIndex))
-                    } else {
-                        tip.hide()
-                    }
-                };
-                tip.show = function() {
-                    this.el.style("display", null)
-                };
-                tip.hide = function() {
-                    this.el.style("display", "none")
-                };
-                Object.keys(config).forEach(function(option) {
-                    utils.getterSetter.call(tip, config, option)
-                });
-                return tip
-            }
-        }, {
-            "./globals": 4,
-            "./helpers/eval": 11,
-            "./utils": 22,
-            clamp: 29,
-            extend: 31
-        }],
-        22: [function(require, module, exports) {
-            "use strict";
-            var linspace = require("linspace");
-            var logspace = require("logspace");
-            var log10 = require("log10");
-            var globals = require("./globals");
-            module.exports = {
-                isValidNumber: function(v) {
-                    return typeof v === "number" && !isNaN(v)
-                },
-                space: function(chart, range, n) {
-                    var lo = range[0];
-                    var hi = range[1];
-                    if (chart.options.xAxis.type === "log") {
-                        return logspace(log10(lo), log10(hi), n)
-                    }
-                    return linspace(lo, hi, n)
-                },
-                getterSetter: function(config, option) {
-                    var me = this;
-                    this[option] = function(value) {
-                        if (!arguments.length) {
-                            return config[option]
-                        }
-                        config[option] = value;
-                        return me
-                    }
-                },
-                sgn: function(v) {
-                    if (v < 0) {
-                        return -1
-                    }
-                    if (v > 0) {
-                        return 1
-                    }
-                    return 0
-                },
-                color: function(data, index) {
-                    return data.color || globals.COLORS[index]
-                }
-            }
-        }, {
-            "./globals": 4,
-            linspace: 54,
-            log10: 56,
-            logspace: 57
-        }],
-        23: [function(require, module, exports) {
-            "use strict";
-            exports.byteLength = byteLength;
-            exports.toByteArray = toByteArray;
-            exports.fromByteArray = fromByteArray;
-            var lookup = [];
-            var revLookup = [];
-            var Arr = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
-            var code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-            for (var i = 0, len = code.length; i < len; ++i) {
-                lookup[i] = code[i];
-                revLookup[code.charCodeAt(i)] = i
-            }
-            revLookup["-".charCodeAt(0)] = 62;
-            revLookup["_".charCodeAt(0)] = 63;
-
-            function getLens(b64) {
-                var len = b64.length;
-                if (len % 4 > 0) {
-                    throw new Error("Invalid string. Length must be a multiple of 4")
-                }
-                var validLen = b64.indexOf("=");
-                if (validLen === -1) validLen = len;
-                var placeHoldersLen = validLen === len ? 0 : 4 - validLen % 4;
-                return [validLen, placeHoldersLen]
-            }
-
-            function byteLength(b64) {
-                var lens = getLens(b64);
-                var validLen = lens[0];
-                var placeHoldersLen = lens[1];
-                return (validLen + placeHoldersLen) * 3 / 4 - placeHoldersLen
-            }
-
-            function _byteLength(b64, validLen, placeHoldersLen) {
-                return (validLen + placeHoldersLen) * 3 / 4 - placeHoldersLen
-            }
-
-            function toByteArray(b64) {
-                var tmp;
-                var lens = getLens(b64);
-                var validLen = lens[0];
-                var placeHoldersLen = lens[1];
-                var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen));
-                var curByte = 0;
-                var len = placeHoldersLen > 0 ? validLen - 4 : validLen;
-                for (var i = 0; i < len; i += 4) {
-                    tmp = revLookup[b64.charCodeAt(i)] << 18 | revLookup[b64.charCodeAt(i + 1)] << 12 | revLookup[b64.charCodeAt(i + 2)] << 6 | revLookup[b64.charCodeAt(i + 3)];
-                    arr[curByte++] = tmp >> 16 & 255;
-                    arr[curByte++] = tmp >> 8 & 255;
-                    arr[curByte++] = tmp & 255
-                }
-                if (placeHoldersLen === 2) {
-                    tmp = revLookup[b64.charCodeAt(i)] << 2 | revLookup[b64.charCodeAt(i + 1)] >> 4;
-                    arr[curByte++] = tmp & 255
-                }
-                if (placeHoldersLen === 1) {
-                    tmp = revLookup[b64.charCodeAt(i)] << 10 | revLookup[b64.charCodeAt(i + 1)] << 4 | revLookup[b64.charCodeAt(i + 2)] >> 2;
-                    arr[curByte++] = tmp >> 8 & 255;
-                    arr[curByte++] = tmp & 255
-                }
-                return arr
-            }
-
-            function tripletToBase64(num) {
-                return lookup[num >> 18 & 63] + lookup[num >> 12 & 63] + lookup[num >> 6 & 63] + lookup[num & 63]
-            }
-
-            function encodeChunk(uint8, start, end) {
-                var tmp;
-                var output = [];
-                for (var i = start; i < end; i += 3) {
-                    tmp = (uint8[i] << 16 & 16711680) + (uint8[i + 1] << 8 & 65280) + (uint8[i + 2] & 255);
-                    output.push(tripletToBase64(tmp))
-                }
-                return output.join("")
-            }
-
-            function fromByteArray(uint8) {
-                var tmp;
-                var len = uint8.length;
-                var extraBytes = len % 3;
-                var parts = [];
-                var maxChunkLength = 16383;
-                for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-                    parts.push(encodeChunk(uint8, i, i + maxChunkLength > len2 ? len2 : i + maxChunkLength))
-                }
-                if (extraBytes === 1) {
-                    tmp = uint8[len - 1];
-                    parts.push(lookup[tmp >> 2] + lookup[tmp << 4 & 63] + "==")
-                } else if (extraBytes === 2) {
-                    tmp = (uint8[len - 2] << 8) + uint8[len - 1];
-                    parts.push(lookup[tmp >> 10] + lookup[tmp >> 4 & 63] + lookup[tmp << 2 & 63] + "=")
-                }
-                return parts.join("")
-            }
-        }, {}],
-        24: [function(require, module, exports) {
-            var objectCreate = Object.create || objectCreatePolyfill;
-            var objectKeys = Object.keys || objectKeysPolyfill;
-            var bind = Function.prototype.bind || functionBindPolyfill;
-
-            function EventEmitter() {
-                if (!this._events || !Object.prototype.hasOwnProperty.call(this, "_events")) {
-                    this._events = objectCreate(null);
-                    this._eventsCount = 0
-                }
-                this._maxListeners = this._maxListeners || undefined
-            }
-            module.exports = EventEmitter;
-            EventEmitter.EventEmitter = EventEmitter;
-            EventEmitter.prototype._events = undefined;
-            EventEmitter.prototype._maxListeners = undefined;
-            var defaultMaxListeners = 10;
-            var hasDefineProperty;
-            try {
-                var o = {};
-                if (Object.defineProperty) Object.defineProperty(o, "x", {
-                    value: 0
-                });
-                hasDefineProperty = o.x === 0
-            } catch (err) {
-                hasDefineProperty = false
-            }
-            if (hasDefineProperty) {
-                Object.defineProperty(EventEmitter, "defaultMaxListeners", {
-                    enumerable: true,
-                    get: function() {
-                        return defaultMaxListeners
-                    },
-                    set: function(arg) {
-                        if (typeof arg !== "number" || arg < 0 || arg !== arg) throw new TypeError('"defaultMaxListeners" must be a positive number');
-                        defaultMaxListeners = arg
-                    }
-                })
             } else {
-                EventEmitter.defaultMaxListeners = defaultMaxListeners
+                if (void 0 !== t) return Array.isArray(t) ? o(t[0], t[1]) : o(t, t);
+                t = n = 0
             }
-            EventEmitter.prototype.setMaxListeners = function setMaxListeners(n) {
-                if (typeof n !== "number" || n < 0 || isNaN(n)) throw new TypeError('"n" argument must be a positive number');
-                this._maxListeners = n;
-                return this
-            };
+            this.lo = void 0, this.hi = void 0, this.assign(t, n)
+        }
+        t.exports = o, o.factory = o, o.prototype.singleton = function(t) { return this.set(t, t) }, o.prototype.bounded = function(t, n) { return this.set(i.prev(t), i.next(n)) }, o.prototype.boundedSingleton = function(t) { return this.bounded(t, t) }, o.prototype.set = function(t, n) { return this.lo = t, this.hi = n, this }, o.prototype.assign = function(t, n) { if ("number" != typeof t || "number" != typeof n) throw TypeError("Interval#assign: arguments must be numbers"); return isNaN(t) || isNaN(n) || t > n ? this.setEmpty() : this.set(t, n) }, o.prototype.setEmpty = function() { return this.set(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY) }, o.prototype.setWhole = function() { return this.set(Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY) }, o.prototype.open = function(t, n) { return this.assign(i.safeNext(t), i.safePrev(n)) }, o.prototype.halfOpenLeft = function(t, n) { return this.assign(i.safeNext(t), n) }, o.prototype.halfOpenRight = function(t, n) { return this.assign(t, i.safePrev(n)) }, o.prototype.toArray = function() { return [this.lo, this.hi] }, o.prototype.clone = function() { return o().set(this.lo, this.hi) }
+    }, function(t, n) { t.exports = function(t, n, e) { return n < e ? t < n ? n : t > e ? e : t : t < e ? e : t > n ? n : t } }, function(t, n, e) {
+        "use strict";
+        var r = e(5),
+            i = e(32),
+            o = 3.141592653589793,
+            a = 3.1415926535897936,
+            s = {};
 
-            function $getMaxListeners(that) {
-                if (that._maxListeners === undefined) return EventEmitter.defaultMaxListeners;
-                return that._maxListeners
-            }
-            EventEmitter.prototype.getMaxListeners = function getMaxListeners() {
-                return $getMaxListeners(this)
-            };
+        function u(t, n) { Object.defineProperty(s, t, { get: function() { return n() }, enumerable: !0 }) }
+        i(s, { PI_LOW: o, PI_HIGH: a, PI_HALF_LOW: o / 2, PI_HALF_HIGH: a / 2, PI_TWICE_LOW: 2 * o, PI_TWICE_HIGH: 2 * a }), u("PI", (function() { return r(o, a) })), u("PI_HALF", (function() { return r(s.PI_HALF_LOW, s.PI_HALF_HIGH) })), u("PI_TWICE", (function() { return r(s.PI_TWICE_LOW, s.PI_TWICE_HIGH) })), u("ZERO", (function() { return r(0) })), u("ONE", (function() { return r(1) })), u("WHOLE", (function() { return r().setWhole() })), u("EMPTY", (function() { return r().setEmpty() })), t.exports = s
+    }, , function(t, n, e) {
+        var r = e(41);
+        t.exports = function(t, n, e) { var i = r(t, n, (n - t) / (e - 1)); return i.length == e ? i : i.concat(n) }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = e(58)
+    }, , function(t, n, e) {
+        "use strict";
+        var r = e(5),
+            i = e(4),
+            o = e(3),
+            a = e(7),
+            s = e(68),
+            u = { add: function(t, n) { return r(i.addLo(t.lo, n.lo), i.addHi(t.hi, n.hi)) }, subtract: function(t, n) { return r(i.subLo(t.lo, n.hi), i.subHi(t.hi, n.lo)) } };
+        u.sub = u.subtract, u.multiply = function(t, n) {
+            if (o.isEmpty(t) || o.isEmpty(n)) return a.EMPTY;
+            var e = t.lo,
+                s = t.hi,
+                u = n.lo,
+                c = n.hi,
+                h = r();
+            return e < 0 ? s > 0 ? u < 0 ? c > 0 ? (h.lo = Math.min(i.mulLo(e, c), i.mulLo(s, u)), h.hi = Math.max(i.mulHi(e, u), i.mulHi(s, c))) : (h.lo = i.mulLo(s, u), h.hi = i.mulHi(e, u)) : c > 0 ? (h.lo = i.mulLo(e, c), h.hi = i.mulHi(s, c)) : (h.lo = 0, h.hi = 0) : u < 0 ? c > 0 ? (h.lo = i.mulLo(e, c), h.hi = i.mulHi(e, u)) : (h.lo = i.mulLo(s, c), h.hi = i.mulHi(e, u)) : c > 0 ? (h.lo = i.mulLo(e, c), h.hi = i.mulHi(s, u)) : (h.lo = 0, h.hi = 0) : s > 0 ? u < 0 ? c > 0 ? (h.lo = i.mulLo(s, u), h.hi = i.mulHi(s, c)) : (h.lo = i.mulLo(s, u), h.hi = i.mulHi(e, c)) : c > 0 ? (h.lo = i.mulLo(e, u), h.hi = i.mulHi(s, c)) : (h.lo = 0, h.hi = 0) : (h.lo = 0, h.hi = 0), h
+        }, u.mul = u.multiply, u.divide = function(t, n) { return o.isEmpty(t) || o.isEmpty(n) ? a.EMPTY : o.zeroIn(n) ? 0 !== n.lo ? 0 !== n.hi ? s.zero(t) : s.negative(t, n.lo) : 0 !== n.hi ? s.positive(t, n.hi) : a.EMPTY : s.nonZero(t, n) }, u.div = u.divide, u.positive = function(t) { return r(t.lo, t.hi) }, u.negative = function(t) { return r(-t.hi, -t.lo) }, t.exports = u
+    }, , , function(t, n, e) {
+        "use strict";
+        t.exports = Math.log10 || function(t) { return Math.log(t) * Math.LOG10E }
+    }, , function(t, n) {
+        var e;
+        e = function() { return this }();
+        try { e = e || new Function("return this")() } catch (t) { "object" == typeof window && (e = window) }
+        t.exports = e
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = e(43)
+    }, function(t, n, e) {
+        "use strict";
+        t.exports.Lexer = e(20), t.exports.Parser = e(44), t.exports.nodeTypes = e(45)
+    }, function(t, n, e) {
+        var r = e(21),
+            i = { n: "\n", f: "\f", r: "\r", t: "\t", v: "\v", "'": "'", '"': '"' },
+            o = { ",": !0, "(": !0, ")": !0, "[": !0, "]": !0, ";": !0, "~": !0, "!": !0, "+": !0, "-": !0, "*": !0, "/": !0, "%": !0, "^": !0, "**": !0, "|": !0, "&": !0, "^|": !0, "=": !0, ":": !0, "?": !0, "||": !0, "&&": !0, xor: !0, "==": !0, "!=": !0, "===": !0, "!==": !0, "<": !0, ">": !0, ">=": !0, "<=": !0, ">>>": !0, "<<": !0, ">>": !0 };
 
-            function emitNone(handler, isFn, self) {
-                if (isFn) handler.call(self);
-                else {
-                    var len = handler.length;
-                    var listeners = arrayClone(handler, len);
-                    for (var i = 0; i < len; ++i) listeners[i].call(self)
-                }
-            }
+        function a(t) { return t >= "0" && t <= "9" }
 
-            function emitOne(handler, isFn, self, arg1) {
-                if (isFn) handler.call(self, arg1);
-                else {
-                    var len = handler.length;
-                    var listeners = arrayClone(handler, len);
-                    for (var i = 0; i < len; ++i) listeners[i].call(self, arg1)
-                }
-            }
+        function s(t) { return t >= "a" && t <= "z" || t >= "A" && t <= "Z" || "$" === t || "_" === t }
 
-            function emitTwo(handler, isFn, self, arg1, arg2) {
-                if (isFn) handler.call(self, arg1, arg2);
-                else {
-                    var len = handler.length;
-                    var listeners = arrayClone(handler, len);
-                    for (var i = 0; i < len; ++i) listeners[i].call(self, arg1, arg2)
-                }
-            }
+        function u(t) { return " " === t || "\r" === t || "\t" === t || "\n" === t || "\v" === t || " " === t }
 
-            function emitThree(handler, isFn, self, arg1, arg2, arg3) {
-                if (isFn) handler.call(self, arg1, arg2, arg3);
-                else {
-                    var len = handler.length;
-                    var listeners = arrayClone(handler, len);
-                    for (var i = 0; i < len; ++i) listeners[i].call(self, arg1, arg2, arg3)
-                }
-            }
+        function c(t) { return o[t] }
 
-            function emitMany(handler, isFn, self, args) {
-                if (isFn) handler.apply(self, args);
-                else {
-                    var len = handler.length;
-                    var listeners = arrayClone(handler, len);
-                    for (var i = 0; i < len; ++i) listeners[i].apply(self, args)
-                }
+        function h(t) { return "'" === t || '"' === t }
+
+        function l() {}
+        l.prototype.throwError = function(t, n) { n = void 0 === n ? this.index : n; var e = new Error(t + " at index " + n); throw e.index = n, e.description = t, e }, l.prototype.lex = function(t) {
+            for (this.text = t, this.index = 0, this.tokens = []; this.index < this.text.length;) {
+                for (; u(this.peek());) this.consume();
+                var n = this.peek(),
+                    e = n + this.peek(1),
+                    i = e + this.peek(2);
+                c(i) ? (this.tokens.push({ type: r.DELIMITER, value: i }), this.consume(), this.consume(), this.consume()) : c(e) ? (this.tokens.push({ type: r.DELIMITER, value: e }), this.consume(), this.consume()) : c(n) ? (this.tokens.push({ type: r.DELIMITER, value: n }), this.consume()) : a(n) || "." === n && a(this.peek(1)) ? this.tokens.push({ type: r.NUMBER, value: this.readNumber() }) : h(n) ? this.tokens.push({ type: r.STRING, value: this.readString() }) : s(n) ? this.tokens.push({ type: r.SYMBOL, value: this.readIdentifier() }) : this.throwError("unexpected character " + n)
             }
-            EventEmitter.prototype.emit = function emit(type) {
-                var er, handler, len, args, i, events;
-                var doError = type === "error";
-                events = this._events;
-                if (events) doError = doError && events.error == null;
-                else if (!doError) return false;
-                if (doError) {
-                    if (arguments.length > 1) er = arguments[1];
-                    if (er instanceof Error) {
-                        throw er
+            return this.tokens.push({ type: r.EOF }), this.tokens
+        }, l.prototype.peek = function(t) { if (t = t || 0, !(this.index + t >= this.text.length)) return this.text.charAt(this.index + t) }, l.prototype.consume = function() { var t = this.peek(); return this.index += 1, t }, l.prototype.readNumber = function() {
+            var t = "";
+            if ("." === this.peek()) t += this.consume(), a(this.peek()) || this.throwError("number expected");
+            else { for (; a(this.peek());) t += this.consume(); "." === this.peek() && (t += this.consume()) }
+            for (; a(this.peek());) t += this.consume();
+            if ("e" === this.peek() || "E" === this.peek())
+                for (t += this.consume(), a(this.peek()) || "+" === this.peek() || "-" === this.peek() || this.throwError(), "+" !== this.peek() && "-" !== this.peek() || (t += this.consume()), a(this.peek()) || this.throwError("number expected"); a(this.peek());) t += this.consume();
+            return t
+        }, l.prototype.readIdentifier = function() { for (var t = ""; s(this.peek()) || a(this.peek());) t += this.consume(); return t }, l.prototype.readString = function() {
+            for (var t, n = this.consume(), e = "";;) {
+                var r = this.consume();
+                if (r || this.throwError("string is not closed"), t) {
+                    if ("u" === r) {
+                        var o = this.text.substring(this.index + 1, this.index + 5);
+                        o.match(/[\da-f]{4}/i) || this.throwError("invalid unicode escape"), this.index += 4, e += String.fromCharCode(parseInt(o, 16))
                     } else {
-                        var err = new Error('Unhandled "error" event. (' + er + ")");
-                        err.context = er;
-                        throw err
+                        var a = i[r];
+                        e += a || r
                     }
-                    return false
+                    t = !1
+                } else { if (r === n) break; "\\" === r ? t = !0 : e += r }
+            }
+            return e
+        }, t.exports = l
+    }, function(t, n) { t.exports = { EOF: 0, DELIMITER: 1, NUMBER: 2, STRING: 3, SYMBOL: 4 } }, function(t, n, e) {
+        var r = e(2),
+            i = { number: !0, string: !0, boolean: !0, undefined: !0, null: !0 };
+
+        function o(t, n) {
+            if (!i[n]) throw Error("unsupported type '" + n + "'");
+            this.value = t, this.valueType = n
+        }
+        o.prototype = Object.create(r.prototype), o.prototype.type = "ConstantNode", t.exports = o
+    }, function(t, n, e) {
+        var r = e(2);
+
+        function i(t, n) { this.op = t, this.args = n || [] }
+        i.prototype = Object.create(r.prototype), i.prototype.type = "OperatorNode", t.exports = i
+    }, function(t, n, e) {
+        var r = e(2);
+
+        function i(t, n) { this.op = t, this.argument = n }
+        i.prototype = Object.create(r.prototype), i.prototype.type = "UnaryNode", t.exports = i
+    }, function(t, n, e) {
+        var r = e(2);
+
+        function i(t) { this.name = t }
+        i.prototype = Object.create(r.prototype), i.prototype.type = "SymbolNode", t.exports = i
+    }, function(t, n, e) {
+        var r = e(2);
+
+        function i(t, n) { this.name = t, this.args = n }
+        i.prototype = Object.create(r.prototype), i.prototype.type = "FunctionNode", t.exports = i
+    }, function(t, n, e) {
+        var r = e(2);
+
+        function i(t) { this.nodes = t }
+        i.prototype = Object.create(r.prototype), i.prototype.type = "ArrayNode", t.exports = i
+    }, function(t, n, e) {
+        var r = e(2);
+
+        function i(t, n, e) { this.condition = t, this.trueExpr = n, this.falseExpr = e }
+        i.prototype = Object.create(r.prototype), i.prototype.type = "ConditionalNode", t.exports = i
+    }, function(t, n, e) {
+        var r = e(2);
+
+        function i(t, n) { this.name = t, this.expr = n }
+        i.prototype = Object.create(r.prototype), i.prototype.type = "AssignmentNode", t.exports = i
+    }, function(t, n, e) {
+        var r = e(2);
+
+        function i(t) { this.blocks = t }
+        i.prototype = Object.create(r.prototype), i.prototype.type = "BlockNode", t.exports = i
+    }, function(t, n, e) {
+        "use strict";
+        var r = Object.prototype.hasOwnProperty,
+            i = Object.prototype.toString,
+            o = Object.defineProperty,
+            a = Object.getOwnPropertyDescriptor,
+            s = function(t) { return "function" == typeof Array.isArray ? Array.isArray(t) : "[object Array]" === i.call(t) },
+            u = function(t) {
+                if (!t || "[object Object]" !== i.call(t)) return !1;
+                var n, e = r.call(t, "constructor"),
+                    o = t.constructor && t.constructor.prototype && r.call(t.constructor.prototype, "isPrototypeOf");
+                if (t.constructor && !e && !o) return !1;
+                for (n in t);
+                return void 0 === n || r.call(t, n)
+            },
+            c = function(t, n) { o && "__proto__" === n.name ? o(t, n.name, { enumerable: !0, configurable: !0, value: n.newValue, writable: !0 }) : t[n.name] = n.newValue },
+            h = function(t, n) { if ("__proto__" === n) { if (!r.call(t, n)) return; if (a) return a(t, n).value } return t[n] };
+        t.exports = function t() {
+            var n, e, r, i, o, a, l = arguments[0],
+                f = 1,
+                p = arguments.length,
+                m = !1;
+            for ("boolean" == typeof l && (m = l, l = arguments[1] || {}, f = 2), (null == l || "object" != typeof l && "function" != typeof l) && (l = {}); f < p; ++f)
+                if (null != (n = arguments[f]))
+                    for (e in n) r = h(l, e), l !== (i = h(n, e)) && (m && i && (u(i) || (o = s(i))) ? (o ? (o = !1, a = r && s(r) ? r : []) : a = r && u(r) ? r : {}, c(l, { name: e, newValue: t(m, a, i) })) : void 0 !== i && c(l, { name: e, newValue: i }));
+            return l
+        }
+    }, function(t, n) { t.exports = function(t) { for (var n = 1; n < arguments.length; n++) { var r = arguments[n]; for (var i in r) e.call(r, i) && (t[i] = r[i]) } return t }; var e = Object.prototype.hasOwnProperty }, function(t, n, e) {
+        "use strict";
+        var r = e(69),
+            i = e(5),
+            o = e(4),
+            a = e(3),
+            s = e(12),
+            u = e(7),
+            c = {
+                fmod: function(t, n) {
+                    if (a.isEmpty(t) || a.isEmpty(n)) return u.EMPTY;
+                    var e = t.lo < 0 ? n.lo : n.hi,
+                        r = t.lo / e;
+                    return r = r < 0 ? Math.ceil(r) : Math.floor(r), s.sub(t, s.mul(n, i(r)))
+                },
+                multiplicativeInverse: function(t) { return a.isEmpty(t) ? u.EMPTY : a.zeroIn(t) ? 0 !== t.lo ? 0 !== t.hi ? u.WHOLE : i(Number.NEGATIVE_INFINITY, o.divHi(1, t.lo)) : 0 !== t.hi ? i(o.divLo(1, t.hi), Number.POSITIVE_INFINITY) : u.EMPTY : i(o.divLo(1, t.hi), o.divHi(1, t.lo)) },
+                pow: function(t, n) {
+                    if (a.isEmpty(t)) return u.EMPTY;
+                    if ("object" == typeof n) {
+                        if (!a.isSingleton(n)) return u.EMPTY;
+                        n = n.lo
+                    }
+                    if (0 === n) return 0 === t.lo && 0 === t.hi ? u.EMPTY : u.ONE;
+                    if (n < 0) return c.pow(c.multiplicativeInverse(t), -n);
+                    if (r(n)) {
+                        if (t.hi < 0) {
+                            var e = o.powLo(-t.hi, n),
+                                s = o.powHi(-t.lo, n);
+                            return 1 & n ? i(-s, -e) : i(e, s)
+                        }
+                        return t.lo < 0 ? 1 & n ? i(-o.powLo(-t.lo, n), o.powHi(t.hi, n)) : i(0, o.powHi(Math.max(-t.lo, t.hi), n)) : i(o.powLo(t.lo, n), o.powHi(t.hi, n))
+                    }
+                    return console.warn("power is not an integer, you should use nth-root instead, returning an empty interval"), u.EMPTY
+                },
+                sqrt: function(t) { return c.nthRoot(t, 2) },
+                nthRoot: function(t, n) {
+                    if (a.isEmpty(t) || n < 0) return u.EMPTY;
+                    if ("object" == typeof n) {
+                        if (!a.isSingleton(n)) return u.EMPTY;
+                        n = n.lo
+                    }
+                    var e = 1 / n;
+                    if (t.hi < 0) {
+                        if (1 & r(n) & n) {
+                            var s = o.powHi(-t.lo, e),
+                                c = o.powLo(-t.hi, e);
+                            return i(-s, -c)
+                        }
+                        return i.EMPTY
+                    }
+                    if (t.lo < 0) { var h = o.powHi(t.hi, e); if (1 & r(n) & n) { var l = -o.powHi(-t.lo, e); return i(l, h) } return i(0, h) }
+                    return i(o.powLo(t.lo, e), o.powHi(t.hi, e))
                 }
-                handler = events[type];
-                if (!handler) return false;
-                var isFn = typeof handler === "function";
-                len = arguments.length;
-                switch (len) {
-                    case 1:
-                        emitNone(handler, isFn, this);
-                        break;
-                    case 2:
-                        emitOne(handler, isFn, this, arguments[1]);
-                        break;
-                    case 3:
-                        emitTwo(handler, isFn, this, arguments[1], arguments[2]);
-                        break;
-                    case 4:
-                        emitThree(handler, isFn, this, arguments[1], arguments[2], arguments[3]);
-                        break;
+            };
+        t.exports = c
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(7),
+            i = e(5),
+            o = e(4),
+            a = e(3),
+            s = e(12),
+            u = { exp: function(t) { return a.isEmpty(t) ? r.EMPTY : i(o.expLo(t.lo), o.expHi(t.hi)) }, log: function(t) { if (a.isEmpty(t)) return r.EMPTY; var n = t.lo <= 0 ? Number.NEGATIVE_INFINITY : o.logLo(t.lo); return i(n, o.logHi(t.hi)) } };
+        u.ln = u.log, u.LOG_EXP_10 = u.log(i(10, 10)), u.log10 = function(t) { return a.isEmpty(t) ? r.EMPTY : s.div(u.log(t), u.LOG_EXP_10) }, u.LOG_EXP_2 = u.log(i(2, 2)), u.log2 = function(t) { return a.isEmpty(t) ? r.EMPTY : s.div(u.log(t), u.LOG_EXP_2) }, u.hull = function(t, n) {
+            var e = a.isEmpty(t),
+                o = a.isEmpty(n);
+            return e && o ? r.EMPTY : e ? n.clone() : o ? t.clone() : i(Math.min(t.lo, n.lo), Math.max(t.hi, n.hi))
+        }, u.intersection = function(t, n) {
+            if (a.isEmpty(t) || a.isEmpty(n)) return r.EMPTY;
+            var e = Math.max(t.lo, n.lo),
+                o = Math.min(t.hi, n.hi);
+            return e <= o ? i(e, o) : r.EMPTY
+        }, u.union = function(t, n) { if (!a.intervalsOverlap(t, n)) throw Error("Interval#union: intervals do not overlap"); return i(Math.min(t.lo, n.lo), Math.max(t.hi, n.hi)) }, u.difference = function(t, n) { if (a.isEmpty(t) || a.isWhole(n)) return r.EMPTY; if (a.intervalsOverlap(t, n)) { if (t.lo < n.lo && n.hi < t.hi) throw Error("Interval.difference: difference creates multiple intervals"); return n.lo <= t.lo && n.hi === 1 / 0 || n.hi >= t.hi && n.lo === -1 / 0 ? r.EMPTY : n.lo <= t.lo ? i().halfOpenLeft(n.hi, t.hi) : i().halfOpenRight(t.lo, n.lo) } return i.clone(t) }, u.width = function(t) { return a.isEmpty(t) ? 0 : o.subHi(t.hi, t.lo) }, u.wid = u.width, u.abs = function(t) { return a.isEmpty(t) ? r.EMPTY : t.lo >= 0 ? i.clone(t) : t.hi <= 0 ? s.negative(t) : i(0, Math.max(-t.lo, t.hi)) }, u.max = function(t, n) {
+            var e = a.isEmpty(t),
+                o = a.isEmpty(n);
+            return e && o ? r.EMPTY : e ? n.clone() : o ? t.clone() : i(Math.max(t.lo, n.lo), Math.max(t.hi, n.hi))
+        }, u.min = function(t, n) {
+            var e = a.isEmpty(t),
+                o = a.isEmpty(n);
+            return e && o ? r.EMPTY : e ? n.clone() : o ? t.clone() : i(Math.min(t.lo, n.lo), Math.min(t.hi, n.hi))
+        }, u.clone = function(t) { return i().set(t.lo, t.hi) }, t.exports = u
+    }, function(t, n, e) {
+        "use strict";
+        var r, i = "object" == typeof Reflect ? Reflect : null,
+            o = i && "function" == typeof i.apply ? i.apply : function(t, n, e) { return Function.prototype.apply.call(t, n, e) };
+        r = i && "function" == typeof i.ownKeys ? i.ownKeys : Object.getOwnPropertySymbols ? function(t) { return Object.getOwnPropertyNames(t).concat(Object.getOwnPropertySymbols(t)) } : function(t) { return Object.getOwnPropertyNames(t) };
+        var a = Number.isNaN || function(t) { return t != t };
+
+        function s() { s.init.call(this) }
+        t.exports = s, t.exports.once = function(t, n) {
+            return new Promise((function(e, r) {
+                function i() { void 0 !== o && t.removeListener("error", o), e([].slice.call(arguments)) }
+                var o;
+                "error" !== n && (o = function(e) { t.removeListener(n, i), r(e) }, t.once("error", o)), t.once(n, i)
+            }))
+        }, s.EventEmitter = s, s.prototype._events = void 0, s.prototype._eventsCount = 0, s.prototype._maxListeners = void 0;
+        var u = 10;
+
+        function c(t) { if ("function" != typeof t) throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof t) }
+
+        function h(t) { return void 0 === t._maxListeners ? s.defaultMaxListeners : t._maxListeners }
+
+        function l(t, n, e, r) {
+            var i, o, a, s;
+            if (c(e), void 0 === (o = t._events) ? (o = t._events = Object.create(null), t._eventsCount = 0) : (void 0 !== o.newListener && (t.emit("newListener", n, e.listener ? e.listener : e), o = t._events), a = o[n]), void 0 === a) a = o[n] = e, ++t._eventsCount;
+            else if ("function" == typeof a ? a = o[n] = r ? [e, a] : [a, e] : r ? a.unshift(e) : a.push(e), (i = h(t)) > 0 && a.length > i && !a.warned) {
+                a.warned = !0;
+                var u = new Error("Possible EventEmitter memory leak detected. " + a.length + " " + String(n) + " listeners added. Use emitter.setMaxListeners() to increase limit");
+                u.name = "MaxListenersExceededWarning", u.emitter = t, u.type = n, u.count = a.length, s = u, console && console.warn && console.warn(s)
+            }
+            return t
+        }
+
+        function f() { if (!this.fired) return this.target.removeListener(this.type, this.wrapFn), this.fired = !0, 0 === arguments.length ? this.listener.call(this.target) : this.listener.apply(this.target, arguments) }
+
+        function p(t, n, e) {
+            var r = { fired: !1, wrapFn: void 0, target: t, type: n, listener: e },
+                i = f.bind(r);
+            return i.listener = e, r.wrapFn = i, i
+        }
+
+        function m(t, n, e) { var r = t._events; if (void 0 === r) return []; var i = r[n]; return void 0 === i ? [] : "function" == typeof i ? e ? [i.listener || i] : [i] : e ? function(t) { for (var n = new Array(t.length), e = 0; e < n.length; ++e) n[e] = t[e].listener || t[e]; return n }(i) : d(i, i.length) }
+
+        function y(t) { var n = this._events; if (void 0 !== n) { var e = n[t]; if ("function" == typeof e) return 1; if (void 0 !== e) return e.length } return 0 }
+
+        function d(t, n) { for (var e = new Array(n), r = 0; r < n; ++r) e[r] = t[r]; return e }
+        Object.defineProperty(s, "defaultMaxListeners", {
+            enumerable: !0,
+            get: function() { return u },
+            set: function(t) {
+                if ("number" != typeof t || t < 0 || a(t)) throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + t + ".");
+                u = t
+            }
+        }), s.init = function() { void 0 !== this._events && this._events !== Object.getPrototypeOf(this)._events || (this._events = Object.create(null), this._eventsCount = 0), this._maxListeners = this._maxListeners || void 0 }, s.prototype.setMaxListeners = function(t) { if ("number" != typeof t || t < 0 || a(t)) throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + t + "."); return this._maxListeners = t, this }, s.prototype.getMaxListeners = function() { return h(this) }, s.prototype.emit = function(t) {
+            for (var n = [], e = 1; e < arguments.length; e++) n.push(arguments[e]);
+            var r = "error" === t,
+                i = this._events;
+            if (void 0 !== i) r = r && void 0 === i.error;
+            else if (!r) return !1;
+            if (r) { var a; if (n.length > 0 && (a = n[0]), a instanceof Error) throw a; var s = new Error("Unhandled error." + (a ? " (" + a.message + ")" : "")); throw s.context = a, s }
+            var u = i[t];
+            if (void 0 === u) return !1;
+            if ("function" == typeof u) o(u, this, n);
+            else {
+                var c = u.length,
+                    h = d(u, c);
+                for (e = 0; e < c; ++e) o(h[e], this, n)
+            }
+            return !0
+        }, s.prototype.addListener = function(t, n) { return l(this, t, n, !1) }, s.prototype.on = s.prototype.addListener, s.prototype.prependListener = function(t, n) { return l(this, t, n, !0) }, s.prototype.once = function(t, n) { return c(n), this.on(t, p(this, t, n)), this }, s.prototype.prependOnceListener = function(t, n) { return c(n), this.prependListener(t, p(this, t, n)), this }, s.prototype.removeListener = function(t, n) {
+            var e, r, i, o, a;
+            if (c(n), void 0 === (r = this._events)) return this;
+            if (void 0 === (e = r[t])) return this;
+            if (e === n || e.listener === n) 0 == --this._eventsCount ? this._events = Object.create(null) : (delete r[t], r.removeListener && this.emit("removeListener", t, e.listener || n));
+            else if ("function" != typeof e) {
+                for (i = -1, o = e.length - 1; o >= 0; o--)
+                    if (e[o] === n || e[o].listener === n) { a = e[o].listener, i = o; break }
+                if (i < 0) return this;
+                0 === i ? e.shift() : function(t, n) {
+                    for (; n + 1 < t.length; n++) t[n] = t[n + 1];
+                    t.pop()
+                }(e, i), 1 === e.length && (r[t] = e[0]), void 0 !== r.removeListener && this.emit("removeListener", t, a || n)
+            }
+            return this
+        }, s.prototype.off = s.prototype.removeListener, s.prototype.removeAllListeners = function(t) {
+            var n, e, r;
+            if (void 0 === (e = this._events)) return this;
+            if (void 0 === e.removeListener) return 0 === arguments.length ? (this._events = Object.create(null), this._eventsCount = 0) : void 0 !== e[t] && (0 == --this._eventsCount ? this._events = Object.create(null) : delete e[t]), this;
+            if (0 === arguments.length) { var i, o = Object.keys(e); for (r = 0; r < o.length; ++r) "removeListener" !== (i = o[r]) && this.removeAllListeners(i); return this.removeAllListeners("removeListener"), this._events = Object.create(null), this._eventsCount = 0, this }
+            if ("function" == typeof(n = e[t])) this.removeListener(t, n);
+            else if (void 0 !== n)
+                for (r = n.length - 1; r >= 0; r--) this.removeListener(t, n[r]);
+            return this
+        }, s.prototype.listeners = function(t) { return m(this, t, !0) }, s.prototype.rawListeners = function(t) { return m(this, t, !1) }, s.listenerCount = function(t, n) { return "function" == typeof t.listenerCount ? t.listenerCount(n) : y.call(t, n) }, s.prototype.listenerCount = y, s.prototype.eventNames = function() { return this._eventsCount > 0 ? r(this._events) : [] }
+    }, function(t, n, e) {
+        var r = e(9);
+        t.exports = function(t, n, e) { return r(t, n, e).map((function(t) { return Math.pow(10, t) })) }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = e(42)
+    }, , , , function(t, n) {
+        var e = /^\s+|\s+$/g,
+            r = /^[-+]0x[0-9a-f]+$/i,
+            i = /^0b[01]+$/i,
+            o = /^0o[0-7]+$/i,
+            a = /^(?:0|[1-9]\d*)$/,
+            s = parseInt;
+        var u = Object.prototype.toString,
+            c = Math.ceil,
+            h = Math.max;
+        var l, f = (l = "length", function(t) { return null == t ? void 0 : t[l] });
+
+        function p(t) { var n = m(t) ? u.call(t) : ""; return "[object Function]" == n || "[object GeneratorFunction]" == n }
+
+        function m(t) { var n = typeof t; return !!t && ("object" == n || "function" == n) }
+
+        function y(t) {
+            return t ? (t = function(t) {
+                if ("number" == typeof t) return t;
+                if (function(t) { return "symbol" == typeof t || function(t) { return !!t && "object" == typeof t }(t) && "[object Symbol]" == u.call(t) }(t)) return NaN;
+                if (m(t)) {
+                    var n = p(t.valueOf) ? t.valueOf() : t;
+                    t = m(n) ? n + "" : n
+                }
+                if ("string" != typeof t) return 0 === t ? t : +t;
+                t = t.replace(e, "");
+                var a = i.test(t);
+                return a || o.test(t) ? s(t.slice(2), a ? 2 : 8) : r.test(t) ? NaN : +t
+            }(t)) === 1 / 0 || t === -1 / 0 ? 17976931348623157e292 * (t < 0 ? -1 : 1) : t == t ? t : 0 : 0 === t ? t : 0
+        }
+        var d, v = function(t, n, e) {
+            return e && "number" != typeof e && function(t, n, e) { if (!m(e)) return !1; var r = typeof n; return !!("number" == r ? function(t) { return null != t && function(t) { return "number" == typeof t && t > -1 && t % 1 == 0 && t <= 9007199254740991 }(f(t)) && !p(t) }(e) && function(t, n) { return !!(n = null == n ? 9007199254740991 : n) && ("number" == typeof t || a.test(t)) && t > -1 && t % 1 == 0 && t < n }(n, e.length) : "string" == r && n in e) && function(t, n) { return t === n || t != t && n != n }(e[n], t) }(t, n, e) && (n = e = void 0), t = y(t), void 0 === n ? (n = t, t = 0) : n = y(n),
+                function(t, n, e, r) { for (var i = -1, o = h(c((n - t) / (e || 1)), 0), a = Array(o); o--;) a[r ? o : ++i] = t, t += e; return a }(t, n, e = void 0 === e ? t < n ? 1 : -1 : y(e), d)
+        };
+        t.exports = v
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(18),
+            i = e(57)();
+
+        function o(t) {
+            Object.keys(t).forEach((function(n) {
+                var e = t[n];
+                t[n] = i.factory(e)
+            }))
+        }
+        t.exports = function(t) { return (new r).setDefs({ $$processScope: o }).parse(t).compile(i) }, t.exports.math = i
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(19).Parser,
+            i = e(46),
+            o = e(31);
+
+        function a(t, n) { this.statements = [], this.defs = n || {}, this.interpreter = new i(this, t) }
+        a.prototype.setDefs = function(t) { return this.defs = o(this.defs, t), this }, a.prototype.compile = function(t) {
+            if (!t || "object" != typeof t && "function" != typeof t) throw TypeError("namespace must be an object");
+            if ("function" != typeof t.factory) throw TypeError("namespace.factory must be a function");
+            this.defs.ns = t, this.defs.$$mathCodegen = { getProperty: function(t, n, e) { if (t in n) return n[t]; if (t in e) return e[t]; throw SyntaxError('symbol "' + t + '" is undefined') }, functionProxy: function(t, n) { if ("function" != typeof t) throw SyntaxError('symbol "' + n + '" must be a function'); return t } }, this.defs.$$processScope = this.defs.$$processScope || function() {};
+            var n = Object.keys(this.defs).map((function(t) { return "var " + t + ' = defs["' + t + '"]' }));
+            if (!this.statements.length) throw Error("there are no statements saved in this generator, make sure you parse an expression before compiling it");
+            this.statements[this.statements.length - 1] = "return " + this.statements[this.statements.length - 1];
+            var e = this.statements.join(";"),
+                r = n.join("\n") + "\n" + ["return {", "  eval: function (scope) {", "    scope = scope || {}", "    $$processScope(scope)", "    " + e, "  },", "  code: '" + e + "'", "}"].join("\n");
+            return new Function("defs", r)(this.defs)
+        }, a.prototype.parse = function(t) {
+            var n = this,
+                e = (new r).parse(t);
+            return this.statements = e.blocks.map((function(t) { return n.interpreter.next(t) })), this
+        }, t.exports = a
+    }, function(t, n, e) {
+        var r = e(21),
+            i = e(20),
+            o = e(22),
+            a = e(23),
+            s = e(24),
+            u = e(25),
+            c = e(26),
+            h = e(27),
+            l = e(28),
+            f = e(29),
+            p = e(30);
+
+        function m() { this.lexer = new i, this.tokens = null }
+        m.prototype.current = function() { return this.tokens[0] }, m.prototype.next = function() { return this.tokens[1] }, m.prototype.peek = function() {
+            if (this.tokens.length)
+                for (var t = this.tokens[0], n = 0; n < arguments.length; n += 1)
+                    if (t.value === arguments[n]) return !0
+        }, m.prototype.consume = function(t) { return this.tokens.shift() }, m.prototype.expect = function(t) { if (!this.peek(t)) throw Error("expected " + t); return this.consume() }, m.prototype.isEOF = function() { return this.current().type === r.EOF }, m.prototype.parse = function(t) { return this.tokens = this.lexer.lex(t), this.program() }, m.prototype.program = function() { for (var t = []; !this.isEOF();) t.push(this.assignment()), this.peek(";") && this.consume(); return this.end(), new p(t) }, m.prototype.assignment = function() { var t = this.ternary(); return t instanceof u && this.peek("=") ? (this.consume(), new f(t.name, this.assignment())) : t }, m.prototype.ternary = function() {
+            var t = this.logicalOR();
+            if (this.peek("?")) {
+                this.consume();
+                var n = this.ternary();
+                this.expect(":");
+                var e = this.ternary();
+                return new l(t, n, e)
+            }
+            return t
+        }, m.prototype.logicalOR = function() {
+            var t = this.logicalXOR();
+            if (this.peek("||")) {
+                var n = this.consume(),
+                    e = this.logicalOR();
+                return new a(n.value, [t, e])
+            }
+            return t
+        }, m.prototype.logicalXOR = function() {
+            var t = this.logicalAND();
+            if ("xor" === this.current().value) {
+                var n = this.consume(),
+                    e = this.logicalXOR();
+                return new a(n.value, [t, e])
+            }
+            return t
+        }, m.prototype.logicalAND = function() {
+            var t = this.bitwiseOR();
+            if (this.peek("&&")) {
+                var n = this.consume(),
+                    e = this.logicalAND();
+                return new a(n.value, [t, e])
+            }
+            return t
+        }, m.prototype.bitwiseOR = function() {
+            var t = this.bitwiseXOR();
+            if (this.peek("|")) {
+                var n = this.consume(),
+                    e = this.bitwiseOR();
+                return new a(n.value, [t, e])
+            }
+            return t
+        }, m.prototype.bitwiseXOR = function() {
+            var t = this.bitwiseAND();
+            if (this.peek("^|")) {
+                var n = this.consume(),
+                    e = this.bitwiseXOR();
+                return new a(n.value, [t, e])
+            }
+            return t
+        }, m.prototype.bitwiseAND = function() {
+            var t = this.relational();
+            if (this.peek("&")) {
+                var n = this.consume(),
+                    e = this.bitwiseAND();
+                return new a(n.value, [t, e])
+            }
+            return t
+        }, m.prototype.relational = function() {
+            var t = this.shift();
+            if (this.peek("==", "===", "!=", "!==", ">=", "<=", ">", "<")) {
+                var n = this.consume(),
+                    e = this.shift();
+                return new a(n.value, [t, e])
+            }
+            return t
+        }, m.prototype.shift = function() {
+            var t = this.additive();
+            if (this.peek(">>", "<<", ">>>")) {
+                var n = this.consume(),
+                    e = this.shift();
+                return new a(n.value, [t, e])
+            }
+            return t
+        }, m.prototype.additive = function() {
+            for (var t = this.multiplicative(); this.peek("+", "-");) {
+                var n = this.consume();
+                t = new a(n.value, [t, this.multiplicative()])
+            }
+            return t
+        }, m.prototype.multiplicative = function() { for (var t, n, e = this.unary(); this.peek("*", "/", "%");) t = this.consume(), e = new a(t.value, [e, this.unary()]); return this.current().type === r.SYMBOL || this.peek("(") || !(e.type instanceof o) && this.current().type === r.NUMBER ? (n = this.multiplicative(), new a("*", [e, n])) : e }, m.prototype.unary = function() {
+            if (this.peek("-", "+", "~")) {
+                var t = this.consume(),
+                    n = this.unary();
+                return new s(t.value, n)
+            }
+            return this.pow()
+        }, m.prototype.pow = function() {
+            var t = this.factorial();
+            if (this.peek("^", "**")) {
+                var n = this.consume(),
+                    e = this.unary();
+                return new a(n.value, [t, e])
+            }
+            return t
+        }, m.prototype.factorial = function() { var t = this.symbol(); if (this.peek("!")) { var n = this.consume(); return new a(n.value, [t]) } return t }, m.prototype.symbol = function() { if (this.current().type === r.SYMBOL) { var t = this.consume(); return this.functionCall(t) } return this.string() }, m.prototype.functionCall = function(t) { var n = t.value; if (this.peek("(")) { this.consume(); for (var e = []; !this.peek(")") && !this.isEOF();) e.push(this.assignment()), this.peek(",") && this.consume(); return this.expect(")"), new c(n, e) } return new u(n) }, m.prototype.string = function() { return this.current().type === r.STRING ? new o(this.consume().value, "string") : this.array() }, m.prototype.array = function() { if (this.peek("[")) { this.consume(); for (var t = []; !this.peek("]") && !this.isEOF();) t.push(this.assignment()), this.peek(",") && this.consume(); return this.expect("]"), new h(t) } return this.number() }, m.prototype.number = function() { return this.current().type === r.NUMBER ? new o(this.consume().value, "number") : this.parentheses() }, m.prototype.parentheses = function() { if ("(" === this.current().value) { this.consume(); var t = this.assignment(); return this.expect(")"), t } return this.end() }, m.prototype.end = function() { if (this.current().type !== r.EOF) throw Error("unexpected end of expression") }, t.exports = m
+    }, function(t, n, e) { t.exports = { ArrayNode: e(27), AssignmentNode: e(29), BlockNode: e(30), ConditionalNode: e(28), ConstantNode: e(22), FunctionNode: e(26), Node: e(2), OperatorNode: e(23), SymbolNode: e(25), UnaryNode: e(24) } }, function(t, n, e) {
+        "use strict";
+        var r = e(31),
+            i = { ArrayNode: e(47), AssignmentNode: e(48), ConditionalNode: e(49), ConstantNode: e(50), FunctionNode: e(51), OperatorNode: e(52), SymbolNode: e(54), UnaryNode: e(55) },
+            o = function(t, n) { this.owner = t, this.options = r({ factory: "ns.factory", raw: !1, rawArrayExpressionElements: !0, rawCallExpressionElements: !1 }, n) };
+        r(o.prototype, i), o.prototype.next = function(t) { if (!(t.type in this)) throw new TypeError("the node type " + t.type + " is not implemented"); return this[t.type](t) }, o.prototype.rawify = function(t, n) {
+            var e = this.options.raw;
+            t && (this.options.raw = !0), n(), t && (this.options.raw = e)
+        }, t.exports = o
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = function(t) {
+            var n = this,
+                e = [];
+            this.rawify(this.options.rawArrayExpressionElements, (function() { e = t.nodes.map((function(t) { return n.next(t) })) }));
+            var r = "[" + e.join(",") + "]";
+            return this.options.raw ? r : this.options.factory + "(" + r + ")"
+        }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = function(t) { return 'scope["' + t.name + '"] = ' + this.next(t.expr) }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = function(t) { return "(" + ("!!(" + this.next(t.condition) + ")") + " ? (" + this.next(t.trueExpr) + ") : (" + this.next(t.falseExpr) + ") )" }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = function(t) { return this.options.raw ? t.value : this.options.factory + "(" + t.value + ")" }
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(19).nodeTypes.SymbolNode,
+            i = function(t) { return "$$mathCodegen.functionProxy(" + this.next(new r(t.name)) + ', "' + t.name + '")' };
+        t.exports = function(t) {
+            var n = this,
+                e = i.call(this, t),
+                r = [];
+            return this.rawify(this.options.rawCallExpressionElements, (function() { r = t.args.map((function(t) { return n.next(t) })) })), e + "(" + r.join(", ") + ")"
+        }, t.exports.functionProxy = i
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(53);
+        t.exports = function(t) { if (this.options.raw) return ["(" + this.next(t.args[0]), t.op, this.next(t.args[1]) + ")"].join(" "); var n = r[t.op]; if (!n) throw TypeError("unidentified operator"); return this.FunctionNode({ name: n, args: t.args }) }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = { "+": "add", "-": "sub", "*": "mul", "/": "div", "^": "pow", "%": "mod", "!": "factorial", "|": "bitwiseOR", "^|": "bitwiseXOR", "&": "bitwiseAND", "||": "logicalOR", xor: "logicalXOR", "&&": "logicalAND", "<": "lessThan", ">": "greaterThan", "<=": "lessEqualThan", ">=": "greaterEqualThan", "===": "strictlyEqual", "==": "equal", "!==": "strictlyNotEqual", "!=": "notEqual", ">>": "shiftRight", "<<": "shiftLeft", ">>>": "unsignedRightShift" }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = function(t) { return '$$mathCodegen.getProperty("' + t.name + '", scope, ns)' }
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(56);
+        t.exports = function(t) { if (this.options.raw) return t.op + this.next(t.argument); if (!(t.op in r)) throw new SyntaxError(t.op + " not implemented"); var n = r[t.op]; return this.FunctionNode({ name: n, args: [t.argument] }) }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = { "+": "positive", "-": "negative", "~": "oneComplement" }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = function() { var t = Object.create(Math); return t.factory = function(t) { if ("number" != typeof t) throw new TypeError("built-in math factory only accepts numbers"); return Number(t) }, t.add = function(t, n) { return t + n }, t.sub = function(t, n) { return t - n }, t.mul = function(t, n) { return t * n }, t.div = function(t, n) { return t / n }, t.mod = function(t, n) { return t % n }, t.factorial = function(t) { for (var n = 1, e = 2; e <= t; e += 1) n *= e; return n }, t.nthRoot = function(t, n) { var e = n < 0; if (e && (n = -n), 0 === n) throw new Error("Root must be non-zero"); if (t < 0 && Math.abs(n) % 2 != 1) throw new Error("Root must be odd when a is negative."); if (0 === t) return 0; if (!isFinite(t)) return e ? 0 : t; var r = Math.pow(Math.abs(t), 1 / n); return r = t < 0 ? -r : r, e ? 1 / r : r }, t.logicalOR = function(t, n) { return t || n }, t.logicalXOR = function(t, n) { return t != n }, t.logicalAND = function(t, n) { return t && n }, t.bitwiseOR = function(t, n) { return t | n }, t.bitwiseXOR = function(t, n) { return t ^ n }, t.bitwiseAND = function(t, n) { return t & n }, t.lessThan = function(t, n) { return t < n }, t.lessEqualThan = function(t, n) { return t <= n }, t.greaterThan = function(t, n) { return t > n }, t.greaterEqualThan = function(t, n) { return t >= n }, t.equal = function(t, n) { return t == n }, t.strictlyEqual = function(t, n) { return t === n }, t.notEqual = function(t, n) { return t != n }, t.strictlyNotEqual = function(t, n) { return t !== n }, t.shiftRight = function(t, n) { return t >> n }, t.shiftLeft = function(t, n) { return t << n }, t.unsignedRightShift = function(t, n) { return t >>> n }, t.negative = function(t) { return -t }, t.positive = function(t) { return t }, t }
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(18),
+            i = e(59);
+
+        function o(t) { Object.keys(t).forEach((function(n) { var e = t[n]; "number" == typeof e || Array.isArray(e) ? t[n] = i.factory(e) : "object" == typeof e && "lo" in e && "hi" in e && (t[n] = i.factory(e.lo, e.hi)) })) }
+        e(72)(i), t.exports = function(t) { return (new r).setDefs({ $$processScope: o }).parse(t).compile(i) }, t.exports.policies = e(73)(i), t.exports.Interval = i
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(32);
+        e(60), t.exports = e(5), t.exports.rmath = e(4), t.exports.round = e(4), r(t.exports, e(7), e(67), e(12), e(33), e(71), e(34), e(3))
+    }, function(t, n, e) {
+        "use strict";
+        Math.sinh = Math.sinh || function(t) { var n = Math.exp(t); return (n - 1 / n) / 2 }, Math.cosh = Math.cosh || function(t) { var n = Math.exp(t); return (n + 1 / n) / 2 }, Math.tanh = Math.tanh || function(t) { if (t === Number.POSITIVE_INFINITY) return 1; if (t === Number.NEGATIVE_INFINITY) return -1; var n = Math.exp(2 * t); return (n - 1) / (n + 1) }
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(62),
+            i = Math.pow(2, -1074);
+        t.exports = function(t, n) {
+            if (isNaN(t) || isNaN(n)) return NaN;
+            if (t === n) return t;
+            if (0 === t) return n < 0 ? -i : i;
+            var e = r.hi(t),
+                o = r.lo(t);
+            n > t == t > 0 ? o === -1 >>> 0 ? (e += 1, o = 0) : o += 1 : 0 === o ? (o = -1 >>> 0, e -= 1) : o -= 1;
+            return r.pack(o, e)
+        }
+    }, function(t, n, e) {
+        (function(n) {
+            var e = !1;
+            if ("undefined" != typeof Float64Array) {
+                var r = new Float64Array(1),
+                    i = new Uint32Array(r.buffer);
+                if (r[0] = 1, e = !0, 1072693248 === i[1]) { t.exports = function(t) { return r[0] = t, [i[0], i[1]] }, t.exports.pack = function(t, n) { return i[0] = t, i[1] = n, r[0] }, t.exports.lo = function(t) { return r[0] = t, i[0] }, t.exports.hi = function(t) { return r[0] = t, i[1] } } else if (1072693248 === i[0]) { t.exports = function(t) { return r[0] = t, [i[1], i[0]] }, t.exports.pack = function(t, n) { return i[1] = t, i[0] = n, r[0] }, t.exports.lo = function(t) { return r[0] = t, i[1] }, t.exports.hi = function(t) { return r[0] = t, i[0] } } else e = !1
+            }
+            if (!e) {
+                var o = new n(8);
+                t.exports = function(t) { return o.writeDoubleLE(t, 0, !0), [o.readUInt32LE(0, !0), o.readUInt32LE(4, !0)] }, t.exports.pack = function(t, n) { return o.writeUInt32LE(t, 0, !0), o.writeUInt32LE(n, 4, !0), o.readDoubleLE(0, !0) }, t.exports.lo = function(t) { return o.writeDoubleLE(t, 0, !0), o.readUInt32LE(0, !0) }, t.exports.hi = function(t) { return o.writeDoubleLE(t, 0, !0), o.readUInt32LE(4, !0) }
+            }
+            t.exports.sign = function(n) { return t.exports.hi(n) >>> 31 }, t.exports.exponent = function(n) { return (t.exports.hi(n) << 1 >>> 21) - 1023 }, t.exports.fraction = function(n) {
+                var e = t.exports.lo(n),
+                    r = t.exports.hi(n),
+                    i = 1048575 & r;
+                return 2146435072 & r && (i += 1 << 20), [e, i]
+            }, t.exports.denormalized = function(n) { return !(2146435072 & t.exports.hi(n)) }
+        }).call(this, e(63).Buffer)
+    }, function(t, n, e) {
+        "use strict";
+        (function(t) {
+            /*!
+             * The buffer module from node.js, for the browser.
+             *
+             * @author   Feross Aboukhadijeh <http://feross.org>
+             * @license  MIT
+             */
+            var r = e(64),
+                i = e(65),
+                o = e(66);
+
+            function a() { return u.TYPED_ARRAY_SUPPORT ? 2147483647 : 1073741823 }
+
+            function s(t, n) { if (a() < n) throw new RangeError("Invalid typed array length"); return u.TYPED_ARRAY_SUPPORT ? (t = new Uint8Array(n)).__proto__ = u.prototype : (null === t && (t = new u(n)), t.length = n), t }
+
+            function u(t, n, e) { if (!(u.TYPED_ARRAY_SUPPORT || this instanceof u)) return new u(t, n, e); if ("number" == typeof t) { if ("string" == typeof n) throw new Error("If encoding is specified then the first argument must be a string"); return l(this, t) } return c(this, t, n, e) }
+
+            function c(t, n, e, r) {
+                if ("number" == typeof n) throw new TypeError('"value" argument must not be a number');
+                return "undefined" != typeof ArrayBuffer && n instanceof ArrayBuffer ? function(t, n, e, r) {
+                    if (n.byteLength, e < 0 || n.byteLength < e) throw new RangeError("'offset' is out of bounds");
+                    if (n.byteLength < e + (r || 0)) throw new RangeError("'length' is out of bounds");
+                    n = void 0 === e && void 0 === r ? new Uint8Array(n) : void 0 === r ? new Uint8Array(n, e) : new Uint8Array(n, e, r);
+                    u.TYPED_ARRAY_SUPPORT ? (t = n).__proto__ = u.prototype : t = f(t, n);
+                    return t
+                }(t, n, e, r) : "string" == typeof n ? function(t, n, e) {
+                    "string" == typeof e && "" !== e || (e = "utf8");
+                    if (!u.isEncoding(e)) throw new TypeError('"encoding" must be a valid string encoding');
+                    var r = 0 | m(n, e),
+                        i = (t = s(t, r)).write(n, e);
+                    i !== r && (t = t.slice(0, i));
+                    return t
+                }(t, n, e) : function(t, n) { if (u.isBuffer(n)) { var e = 0 | p(n.length); return 0 === (t = s(t, e)).length || n.copy(t, 0, 0, e), t } if (n) { if ("undefined" != typeof ArrayBuffer && n.buffer instanceof ArrayBuffer || "length" in n) return "number" != typeof n.length || (r = n.length) != r ? s(t, 0) : f(t, n); if ("Buffer" === n.type && o(n.data)) return f(t, n.data) } var r; throw new TypeError("First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.") }(t, n)
+            }
+
+            function h(t) { if ("number" != typeof t) throw new TypeError('"size" argument must be a number'); if (t < 0) throw new RangeError('"size" argument must not be negative') }
+
+            function l(t, n) {
+                if (h(n), t = s(t, n < 0 ? 0 : 0 | p(n)), !u.TYPED_ARRAY_SUPPORT)
+                    for (var e = 0; e < n; ++e) t[e] = 0;
+                return t
+            }
+
+            function f(t, n) {
+                var e = n.length < 0 ? 0 : 0 | p(n.length);
+                t = s(t, e);
+                for (var r = 0; r < e; r += 1) t[r] = 255 & n[r];
+                return t
+            }
+
+            function p(t) { if (t >= a()) throw new RangeError("Attempt to allocate Buffer larger than maximum size: 0x" + a().toString(16) + " bytes"); return 0 | t }
+
+            function m(t, n) {
+                if (u.isBuffer(t)) return t.length;
+                if ("undefined" != typeof ArrayBuffer && "function" == typeof ArrayBuffer.isView && (ArrayBuffer.isView(t) || t instanceof ArrayBuffer)) return t.byteLength;
+                "string" != typeof t && (t = "" + t);
+                var e = t.length;
+                if (0 === e) return 0;
+                for (var r = !1;;) switch (n) {
+                    case "ascii":
+                    case "latin1":
+                    case "binary":
+                        return e;
+                    case "utf8":
+                    case "utf-8":
+                    case void 0:
+                        return B(t).length;
+                    case "ucs2":
+                    case "ucs-2":
+                    case "utf16le":
+                    case "utf-16le":
+                        return 2 * e;
+                    case "hex":
+                        return e >>> 1;
+                    case "base64":
+                        return U(t).length;
                     default:
-                        args = new Array(len - 1);
-                        for (i = 1; i < len; i++) args[i - 1] = arguments[i];
-                        emitMany(handler, isFn, this, args)
+                        if (r) return B(t).length;
+                        n = ("" + n).toLowerCase(), r = !0
                 }
-                return true
-            };
-
-            function _addListener(target, type, listener, prepend) {
-                var m;
-                var events;
-                var existing;
-                if (typeof listener !== "function") throw new TypeError('"listener" argument must be a function');
-                events = target._events;
-                if (!events) {
-                    events = target._events = objectCreate(null);
-                    target._eventsCount = 0
-                } else {
-                    if (events.newListener) {
-                        target.emit("newListener", type, listener.listener ? listener.listener : listener);
-                        events = target._events
-                    }
-                    existing = events[type]
-                }
-                if (!existing) {
-                    existing = events[type] = listener;
-                    ++target._eventsCount
-                } else {
-                    if (typeof existing === "function") {
-                        existing = events[type] = prepend ? [listener, existing] : [existing, listener]
-                    } else {
-                        if (prepend) {
-                            existing.unshift(listener)
-                        } else {
-                            existing.push(listener)
-                        }
-                    }
-                    if (!existing.warned) {
-                        m = $getMaxListeners(target);
-                        if (m && m > 0 && existing.length > m) {
-                            existing.warned = true;
-                            var w = new Error("Possible EventEmitter memory leak detected. " + existing.length + ' "' + String(type) + '" listeners ' + "added. Use emitter.setMaxListeners() to " + "increase limit.");
-                            w.name = "MaxListenersExceededWarning";
-                            w.emitter = target;
-                            w.type = type;
-                            w.count = existing.length;
-                            if (typeof console === "object" && console.warn) {
-                                console.warn("%s: %s", w.name, w.message)
-                            }
-                        }
-                    }
-                }
-                return target
             }
-            EventEmitter.prototype.addListener = function addListener(type, listener) {
-                return _addListener(this, type, listener, false)
-            };
-            EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-            EventEmitter.prototype.prependListener = function prependListener(type, listener) {
-                return _addListener(this, type, listener, true)
-            };
 
-            function onceWrapper() {
-                if (!this.fired) {
-                    this.target.removeListener(this.type, this.wrapFn);
-                    this.fired = true;
-                    switch (arguments.length) {
-                        case 0:
-                            return this.listener.call(this.target);
+            function y(t, n, e) {
+                var r = !1;
+                if ((void 0 === n || n < 0) && (n = 0), n > this.length) return "";
+                if ((void 0 === e || e > this.length) && (e = this.length), e <= 0) return "";
+                if ((e >>>= 0) <= (n >>>= 0)) return "";
+                for (t || (t = "utf8");;) switch (t) {
+                    case "hex":
+                        return S(this, n, e);
+                    case "utf8":
+                    case "utf-8":
+                        return T(this, n, e);
+                    case "ascii":
+                        return k(this, n, e);
+                    case "latin1":
+                    case "binary":
+                        return I(this, n, e);
+                    case "base64":
+                        return A(this, n, e);
+                    case "ucs2":
+                    case "ucs-2":
+                    case "utf16le":
+                    case "utf-16le":
+                        return N(this, n, e);
+                    default:
+                        if (r) throw new TypeError("Unknown encoding: " + t);
+                        t = (t + "").toLowerCase(), r = !0
+                }
+            }
+
+            function d(t, n, e) {
+                var r = t[n];
+                t[n] = t[e], t[e] = r
+            }
+
+            function v(t, n, e, r, i) {
+                if (0 === t.length) return -1;
+                if ("string" == typeof e ? (r = e, e = 0) : e > 2147483647 ? e = 2147483647 : e < -2147483648 && (e = -2147483648), e = +e, isNaN(e) && (e = i ? 0 : t.length - 1), e < 0 && (e = t.length + e), e >= t.length) {
+                    if (i) return -1;
+                    e = t.length - 1
+                } else if (e < 0) {
+                    if (!i) return -1;
+                    e = 0
+                }
+                if ("string" == typeof n && (n = u.from(n, r)), u.isBuffer(n)) return 0 === n.length ? -1 : g(t, n, e, r, i);
+                if ("number" == typeof n) return n &= 255, u.TYPED_ARRAY_SUPPORT && "function" == typeof Uint8Array.prototype.indexOf ? i ? Uint8Array.prototype.indexOf.call(t, n, e) : Uint8Array.prototype.lastIndexOf.call(t, n, e) : g(t, [n], e, r, i);
+                throw new TypeError("val must be string, number or Buffer")
+            }
+
+            function g(t, n, e, r, i) {
+                var o, a = 1,
+                    s = t.length,
+                    u = n.length;
+                if (void 0 !== r && ("ucs2" === (r = String(r).toLowerCase()) || "ucs-2" === r || "utf16le" === r || "utf-16le" === r)) {
+                    if (t.length < 2 || n.length < 2) return -1;
+                    a = 2, s /= 2, u /= 2, e /= 2
+                }
+
+                function c(t, n) { return 1 === a ? t[n] : t.readUInt16BE(n * a) }
+                if (i) {
+                    var h = -1;
+                    for (o = e; o < s; o++)
+                        if (c(t, o) === c(n, -1 === h ? 0 : o - h)) { if (-1 === h && (h = o), o - h + 1 === u) return h * a } else -1 !== h && (o -= o - h), h = -1
+                } else
+                    for (e + u > s && (e = s - u), o = e; o >= 0; o--) {
+                        for (var l = !0, f = 0; f < u; f++)
+                            if (c(t, o + f) !== c(n, f)) { l = !1; break }
+                        if (l) return o
+                    }
+                return -1
+            }
+
+            function w(t, n, e, r) {
+                e = Number(e) || 0;
+                var i = t.length - e;
+                r ? (r = Number(r)) > i && (r = i) : r = i;
+                var o = n.length;
+                if (o % 2 != 0) throw new TypeError("Invalid hex string");
+                r > o / 2 && (r = o / 2);
+                for (var a = 0; a < r; ++a) {
+                    var s = parseInt(n.substr(2 * a, 2), 16);
+                    if (isNaN(s)) return a;
+                    t[e + a] = s
+                }
+                return a
+            }
+
+            function x(t, n, e, r) { return F(B(n, t.length - e), t, e, r) }
+
+            function _(t, n, e, r) { return F(function(t) { for (var n = [], e = 0; e < t.length; ++e) n.push(255 & t.charCodeAt(e)); return n }(n), t, e, r) }
+
+            function b(t, n, e, r) { return _(t, n, e, r) }
+
+            function E(t, n, e, r) { return F(U(n), t, e, r) }
+
+            function M(t, n, e, r) { return F(function(t, n) { for (var e, r, i, o = [], a = 0; a < t.length && !((n -= 2) < 0); ++a) e = t.charCodeAt(a), r = e >> 8, i = e % 256, o.push(i), o.push(r); return o }(n, t.length - e), t, e, r) }
+
+            function A(t, n, e) { return 0 === n && e === t.length ? r.fromByteArray(t) : r.fromByteArray(t.slice(n, e)) }
+
+            function T(t, n, e) {
+                e = Math.min(t.length, e);
+                for (var r = [], i = n; i < e;) {
+                    var o, a, s, u, c = t[i],
+                        h = null,
+                        l = c > 239 ? 4 : c > 223 ? 3 : c > 191 ? 2 : 1;
+                    if (i + l <= e) switch (l) {
                         case 1:
-                            return this.listener.call(this.target, arguments[0]);
+                            c < 128 && (h = c);
+                            break;
                         case 2:
-                            return this.listener.call(this.target, arguments[0], arguments[1]);
+                            128 == (192 & (o = t[i + 1])) && (u = (31 & c) << 6 | 63 & o) > 127 && (h = u);
+                            break;
                         case 3:
-                            return this.listener.call(this.target, arguments[0], arguments[1], arguments[2]);
-                        default:
-                            var args = new Array(arguments.length);
-                            for (var i = 0; i < args.length; ++i) args[i] = arguments[i];
-                            this.listener.apply(this.target, args)
+                            o = t[i + 1], a = t[i + 2], 128 == (192 & o) && 128 == (192 & a) && (u = (15 & c) << 12 | (63 & o) << 6 | 63 & a) > 2047 && (u < 55296 || u > 57343) && (h = u);
+                            break;
+                        case 4:
+                            o = t[i + 1], a = t[i + 2], s = t[i + 3], 128 == (192 & o) && 128 == (192 & a) && 128 == (192 & s) && (u = (15 & c) << 18 | (63 & o) << 12 | (63 & a) << 6 | 63 & s) > 65535 && u < 1114112 && (h = u)
                     }
+                    null === h ? (h = 65533, l = 1) : h > 65535 && (h -= 65536, r.push(h >>> 10 & 1023 | 55296), h = 56320 | 1023 & h), r.push(h), i += l
                 }
+                return function(t) {
+                    var n = t.length;
+                    if (n <= 4096) return String.fromCharCode.apply(String, t);
+                    var e = "",
+                        r = 0;
+                    for (; r < n;) e += String.fromCharCode.apply(String, t.slice(r, r += 4096));
+                    return e
+                }(r)
             }
-
-            function _onceWrap(target, type, listener) {
-                var state = {
-                    fired: false,
-                    wrapFn: undefined,
-                    target: target,
-                    type: type,
-                    listener: listener
-                };
-                var wrapped = bind.call(onceWrapper, state);
-                wrapped.listener = listener;
-                state.wrapFn = wrapped;
-                return wrapped
-            }
-            EventEmitter.prototype.once = function once(type, listener) {
-                if (typeof listener !== "function") throw new TypeError('"listener" argument must be a function');
-                this.on(type, _onceWrap(this, type, listener));
-                return this
-            };
-            EventEmitter.prototype.prependOnceListener = function prependOnceListener(type, listener) {
-                if (typeof listener !== "function") throw new TypeError('"listener" argument must be a function');
-                this.prependListener(type, _onceWrap(this, type, listener));
-                return this
-            };
-            EventEmitter.prototype.removeListener = function removeListener(type, listener) {
-                var list, events, position, i, originalListener;
-                if (typeof listener !== "function") throw new TypeError('"listener" argument must be a function');
-                events = this._events;
-                if (!events) return this;
-                list = events[type];
-                if (!list) return this;
-                if (list === listener || list.listener === listener) {
-                    if (--this._eventsCount === 0) this._events = objectCreate(null);
-                    else {
-                        delete events[type];
-                        if (events.removeListener) this.emit("removeListener", type, list.listener || listener)
-                    }
-                } else if (typeof list !== "function") {
-                    position = -1;
-                    for (i = list.length - 1; i >= 0; i--) {
-                        if (list[i] === listener || list[i].listener === listener) {
-                            originalListener = list[i].listener;
-                            position = i;
-                            break
-                        }
-                    }
-                    if (position < 0) return this;
-                    if (position === 0) list.shift();
-                    else spliceOne(list, position);
-                    if (list.length === 1) events[type] = list[0];
-                    if (events.removeListener) this.emit("removeListener", type, originalListener || listener)
-                }
-                return this
-            };
-            EventEmitter.prototype.removeAllListeners = function removeAllListeners(type) {
-                var listeners, events, i;
-                events = this._events;
-                if (!events) return this;
-                if (!events.removeListener) {
-                    if (arguments.length === 0) {
-                        this._events = objectCreate(null);
-                        this._eventsCount = 0
-                    } else if (events[type]) {
-                        if (--this._eventsCount === 0) this._events = objectCreate(null);
-                        else delete events[type]
-                    }
-                    return this
-                }
-                if (arguments.length === 0) {
-                    var keys = objectKeys(events);
-                    var key;
-                    for (i = 0; i < keys.length; ++i) {
-                        key = keys[i];
-                        if (key === "removeListener") continue;
-                        this.removeAllListeners(key)
-                    }
-                    this.removeAllListeners("removeListener");
-                    this._events = objectCreate(null);
-                    this._eventsCount = 0;
-                    return this
-                }
-                listeners = events[type];
-                if (typeof listeners === "function") {
-                    this.removeListener(type, listeners)
-                } else if (listeners) {
-                    for (i = listeners.length - 1; i >= 0; i--) {
-                        this.removeListener(type, listeners[i])
-                    }
-                }
-                return this
-            };
-
-            function _listeners(target, type, unwrap) {
-                var events = target._events;
-                if (!events) return [];
-                var evlistener = events[type];
-                if (!evlistener) return [];
-                if (typeof evlistener === "function") return unwrap ? [evlistener.listener || evlistener] : [evlistener];
-                return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length)
-            }
-            EventEmitter.prototype.listeners = function listeners(type) {
-                return _listeners(this, type, true)
-            };
-            EventEmitter.prototype.rawListeners = function rawListeners(type) {
-                return _listeners(this, type, false)
-            };
-            EventEmitter.listenerCount = function(emitter, type) {
-                if (typeof emitter.listenerCount === "function") {
-                    return emitter.listenerCount(type)
-                } else {
-                    return listenerCount.call(emitter, type)
-                }
-            };
-            EventEmitter.prototype.listenerCount = listenerCount;
-
-            function listenerCount(type) {
-                var events = this._events;
-                if (events) {
-                    var evlistener = events[type];
-                    if (typeof evlistener === "function") {
-                        return 1
-                    } else if (evlistener) {
-                        return evlistener.length
-                    }
-                }
-                return 0
-            }
-            EventEmitter.prototype.eventNames = function eventNames() {
-                return this._eventsCount > 0 ? Reflect.ownKeys(this._events) : []
-            };
-
-            function spliceOne(list, index) {
-                for (var i = index, k = i + 1, n = list.length; k < n; i += 1, k += 1) list[i] = list[k];
-                list.pop()
-            }
-
-            function arrayClone(arr, n) {
-                var copy = new Array(n);
-                for (var i = 0; i < n; ++i) copy[i] = arr[i];
-                return copy
-            }
-
-            function unwrapListeners(arr) {
-                var ret = new Array(arr.length);
-                for (var i = 0; i < ret.length; ++i) {
-                    ret[i] = arr[i].listener || arr[i]
-                }
-                return ret
-            }
-
-            function objectCreatePolyfill(proto) {
-                var F = function() {};
-                F.prototype = proto;
-                return new F
-            }
-
-            function objectKeysPolyfill(obj) {
-                var keys = [];
-                for (var k in obj)
-                    if (Object.prototype.hasOwnProperty.call(obj, k)) {
-                        keys.push(k)
-                    }
-                return k
-            }
-
-            function functionBindPolyfill(context) {
-                var fn = this;
-                return function() {
-                    return fn.apply(context, arguments)
-                }
-            }
-        }, {}],
-        25: [function(require, module, exports) {
-            "use strict";
-            var base64 = require("base64-js");
-            var ieee754 = require("ieee754");
-            exports.Buffer = Buffer;
-            exports.SlowBuffer = SlowBuffer;
-            exports.INSPECT_MAX_BYTES = 50;
-            var K_MAX_LENGTH = 2147483647;
-            exports.kMaxLength = K_MAX_LENGTH;
-            Buffer.TYPED_ARRAY_SUPPORT = typedArraySupport();
-            if (!Buffer.TYPED_ARRAY_SUPPORT && typeof console !== "undefined" && typeof console.error === "function") {
-                console.error("This browser lacks typed array (Uint8Array) support which is required by " + "`buffer` v5.x. Use `buffer` v4.x if you require old browser support.")
-            }
-
-            function typedArraySupport() {
-                try {
-                    var arr = new Uint8Array(1);
-                    arr.__proto__ = {
-                        __proto__: Uint8Array.prototype,
-                        foo: function() {
-                            return 42
-                        }
-                    };
-                    return arr.foo() === 42
-                } catch (e) {
-                    return false
-                }
-            }
-            Object.defineProperty(Buffer.prototype, "parent", {
-                enumerable: true,
-                get: function() {
-                    if (!Buffer.isBuffer(this)) return undefined;
-                    return this.buffer
-                }
-            });
-            Object.defineProperty(Buffer.prototype, "offset", {
-                enumerable: true,
-                get: function() {
-                    if (!Buffer.isBuffer(this)) return undefined;
-                    return this.byteOffset
-                }
-            });
-
-            function createBuffer(length) {
-                if (length > K_MAX_LENGTH) {
-                    throw new RangeError('The value "' + length + '" is invalid for option "size"')
-                }
-                var buf = new Uint8Array(length);
-                buf.__proto__ = Buffer.prototype;
-                return buf
-            }
-
-            function Buffer(arg, encodingOrOffset, length) {
-                if (typeof arg === "number") {
-                    if (typeof encodingOrOffset === "string") {
-                        throw new TypeError('The "string" argument must be of type string. Received type number')
-                    }
-                    return allocUnsafe(arg)
-                }
-                return from(arg, encodingOrOffset, length)
-            }
-            if (typeof Symbol !== "undefined" && Symbol.species != null && Buffer[Symbol.species] === Buffer) {
-                Object.defineProperty(Buffer, Symbol.species, {
-                    value: null,
-                    configurable: true,
-                    enumerable: false,
-                    writable: false
-                })
-            }
-            Buffer.poolSize = 8192;
-
-            function from(value, encodingOrOffset, length) {
-                if (typeof value === "string") {
-                    return fromString(value, encodingOrOffset)
-                }
-                if (ArrayBuffer.isView(value)) {
-                    return fromArrayLike(value)
-                }
-                if (value == null) {
-                    throw TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, " + "or Array-like Object. Received type " + typeof value)
-                }
-                if (isInstance(value, ArrayBuffer) || value && isInstance(value.buffer, ArrayBuffer)) {
-                    return fromArrayBuffer(value, encodingOrOffset, length)
-                }
-                if (typeof value === "number") {
-                    throw new TypeError('The "value" argument must not be of type number. Received type number')
-                }
-                var valueOf = value.valueOf && value.valueOf();
-                if (valueOf != null && valueOf !== value) {
-                    return Buffer.from(valueOf, encodingOrOffset, length)
-                }
-                var b = fromObject(value);
-                if (b) return b;
-                if (typeof Symbol !== "undefined" && Symbol.toPrimitive != null && typeof value[Symbol.toPrimitive] === "function") {
-                    return Buffer.from(value[Symbol.toPrimitive]("string"), encodingOrOffset, length)
-                }
-                throw new TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, " + "or Array-like Object. Received type " + typeof value)
-            }
-            Buffer.from = function(value, encodingOrOffset, length) {
-                return from(value, encodingOrOffset, length)
-            };
-            Buffer.prototype.__proto__ = Uint8Array.prototype;
-            Buffer.__proto__ = Uint8Array;
-
-            function assertSize(size) {
-                if (typeof size !== "number") {
-                    throw new TypeError('"size" argument must be of type number')
-                } else if (size < 0) {
-                    throw new RangeError('The value "' + size + '" is invalid for option "size"')
-                }
-            }
-
-            function alloc(size, fill, encoding) {
-                assertSize(size);
-                if (size <= 0) {
-                    return createBuffer(size)
-                }
-                if (fill !== undefined) {
-                    return typeof encoding === "string" ? createBuffer(size).fill(fill, encoding) : createBuffer(size).fill(fill)
-                }
-                return createBuffer(size)
-            }
-            Buffer.alloc = function(size, fill, encoding) {
-                return alloc(size, fill, encoding)
-            };
-
-            function allocUnsafe(size) {
-                assertSize(size);
-                return createBuffer(size < 0 ? 0 : checked(size) | 0)
-            }
-            Buffer.allocUnsafe = function(size) {
-                return allocUnsafe(size)
-            };
-            Buffer.allocUnsafeSlow = function(size) {
-                return allocUnsafe(size)
-            };
-
-            function fromString(string, encoding) {
-                if (typeof encoding !== "string" || encoding === "") {
-                    encoding = "utf8"
-                }
-                if (!Buffer.isEncoding(encoding)) {
-                    throw new TypeError("Unknown encoding: " + encoding)
-                }
-                var length = byteLength(string, encoding) | 0;
-                var buf = createBuffer(length);
-                var actual = buf.write(string, encoding);
-                if (actual !== length) {
-                    buf = buf.slice(0, actual)
-                }
-                return buf
-            }
-
-            function fromArrayLike(array) {
-                var length = array.length < 0 ? 0 : checked(array.length) | 0;
-                var buf = createBuffer(length);
-                for (var i = 0; i < length; i += 1) {
-                    buf[i] = array[i] & 255
-                }
-                return buf
-            }
-
-            function fromArrayBuffer(array, byteOffset, length) {
-                if (byteOffset < 0 || array.byteLength < byteOffset) {
-                    throw new RangeError('"offset" is outside of buffer bounds')
-                }
-                if (array.byteLength < byteOffset + (length || 0)) {
-                    throw new RangeError('"length" is outside of buffer bounds')
-                }
-                var buf;
-                if (byteOffset === undefined && length === undefined) {
-                    buf = new Uint8Array(array)
-                } else if (length === undefined) {
-                    buf = new Uint8Array(array, byteOffset)
-                } else {
-                    buf = new Uint8Array(array, byteOffset, length)
-                }
-                buf.__proto__ = Buffer.prototype;
-                return buf
-            }
-
-            function fromObject(obj) {
-                if (Buffer.isBuffer(obj)) {
-                    var len = checked(obj.length) | 0;
-                    var buf = createBuffer(len);
-                    if (buf.length === 0) {
-                        return buf
-                    }
-                    obj.copy(buf, 0, 0, len);
-                    return buf
-                }
-                if (obj.length !== undefined) {
-                    if (typeof obj.length !== "number" || numberIsNaN(obj.length)) {
-                        return createBuffer(0)
-                    }
-                    return fromArrayLike(obj)
-                }
-                if (obj.type === "Buffer" && Array.isArray(obj.data)) {
-                    return fromArrayLike(obj.data)
-                }
-            }
-
-            function checked(length) {
-                if (length >= K_MAX_LENGTH) {
-                    throw new RangeError("Attempt to allocate Buffer larger than maximum " + "size: 0x" + K_MAX_LENGTH.toString(16) + " bytes")
-                }
-                return length | 0
-            }
-
-            function SlowBuffer(length) {
-                if (+length != length) {
-                    length = 0
-                }
-                return Buffer.alloc(+length)
-            }
-            Buffer.isBuffer = function isBuffer(b) {
-                return b != null && b._isBuffer === true && b !== Buffer.prototype
-            };
-            Buffer.compare = function compare(a, b) {
-                if (isInstance(a, Uint8Array)) a = Buffer.from(a, a.offset, a.byteLength);
-                if (isInstance(b, Uint8Array)) b = Buffer.from(b, b.offset, b.byteLength);
-                if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
-                    throw new TypeError('The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array')
-                }
-                if (a === b) return 0;
-                var x = a.length;
-                var y = b.length;
-                for (var i = 0, len = Math.min(x, y); i < len; ++i) {
-                    if (a[i] !== b[i]) {
-                        x = a[i];
-                        y = b[i];
-                        break
-                    }
-                }
-                if (x < y) return -1;
-                if (y < x) return 1;
-                return 0
-            };
-            Buffer.isEncoding = function isEncoding(encoding) {
-                switch (String(encoding).toLowerCase()) {
+            n.Buffer = u, n.SlowBuffer = function(t) {+t != t && (t = 0); return u.alloc(+t) }, n.INSPECT_MAX_BYTES = 50, u.TYPED_ARRAY_SUPPORT = void 0 !== t.TYPED_ARRAY_SUPPORT ? t.TYPED_ARRAY_SUPPORT : function() { try { var t = new Uint8Array(1); return t.__proto__ = { __proto__: Uint8Array.prototype, foo: function() { return 42 } }, 42 === t.foo() && "function" == typeof t.subarray && 0 === t.subarray(1, 1).byteLength } catch (t) { return !1 } }(), n.kMaxLength = a(), u.poolSize = 8192, u._augment = function(t) { return t.__proto__ = u.prototype, t }, u.from = function(t, n, e) { return c(null, t, n, e) }, u.TYPED_ARRAY_SUPPORT && (u.prototype.__proto__ = Uint8Array.prototype, u.__proto__ = Uint8Array, "undefined" != typeof Symbol && Symbol.species && u[Symbol.species] === u && Object.defineProperty(u, Symbol.species, { value: null, configurable: !0 })), u.alloc = function(t, n, e) { return function(t, n, e, r) { return h(n), n <= 0 ? s(t, n) : void 0 !== e ? "string" == typeof r ? s(t, n).fill(e, r) : s(t, n).fill(e) : s(t, n) }(null, t, n, e) }, u.allocUnsafe = function(t) { return l(null, t) }, u.allocUnsafeSlow = function(t) { return l(null, t) }, u.isBuffer = function(t) { return !(null == t || !t._isBuffer) }, u.compare = function(t, n) {
+                if (!u.isBuffer(t) || !u.isBuffer(n)) throw new TypeError("Arguments must be Buffers");
+                if (t === n) return 0;
+                for (var e = t.length, r = n.length, i = 0, o = Math.min(e, r); i < o; ++i)
+                    if (t[i] !== n[i]) { e = t[i], r = n[i]; break }
+                return e < r ? -1 : r < e ? 1 : 0
+            }, u.isEncoding = function(t) {
+                switch (String(t).toLowerCase()) {
                     case "hex":
                     case "utf8":
                     case "utf-8":
@@ -2373,4293 +949,2792 @@
                     case "ucs-2":
                     case "utf16le":
                     case "utf-16le":
-                        return true;
+                        return !0;
                     default:
-                        return false
+                        return !1
                 }
-            };
-            Buffer.concat = function concat(list, length) {
-                if (!Array.isArray(list)) {
-                    throw new TypeError('"list" argument must be an Array of Buffers')
+            }, u.concat = function(t, n) {
+                if (!o(t)) throw new TypeError('"list" argument must be an Array of Buffers');
+                if (0 === t.length) return u.alloc(0);
+                var e;
+                if (void 0 === n)
+                    for (n = 0, e = 0; e < t.length; ++e) n += t[e].length;
+                var r = u.allocUnsafe(n),
+                    i = 0;
+                for (e = 0; e < t.length; ++e) {
+                    var a = t[e];
+                    if (!u.isBuffer(a)) throw new TypeError('"list" argument must be an Array of Buffers');
+                    a.copy(r, i), i += a.length
                 }
-                if (list.length === 0) {
-                    return Buffer.alloc(0)
+                return r
+            }, u.byteLength = m, u.prototype._isBuffer = !0, u.prototype.swap16 = function() { var t = this.length; if (t % 2 != 0) throw new RangeError("Buffer size must be a multiple of 16-bits"); for (var n = 0; n < t; n += 2) d(this, n, n + 1); return this }, u.prototype.swap32 = function() { var t = this.length; if (t % 4 != 0) throw new RangeError("Buffer size must be a multiple of 32-bits"); for (var n = 0; n < t; n += 4) d(this, n, n + 3), d(this, n + 1, n + 2); return this }, u.prototype.swap64 = function() { var t = this.length; if (t % 8 != 0) throw new RangeError("Buffer size must be a multiple of 64-bits"); for (var n = 0; n < t; n += 8) d(this, n, n + 7), d(this, n + 1, n + 6), d(this, n + 2, n + 5), d(this, n + 3, n + 4); return this }, u.prototype.toString = function() { var t = 0 | this.length; return 0 === t ? "" : 0 === arguments.length ? T(this, 0, t) : y.apply(this, arguments) }, u.prototype.equals = function(t) { if (!u.isBuffer(t)) throw new TypeError("Argument must be a Buffer"); return this === t || 0 === u.compare(this, t) }, u.prototype.inspect = function() {
+                var t = "",
+                    e = n.INSPECT_MAX_BYTES;
+                return this.length > 0 && (t = this.toString("hex", 0, e).match(/.{2}/g).join(" "), this.length > e && (t += " ... ")), "<Buffer " + t + ">"
+            }, u.prototype.compare = function(t, n, e, r, i) {
+                if (!u.isBuffer(t)) throw new TypeError("Argument must be a Buffer");
+                if (void 0 === n && (n = 0), void 0 === e && (e = t ? t.length : 0), void 0 === r && (r = 0), void 0 === i && (i = this.length), n < 0 || e > t.length || r < 0 || i > this.length) throw new RangeError("out of range index");
+                if (r >= i && n >= e) return 0;
+                if (r >= i) return -1;
+                if (n >= e) return 1;
+                if (this === t) return 0;
+                for (var o = (i >>>= 0) - (r >>>= 0), a = (e >>>= 0) - (n >>>= 0), s = Math.min(o, a), c = this.slice(r, i), h = t.slice(n, e), l = 0; l < s; ++l)
+                    if (c[l] !== h[l]) { o = c[l], a = h[l]; break }
+                return o < a ? -1 : a < o ? 1 : 0
+            }, u.prototype.includes = function(t, n, e) { return -1 !== this.indexOf(t, n, e) }, u.prototype.indexOf = function(t, n, e) { return v(this, t, n, e, !0) }, u.prototype.lastIndexOf = function(t, n, e) { return v(this, t, n, e, !1) }, u.prototype.write = function(t, n, e, r) {
+                if (void 0 === n) r = "utf8", e = this.length, n = 0;
+                else if (void 0 === e && "string" == typeof n) r = n, e = this.length, n = 0;
+                else {
+                    if (!isFinite(n)) throw new Error("Buffer.write(string, encoding, offset[, length]) is no longer supported");
+                    n |= 0, isFinite(e) ? (e |= 0, void 0 === r && (r = "utf8")) : (r = e, e = void 0)
                 }
-                var i;
-                if (length === undefined) {
-                    length = 0;
-                    for (i = 0; i < list.length; ++i) {
-                        length += list[i].length
-                    }
+                var i = this.length - n;
+                if ((void 0 === e || e > i) && (e = i), t.length > 0 && (e < 0 || n < 0) || n > this.length) throw new RangeError("Attempt to write outside buffer bounds");
+                r || (r = "utf8");
+                for (var o = !1;;) switch (r) {
+                    case "hex":
+                        return w(this, t, n, e);
+                    case "utf8":
+                    case "utf-8":
+                        return x(this, t, n, e);
+                    case "ascii":
+                        return _(this, t, n, e);
+                    case "latin1":
+                    case "binary":
+                        return b(this, t, n, e);
+                    case "base64":
+                        return E(this, t, n, e);
+                    case "ucs2":
+                    case "ucs-2":
+                    case "utf16le":
+                    case "utf-16le":
+                        return M(this, t, n, e);
+                    default:
+                        if (o) throw new TypeError("Unknown encoding: " + r);
+                        r = ("" + r).toLowerCase(), o = !0
                 }
-                var buffer = Buffer.allocUnsafe(length);
-                var pos = 0;
-                for (i = 0; i < list.length; ++i) {
-                    var buf = list[i];
-                    if (isInstance(buf, Uint8Array)) {
-                        buf = Buffer.from(buf)
-                    }
-                    if (!Buffer.isBuffer(buf)) {
-                        throw new TypeError('"list" argument must be an Array of Buffers')
-                    }
-                    buf.copy(buffer, pos);
-                    pos += buf.length
-                }
-                return buffer
-            };
+            }, u.prototype.toJSON = function() { return { type: "Buffer", data: Array.prototype.slice.call(this._arr || this, 0) } };
 
-            function byteLength(string, encoding) {
-                if (Buffer.isBuffer(string)) {
-                    return string.length
-                }
-                if (ArrayBuffer.isView(string) || isInstance(string, ArrayBuffer)) {
-                    return string.byteLength
-                }
-                if (typeof string !== "string") {
-                    throw new TypeError('The "string" argument must be one of type string, Buffer, or ArrayBuffer. ' + "Received type " + typeof string)
-                }
-                var len = string.length;
-                var mustMatch = arguments.length > 2 && arguments[2] === true;
-                if (!mustMatch && len === 0) return 0;
-                var loweredCase = false;
-                for (;;) {
-                    switch (encoding) {
-                        case "ascii":
-                        case "latin1":
-                        case "binary":
-                            return len;
-                        case "utf8":
-                        case "utf-8":
-                            return utf8ToBytes(string).length;
-                        case "ucs2":
-                        case "ucs-2":
-                        case "utf16le":
-                        case "utf-16le":
-                            return len * 2;
-                        case "hex":
-                            return len >>> 1;
-                        case "base64":
-                            return base64ToBytes(string).length;
-                        default:
-                            if (loweredCase) {
-                                return mustMatch ? -1 : utf8ToBytes(string).length
-                            }
-                            encoding = ("" + encoding).toLowerCase();
-                            loweredCase = true
-                    }
-                }
-            }
-            Buffer.byteLength = byteLength;
-
-            function slowToString(encoding, start, end) {
-                var loweredCase = false;
-                if (start === undefined || start < 0) {
-                    start = 0
-                }
-                if (start > this.length) {
-                    return ""
-                }
-                if (end === undefined || end > this.length) {
-                    end = this.length
-                }
-                if (end <= 0) {
-                    return ""
-                }
-                end >>>= 0;
-                start >>>= 0;
-                if (end <= start) {
-                    return ""
-                }
-                if (!encoding) encoding = "utf8";
-                while (true) {
-                    switch (encoding) {
-                        case "hex":
-                            return hexSlice(this, start, end);
-                        case "utf8":
-                        case "utf-8":
-                            return utf8Slice(this, start, end);
-                        case "ascii":
-                            return asciiSlice(this, start, end);
-                        case "latin1":
-                        case "binary":
-                            return latin1Slice(this, start, end);
-                        case "base64":
-                            return base64Slice(this, start, end);
-                        case "ucs2":
-                        case "ucs-2":
-                        case "utf16le":
-                        case "utf-16le":
-                            return utf16leSlice(this, start, end);
-                        default:
-                            if (loweredCase) throw new TypeError("Unknown encoding: " + encoding);
-                            encoding = (encoding + "").toLowerCase();
-                            loweredCase = true
-                    }
-                }
-            }
-            Buffer.prototype._isBuffer = true;
-
-            function swap(b, n, m) {
-                var i = b[n];
-                b[n] = b[m];
-                b[m] = i
-            }
-            Buffer.prototype.swap16 = function swap16() {
-                var len = this.length;
-                if (len % 2 !== 0) {
-                    throw new RangeError("Buffer size must be a multiple of 16-bits")
-                }
-                for (var i = 0; i < len; i += 2) {
-                    swap(this, i, i + 1)
-                }
-                return this
-            };
-            Buffer.prototype.swap32 = function swap32() {
-                var len = this.length;
-                if (len % 4 !== 0) {
-                    throw new RangeError("Buffer size must be a multiple of 32-bits")
-                }
-                for (var i = 0; i < len; i += 4) {
-                    swap(this, i, i + 3);
-                    swap(this, i + 1, i + 2)
-                }
-                return this
-            };
-            Buffer.prototype.swap64 = function swap64() {
-                var len = this.length;
-                if (len % 8 !== 0) {
-                    throw new RangeError("Buffer size must be a multiple of 64-bits")
-                }
-                for (var i = 0; i < len; i += 8) {
-                    swap(this, i, i + 7);
-                    swap(this, i + 1, i + 6);
-                    swap(this, i + 2, i + 5);
-                    swap(this, i + 3, i + 4)
-                }
-                return this
-            };
-            Buffer.prototype.toString = function toString() {
-                var length = this.length;
-                if (length === 0) return "";
-                if (arguments.length === 0) return utf8Slice(this, 0, length);
-                return slowToString.apply(this, arguments)
-            };
-            Buffer.prototype.toLocaleString = Buffer.prototype.toString;
-            Buffer.prototype.equals = function equals(b) {
-                if (!Buffer.isBuffer(b)) throw new TypeError("Argument must be a Buffer");
-                if (this === b) return true;
-                return Buffer.compare(this, b) === 0
-            };
-            Buffer.prototype.inspect = function inspect() {
-                var str = "";
-                var max = exports.INSPECT_MAX_BYTES;
-                str = this.toString("hex", 0, max).replace(/(.{2})/g, "$1 ").trim();
-                if (this.length > max) str += " ... ";
-                return "<Buffer " + str + ">"
-            };
-            Buffer.prototype.compare = function compare(target, start, end, thisStart, thisEnd) {
-                if (isInstance(target, Uint8Array)) {
-                    target = Buffer.from(target, target.offset, target.byteLength)
-                }
-                if (!Buffer.isBuffer(target)) {
-                    throw new TypeError('The "target" argument must be one of type Buffer or Uint8Array. ' + "Received type " + typeof target)
-                }
-                if (start === undefined) {
-                    start = 0
-                }
-                if (end === undefined) {
-                    end = target ? target.length : 0
-                }
-                if (thisStart === undefined) {
-                    thisStart = 0
-                }
-                if (thisEnd === undefined) {
-                    thisEnd = this.length
-                }
-                if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
-                    throw new RangeError("out of range index")
-                }
-                if (thisStart >= thisEnd && start >= end) {
-                    return 0
-                }
-                if (thisStart >= thisEnd) {
-                    return -1
-                }
-                if (start >= end) {
-                    return 1
-                }
-                start >>>= 0;
-                end >>>= 0;
-                thisStart >>>= 0;
-                thisEnd >>>= 0;
-                if (this === target) return 0;
-                var x = thisEnd - thisStart;
-                var y = end - start;
-                var len = Math.min(x, y);
-                var thisCopy = this.slice(thisStart, thisEnd);
-                var targetCopy = target.slice(start, end);
-                for (var i = 0; i < len; ++i) {
-                    if (thisCopy[i] !== targetCopy[i]) {
-                        x = thisCopy[i];
-                        y = targetCopy[i];
-                        break
-                    }
-                }
-                if (x < y) return -1;
-                if (y < x) return 1;
-                return 0
-            };
-
-            function bidirectionalIndexOf(buffer, val, byteOffset, encoding, dir) {
-                if (buffer.length === 0) return -1;
-                if (typeof byteOffset === "string") {
-                    encoding = byteOffset;
-                    byteOffset = 0
-                } else if (byteOffset > 2147483647) {
-                    byteOffset = 2147483647
-                } else if (byteOffset < -2147483648) {
-                    byteOffset = -2147483648
-                }
-                byteOffset = +byteOffset;
-                if (numberIsNaN(byteOffset)) {
-                    byteOffset = dir ? 0 : buffer.length - 1
-                }
-                if (byteOffset < 0) byteOffset = buffer.length + byteOffset;
-                if (byteOffset >= buffer.length) {
-                    if (dir) return -1;
-                    else byteOffset = buffer.length - 1
-                } else if (byteOffset < 0) {
-                    if (dir) byteOffset = 0;
-                    else return -1
-                }
-                if (typeof val === "string") {
-                    val = Buffer.from(val, encoding)
-                }
-                if (Buffer.isBuffer(val)) {
-                    if (val.length === 0) {
-                        return -1
-                    }
-                    return arrayIndexOf(buffer, val, byteOffset, encoding, dir)
-                } else if (typeof val === "number") {
-                    val = val & 255;
-                    if (typeof Uint8Array.prototype.indexOf === "function") {
-                        if (dir) {
-                            return Uint8Array.prototype.indexOf.call(buffer, val, byteOffset)
-                        } else {
-                            return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
-                        }
-                    }
-                    return arrayIndexOf(buffer, [val], byteOffset, encoding, dir)
-                }
-                throw new TypeError("val must be string, number or Buffer")
+            function k(t, n, e) {
+                var r = "";
+                e = Math.min(t.length, e);
+                for (var i = n; i < e; ++i) r += String.fromCharCode(127 & t[i]);
+                return r
             }
 
-            function arrayIndexOf(arr, val, byteOffset, encoding, dir) {
-                var indexSize = 1;
-                var arrLength = arr.length;
-                var valLength = val.length;
-                if (encoding !== undefined) {
-                    encoding = String(encoding).toLowerCase();
-                    if (encoding === "ucs2" || encoding === "ucs-2" || encoding === "utf16le" || encoding === "utf-16le") {
-                        if (arr.length < 2 || val.length < 2) {
-                            return -1
-                        }
-                        indexSize = 2;
-                        arrLength /= 2;
-                        valLength /= 2;
-                        byteOffset /= 2
-                    }
-                }
-
-                function read(buf, i) {
-                    if (indexSize === 1) {
-                        return buf[i]
-                    } else {
-                        return buf.readUInt16BE(i * indexSize)
-                    }
-                }
-                var i;
-                if (dir) {
-                    var foundIndex = -1;
-                    for (i = byteOffset; i < arrLength; i++) {
-                        if (read(arr, i) === read(val, foundIndex === -1 ? 0 : i - foundIndex)) {
-                            if (foundIndex === -1) foundIndex = i;
-                            if (i - foundIndex + 1 === valLength) return foundIndex * indexSize
-                        } else {
-                            if (foundIndex !== -1) i -= i - foundIndex;
-                            foundIndex = -1
-                        }
-                    }
-                } else {
-                    if (byteOffset + valLength > arrLength) byteOffset = arrLength - valLength;
-                    for (i = byteOffset; i >= 0; i--) {
-                        var found = true;
-                        for (var j = 0; j < valLength; j++) {
-                            if (read(arr, i + j) !== read(val, j)) {
-                                found = false;
-                                break
-                            }
-                        }
-                        if (found) return i
-                    }
-                }
-                return -1
+            function I(t, n, e) {
+                var r = "";
+                e = Math.min(t.length, e);
+                for (var i = n; i < e; ++i) r += String.fromCharCode(t[i]);
+                return r
             }
-            Buffer.prototype.includes = function includes(val, byteOffset, encoding) {
-                return this.indexOf(val, byteOffset, encoding) !== -1
-            };
-            Buffer.prototype.indexOf = function indexOf(val, byteOffset, encoding) {
-                return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
-            };
-            Buffer.prototype.lastIndexOf = function lastIndexOf(val, byteOffset, encoding) {
-                return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
-            };
 
-            function hexWrite(buf, string, offset, length) {
-                offset = Number(offset) || 0;
-                var remaining = buf.length - offset;
-                if (!length) {
-                    length = remaining
-                } else {
-                    length = Number(length);
-                    if (length > remaining) {
-                        length = remaining
-                    }
-                }
-                var strLen = string.length;
-                if (length > strLen / 2) {
-                    length = strLen / 2
-                }
-                for (var i = 0; i < length; ++i) {
-                    var parsed = parseInt(string.substr(i * 2, 2), 16);
-                    if (numberIsNaN(parsed)) return i;
-                    buf[offset + i] = parsed
-                }
+            function S(t, n, e) {
+                var r = t.length;
+                (!n || n < 0) && (n = 0), (!e || e < 0 || e > r) && (e = r);
+                for (var i = "", o = n; o < e; ++o) i += z(t[o]);
                 return i
             }
 
-            function utf8Write(buf, string, offset, length) {
-                return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
-            }
+            function N(t, n, e) { for (var r = t.slice(n, e), i = "", o = 0; o < r.length; o += 2) i += String.fromCharCode(r[o] + 256 * r[o + 1]); return i }
 
-            function asciiWrite(buf, string, offset, length) {
-                return blitBuffer(asciiToBytes(string), buf, offset, length)
-            }
+            function L(t, n, e) { if (t % 1 != 0 || t < 0) throw new RangeError("offset is not uint"); if (t + n > e) throw new RangeError("Trying to access beyond buffer length") }
 
-            function latin1Write(buf, string, offset, length) {
-                return asciiWrite(buf, string, offset, length)
-            }
+            function P(t, n, e, r, i, o) { if (!u.isBuffer(t)) throw new TypeError('"buffer" argument must be a Buffer instance'); if (n > i || n < o) throw new RangeError('"value" argument is out of bounds'); if (e + r > t.length) throw new RangeError("Index out of range") }
 
-            function base64Write(buf, string, offset, length) {
-                return blitBuffer(base64ToBytes(string), buf, offset, length)
-            }
+            function O(t, n, e, r) { n < 0 && (n = 65535 + n + 1); for (var i = 0, o = Math.min(t.length - e, 2); i < o; ++i) t[e + i] = (n & 255 << 8 * (r ? i : 1 - i)) >>> 8 * (r ? i : 1 - i) }
 
-            function ucs2Write(buf, string, offset, length) {
-                return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
-            }
-            Buffer.prototype.write = function write(string, offset, length, encoding) {
-                if (offset === undefined) {
-                    encoding = "utf8";
-                    length = this.length;
-                    offset = 0
-                } else if (length === undefined && typeof offset === "string") {
-                    encoding = offset;
-                    length = this.length;
-                    offset = 0
-                } else if (isFinite(offset)) {
-                    offset = offset >>> 0;
-                    if (isFinite(length)) {
-                        length = length >>> 0;
-                        if (encoding === undefined) encoding = "utf8"
+            function R(t, n, e, r) { n < 0 && (n = 4294967295 + n + 1); for (var i = 0, o = Math.min(t.length - e, 4); i < o; ++i) t[e + i] = n >>> 8 * (r ? i : 3 - i) & 255 }
+
+            function H(t, n, e, r, i, o) { if (e + r > t.length) throw new RangeError("Index out of range"); if (e < 0) throw new RangeError("Index out of range") }
+
+            function Y(t, n, e, r, o) { return o || H(t, 0, e, 4), i.write(t, n, e, r, 23, 4), e + 4 }
+
+            function j(t, n, e, r, o) { return o || H(t, 0, e, 8), i.write(t, n, e, r, 52, 8), e + 8 }
+            u.prototype.slice = function(t, n) {
+                var e, r = this.length;
+                if ((t = ~~t) < 0 ? (t += r) < 0 && (t = 0) : t > r && (t = r), (n = void 0 === n ? r : ~~n) < 0 ? (n += r) < 0 && (n = 0) : n > r && (n = r), n < t && (n = t), u.TYPED_ARRAY_SUPPORT)(e = this.subarray(t, n)).__proto__ = u.prototype;
+                else {
+                    var i = n - t;
+                    e = new u(i, void 0);
+                    for (var o = 0; o < i; ++o) e[o] = this[o + t]
+                }
+                return e
+            }, u.prototype.readUIntLE = function(t, n, e) { t |= 0, n |= 0, e || L(t, n, this.length); for (var r = this[t], i = 1, o = 0; ++o < n && (i *= 256);) r += this[t + o] * i; return r }, u.prototype.readUIntBE = function(t, n, e) { t |= 0, n |= 0, e || L(t, n, this.length); for (var r = this[t + --n], i = 1; n > 0 && (i *= 256);) r += this[t + --n] * i; return r }, u.prototype.readUInt8 = function(t, n) { return n || L(t, 1, this.length), this[t] }, u.prototype.readUInt16LE = function(t, n) { return n || L(t, 2, this.length), this[t] | this[t + 1] << 8 }, u.prototype.readUInt16BE = function(t, n) { return n || L(t, 2, this.length), this[t] << 8 | this[t + 1] }, u.prototype.readUInt32LE = function(t, n) { return n || L(t, 4, this.length), (this[t] | this[t + 1] << 8 | this[t + 2] << 16) + 16777216 * this[t + 3] }, u.prototype.readUInt32BE = function(t, n) { return n || L(t, 4, this.length), 16777216 * this[t] + (this[t + 1] << 16 | this[t + 2] << 8 | this[t + 3]) }, u.prototype.readIntLE = function(t, n, e) { t |= 0, n |= 0, e || L(t, n, this.length); for (var r = this[t], i = 1, o = 0; ++o < n && (i *= 256);) r += this[t + o] * i; return r >= (i *= 128) && (r -= Math.pow(2, 8 * n)), r }, u.prototype.readIntBE = function(t, n, e) { t |= 0, n |= 0, e || L(t, n, this.length); for (var r = n, i = 1, o = this[t + --r]; r > 0 && (i *= 256);) o += this[t + --r] * i; return o >= (i *= 128) && (o -= Math.pow(2, 8 * n)), o }, u.prototype.readInt8 = function(t, n) { return n || L(t, 1, this.length), 128 & this[t] ? -1 * (255 - this[t] + 1) : this[t] }, u.prototype.readInt16LE = function(t, n) { n || L(t, 2, this.length); var e = this[t] | this[t + 1] << 8; return 32768 & e ? 4294901760 | e : e }, u.prototype.readInt16BE = function(t, n) { n || L(t, 2, this.length); var e = this[t + 1] | this[t] << 8; return 32768 & e ? 4294901760 | e : e }, u.prototype.readInt32LE = function(t, n) { return n || L(t, 4, this.length), this[t] | this[t + 1] << 8 | this[t + 2] << 16 | this[t + 3] << 24 }, u.prototype.readInt32BE = function(t, n) { return n || L(t, 4, this.length), this[t] << 24 | this[t + 1] << 16 | this[t + 2] << 8 | this[t + 3] }, u.prototype.readFloatLE = function(t, n) { return n || L(t, 4, this.length), i.read(this, t, !0, 23, 4) }, u.prototype.readFloatBE = function(t, n) { return n || L(t, 4, this.length), i.read(this, t, !1, 23, 4) }, u.prototype.readDoubleLE = function(t, n) { return n || L(t, 8, this.length), i.read(this, t, !0, 52, 8) }, u.prototype.readDoubleBE = function(t, n) { return n || L(t, 8, this.length), i.read(this, t, !1, 52, 8) }, u.prototype.writeUIntLE = function(t, n, e, r) {
+                (t = +t, n |= 0, e |= 0, r) || P(this, t, n, e, Math.pow(2, 8 * e) - 1, 0);
+                var i = 1,
+                    o = 0;
+                for (this[n] = 255 & t; ++o < e && (i *= 256);) this[n + o] = t / i & 255;
+                return n + e
+            }, u.prototype.writeUIntBE = function(t, n, e, r) {
+                (t = +t, n |= 0, e |= 0, r) || P(this, t, n, e, Math.pow(2, 8 * e) - 1, 0);
+                var i = e - 1,
+                    o = 1;
+                for (this[n + i] = 255 & t; --i >= 0 && (o *= 256);) this[n + i] = t / o & 255;
+                return n + e
+            }, u.prototype.writeUInt8 = function(t, n, e) { return t = +t, n |= 0, e || P(this, t, n, 1, 255, 0), u.TYPED_ARRAY_SUPPORT || (t = Math.floor(t)), this[n] = 255 & t, n + 1 }, u.prototype.writeUInt16LE = function(t, n, e) { return t = +t, n |= 0, e || P(this, t, n, 2, 65535, 0), u.TYPED_ARRAY_SUPPORT ? (this[n] = 255 & t, this[n + 1] = t >>> 8) : O(this, t, n, !0), n + 2 }, u.prototype.writeUInt16BE = function(t, n, e) { return t = +t, n |= 0, e || P(this, t, n, 2, 65535, 0), u.TYPED_ARRAY_SUPPORT ? (this[n] = t >>> 8, this[n + 1] = 255 & t) : O(this, t, n, !1), n + 2 }, u.prototype.writeUInt32LE = function(t, n, e) { return t = +t, n |= 0, e || P(this, t, n, 4, 4294967295, 0), u.TYPED_ARRAY_SUPPORT ? (this[n + 3] = t >>> 24, this[n + 2] = t >>> 16, this[n + 1] = t >>> 8, this[n] = 255 & t) : R(this, t, n, !0), n + 4 }, u.prototype.writeUInt32BE = function(t, n, e) { return t = +t, n |= 0, e || P(this, t, n, 4, 4294967295, 0), u.TYPED_ARRAY_SUPPORT ? (this[n] = t >>> 24, this[n + 1] = t >>> 16, this[n + 2] = t >>> 8, this[n + 3] = 255 & t) : R(this, t, n, !1), n + 4 }, u.prototype.writeIntLE = function(t, n, e, r) {
+                if (t = +t, n |= 0, !r) {
+                    var i = Math.pow(2, 8 * e - 1);
+                    P(this, t, n, e, i - 1, -i)
+                }
+                var o = 0,
+                    a = 1,
+                    s = 0;
+                for (this[n] = 255 & t; ++o < e && (a *= 256);) t < 0 && 0 === s && 0 !== this[n + o - 1] && (s = 1), this[n + o] = (t / a >> 0) - s & 255;
+                return n + e
+            }, u.prototype.writeIntBE = function(t, n, e, r) {
+                if (t = +t, n |= 0, !r) {
+                    var i = Math.pow(2, 8 * e - 1);
+                    P(this, t, n, e, i - 1, -i)
+                }
+                var o = e - 1,
+                    a = 1,
+                    s = 0;
+                for (this[n + o] = 255 & t; --o >= 0 && (a *= 256);) t < 0 && 0 === s && 0 !== this[n + o + 1] && (s = 1), this[n + o] = (t / a >> 0) - s & 255;
+                return n + e
+            }, u.prototype.writeInt8 = function(t, n, e) { return t = +t, n |= 0, e || P(this, t, n, 1, 127, -128), u.TYPED_ARRAY_SUPPORT || (t = Math.floor(t)), t < 0 && (t = 255 + t + 1), this[n] = 255 & t, n + 1 }, u.prototype.writeInt16LE = function(t, n, e) { return t = +t, n |= 0, e || P(this, t, n, 2, 32767, -32768), u.TYPED_ARRAY_SUPPORT ? (this[n] = 255 & t, this[n + 1] = t >>> 8) : O(this, t, n, !0), n + 2 }, u.prototype.writeInt16BE = function(t, n, e) { return t = +t, n |= 0, e || P(this, t, n, 2, 32767, -32768), u.TYPED_ARRAY_SUPPORT ? (this[n] = t >>> 8, this[n + 1] = 255 & t) : O(this, t, n, !1), n + 2 }, u.prototype.writeInt32LE = function(t, n, e) { return t = +t, n |= 0, e || P(this, t, n, 4, 2147483647, -2147483648), u.TYPED_ARRAY_SUPPORT ? (this[n] = 255 & t, this[n + 1] = t >>> 8, this[n + 2] = t >>> 16, this[n + 3] = t >>> 24) : R(this, t, n, !0), n + 4 }, u.prototype.writeInt32BE = function(t, n, e) { return t = +t, n |= 0, e || P(this, t, n, 4, 2147483647, -2147483648), t < 0 && (t = 4294967295 + t + 1), u.TYPED_ARRAY_SUPPORT ? (this[n] = t >>> 24, this[n + 1] = t >>> 16, this[n + 2] = t >>> 8, this[n + 3] = 255 & t) : R(this, t, n, !1), n + 4 }, u.prototype.writeFloatLE = function(t, n, e) { return Y(this, t, n, !0, e) }, u.prototype.writeFloatBE = function(t, n, e) { return Y(this, t, n, !1, e) }, u.prototype.writeDoubleLE = function(t, n, e) { return j(this, t, n, !0, e) }, u.prototype.writeDoubleBE = function(t, n, e) { return j(this, t, n, !1, e) }, u.prototype.copy = function(t, n, e, r) {
+                if (e || (e = 0), r || 0 === r || (r = this.length), n >= t.length && (n = t.length), n || (n = 0), r > 0 && r < e && (r = e), r === e) return 0;
+                if (0 === t.length || 0 === this.length) return 0;
+                if (n < 0) throw new RangeError("targetStart out of bounds");
+                if (e < 0 || e >= this.length) throw new RangeError("sourceStart out of bounds");
+                if (r < 0) throw new RangeError("sourceEnd out of bounds");
+                r > this.length && (r = this.length), t.length - n < r - e && (r = t.length - n + e);
+                var i, o = r - e;
+                if (this === t && e < n && n < r)
+                    for (i = o - 1; i >= 0; --i) t[i + n] = this[i + e];
+                else if (o < 1e3 || !u.TYPED_ARRAY_SUPPORT)
+                    for (i = 0; i < o; ++i) t[i + n] = this[i + e];
+                else Uint8Array.prototype.set.call(t, this.subarray(e, e + o), n);
+                return o
+            }, u.prototype.fill = function(t, n, e, r) {
+                if ("string" == typeof t) {
+                    if ("string" == typeof n ? (r = n, n = 0, e = this.length) : "string" == typeof e && (r = e, e = this.length), 1 === t.length) {
+                        var i = t.charCodeAt(0);
+                        i < 256 && (t = i)
+                    }
+                    if (void 0 !== r && "string" != typeof r) throw new TypeError("encoding must be a string");
+                    if ("string" == typeof r && !u.isEncoding(r)) throw new TypeError("Unknown encoding: " + r)
+                } else "number" == typeof t && (t &= 255);
+                if (n < 0 || this.length < n || this.length < e) throw new RangeError("Out of range index");
+                if (e <= n) return this;
+                var o;
+                if (n >>>= 0, e = void 0 === e ? this.length : e >>> 0, t || (t = 0), "number" == typeof t)
+                    for (o = n; o < e; ++o) this[o] = t;
+                else {
+                    var a = u.isBuffer(t) ? t : B(new u(t, r).toString()),
+                        s = a.length;
+                    for (o = 0; o < e - n; ++o) this[o + n] = a[o % s]
+                }
+                return this
+            };
+            var C = /[^+\/0-9A-Za-z-_]/g;
+
+            function z(t) { return t < 16 ? "0" + t.toString(16) : t.toString(16) }
+
+            function B(t, n) {
+                var e;
+                n = n || 1 / 0;
+                for (var r = t.length, i = null, o = [], a = 0; a < r; ++a) {
+                    if ((e = t.charCodeAt(a)) > 55295 && e < 57344) {
+                        if (!i) {
+                            if (e > 56319) {
+                                (n -= 3) > -1 && o.push(239, 191, 189);
+                                continue
+                            }
+                            if (a + 1 === r) {
+                                (n -= 3) > -1 && o.push(239, 191, 189);
+                                continue
+                            }
+                            i = e;
+                            continue
+                        }
+                        if (e < 56320) {
+                            (n -= 3) > -1 && o.push(239, 191, 189), i = e;
+                            continue
+                        }
+                        e = 65536 + (i - 55296 << 10 | e - 56320)
+                    } else i && (n -= 3) > -1 && o.push(239, 191, 189);
+                    if (i = null, e < 128) {
+                        if ((n -= 1) < 0) break;
+                        o.push(e)
+                    } else if (e < 2048) {
+                        if ((n -= 2) < 0) break;
+                        o.push(e >> 6 | 192, 63 & e | 128)
+                    } else if (e < 65536) {
+                        if ((n -= 3) < 0) break;
+                        o.push(e >> 12 | 224, e >> 6 & 63 | 128, 63 & e | 128)
                     } else {
-                        encoding = length;
-                        length = undefined
+                        if (!(e < 1114112)) throw new Error("Invalid code point");
+                        if ((n -= 4) < 0) break;
+                        o.push(e >> 18 | 240, e >> 12 & 63 | 128, e >> 6 & 63 | 128, 63 & e | 128)
                     }
-                } else {
-                    throw new Error("Buffer.write(string, encoding, offset[, length]) is no longer supported")
                 }
-                var remaining = this.length - offset;
-                if (length === undefined || length > remaining) length = remaining;
-                if (string.length > 0 && (length < 0 || offset < 0) || offset > this.length) {
-                    throw new RangeError("Attempt to write outside buffer bounds")
+                return o
+            }
+
+            function U(t) { return r.toByteArray(function(t) { if ((t = function(t) { return t.trim ? t.trim() : t.replace(/^\s+|\s+$/g, "") }(t).replace(C, "")).length < 2) return ""; for (; t.length % 4 != 0;) t += "="; return t }(t)) }
+
+            function F(t, n, e, r) { for (var i = 0; i < r && !(i + e >= n.length || i >= t.length); ++i) n[i + e] = t[i]; return i }
+        }).call(this, e(17))
+    }, function(t, n, e) {
+        "use strict";
+        n.byteLength = function(t) {
+            var n = c(t),
+                e = n[0],
+                r = n[1];
+            return 3 * (e + r) / 4 - r
+        }, n.toByteArray = function(t) {
+            for (var n, e = c(t), r = e[0], a = e[1], s = new o(function(t, n, e) { return 3 * (n + e) / 4 - e }(0, r, a)), u = 0, h = a > 0 ? r - 4 : r, l = 0; l < h; l += 4) n = i[t.charCodeAt(l)] << 18 | i[t.charCodeAt(l + 1)] << 12 | i[t.charCodeAt(l + 2)] << 6 | i[t.charCodeAt(l + 3)], s[u++] = n >> 16 & 255, s[u++] = n >> 8 & 255, s[u++] = 255 & n;
+            2 === a && (n = i[t.charCodeAt(l)] << 2 | i[t.charCodeAt(l + 1)] >> 4, s[u++] = 255 & n);
+            1 === a && (n = i[t.charCodeAt(l)] << 10 | i[t.charCodeAt(l + 1)] << 4 | i[t.charCodeAt(l + 2)] >> 2, s[u++] = n >> 8 & 255, s[u++] = 255 & n);
+            return s
+        }, n.fromByteArray = function(t) {
+            for (var n, e = t.length, i = e % 3, o = [], a = 0, s = e - i; a < s; a += 16383) o.push(h(t, a, a + 16383 > s ? s : a + 16383));
+            1 === i ? (n = t[e - 1], o.push(r[n >> 2] + r[n << 4 & 63] + "==")) : 2 === i && (n = (t[e - 2] << 8) + t[e - 1], o.push(r[n >> 10] + r[n >> 4 & 63] + r[n << 2 & 63] + "="));
+            return o.join("")
+        };
+        for (var r = [], i = [], o = "undefined" != typeof Uint8Array ? Uint8Array : Array, a = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", s = 0, u = a.length; s < u; ++s) r[s] = a[s], i[a.charCodeAt(s)] = s;
+
+        function c(t) { var n = t.length; if (n % 4 > 0) throw new Error("Invalid string. Length must be a multiple of 4"); var e = t.indexOf("="); return -1 === e && (e = n), [e, e === n ? 0 : 4 - e % 4] }
+
+        function h(t, n, e) { for (var i, o, a = [], s = n; s < e; s += 3) i = (t[s] << 16 & 16711680) + (t[s + 1] << 8 & 65280) + (255 & t[s + 2]), a.push(r[(o = i) >> 18 & 63] + r[o >> 12 & 63] + r[o >> 6 & 63] + r[63 & o]); return a.join("") }
+        i["-".charCodeAt(0)] = 62, i["_".charCodeAt(0)] = 63
+    }, function(t, n) {
+        n.read = function(t, n, e, r, i) {
+            var o, a, s = 8 * i - r - 1,
+                u = (1 << s) - 1,
+                c = u >> 1,
+                h = -7,
+                l = e ? i - 1 : 0,
+                f = e ? -1 : 1,
+                p = t[n + l];
+            for (l += f, o = p & (1 << -h) - 1, p >>= -h, h += s; h > 0; o = 256 * o + t[n + l], l += f, h -= 8);
+            for (a = o & (1 << -h) - 1, o >>= -h, h += r; h > 0; a = 256 * a + t[n + l], l += f, h -= 8);
+            if (0 === o) o = 1 - c;
+            else {
+                if (o === u) return a ? NaN : 1 / 0 * (p ? -1 : 1);
+                a += Math.pow(2, r), o -= c
+            }
+            return (p ? -1 : 1) * a * Math.pow(2, o - r)
+        }, n.write = function(t, n, e, r, i, o) {
+            var a, s, u, c = 8 * o - i - 1,
+                h = (1 << c) - 1,
+                l = h >> 1,
+                f = 23 === i ? Math.pow(2, -24) - Math.pow(2, -77) : 0,
+                p = r ? 0 : o - 1,
+                m = r ? 1 : -1,
+                y = n < 0 || 0 === n && 1 / n < 0 ? 1 : 0;
+            for (n = Math.abs(n), isNaN(n) || n === 1 / 0 ? (s = isNaN(n) ? 1 : 0, a = h) : (a = Math.floor(Math.log(n) / Math.LN2), n * (u = Math.pow(2, -a)) < 1 && (a--, u *= 2), (n += a + l >= 1 ? f / u : f * Math.pow(2, 1 - l)) * u >= 2 && (a++, u /= 2), a + l >= h ? (s = 0, a = h) : a + l >= 1 ? (s = (n * u - 1) * Math.pow(2, i), a += l) : (s = n * Math.pow(2, l - 1) * Math.pow(2, i), a = 0)); i >= 8; t[e + p] = 255 & s, p += m, s /= 256, i -= 8);
+            for (a = a << i | s, c += i; c > 0; t[e + p] = 255 & a, p += m, a /= 256, c -= 8);
+            t[e + p - m] |= 128 * y
+        }
+    }, function(t, n) {
+        var e = {}.toString;
+        t.exports = Array.isArray || function(t) { return "[object Array]" == e.call(t) }
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(3),
+            i = { equal: function(t, n) { return r.isEmpty(t) ? r.isEmpty(n) : !r.isEmpty(n) && t.lo === n.lo && t.hi === n.hi } };
+
+        function o(t, n) { if (!t) throw new Error(n || "assertion failed") }
+
+        function a(t, n) {
+            if (!isFinite(t)) return o(t === n, "[Infinity] expected " + t + " to be " + n);
+            o(Math.abs(t - n) < 1e-7, "expected " + t + " to be close to " + n)
+        }
+        i.almostEqual = function(t, n) { t = Array.isArray(t) ? t : t.toArray(), n = Array.isArray(n) ? n : n.toArray(), a(t[0], n[0]), a(t[1], n[1]) }, i.assertIncludes = function(t, n) { i.almostEqual(t, n), t = Array.isArray(t) ? t : t.toArray(), n = Array.isArray(n) ? n : n.toArray(), o(t[0] <= n[0], t[0] + " should be less/equal than " + n[0]), o(n[1] <= t[1], n[1] + " should be less/equal than " + t[1]) }, i.notEqual = function(t, n) { return r.isEmpty(t) ? !r.isEmpty(n) : r.isEmpty(n) || t.hi < n.lo || t.lo > n.hi }, i.lessThan = function(t, n) { return !r.isEmpty(t) && !r.isEmpty(n) && t.hi < n.lo }, i.lt = i.lessThan, i.greaterThan = function(t, n) { return !r.isEmpty(t) && !r.isEmpty(n) && t.lo > n.hi }, i.gt = i.greaterThan, i.lessEqualThan = function(t, n) { return !r.isEmpty(t) && !r.isEmpty(n) && t.hi <= n.lo }, i.leq = i.lessEqualThan, i.greaterEqualThan = function(t, n) { return !r.isEmpty(t) && !r.isEmpty(n) && t.lo >= n.hi }, i.geq = i.greaterEqualThan, t.exports = i
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(5),
+            i = e(4),
+            o = e(3),
+            a = e(7),
+            s = {
+                nonZero: function(t, n) {
+                    var e = t.lo,
+                        o = t.hi,
+                        a = n.lo,
+                        s = n.hi,
+                        u = r();
+                    return o < 0 ? s < 0 ? (u.lo = i.divLo(o, a), u.hi = i.divHi(e, s)) : (u.lo = i.divLo(e, a), u.hi = i.divHi(o, s)) : e < 0 ? s < 0 ? (u.lo = i.divLo(o, s), u.hi = i.divHi(e, s)) : (u.lo = i.divLo(e, a), u.hi = i.divHi(o, a)) : s < 0 ? (u.lo = i.divLo(o, s), u.hi = i.divHi(e, a)) : (u.lo = i.divLo(e, s), u.hi = i.divHi(o, a)), u
+                },
+                positive: function(t, n) { return 0 === t.lo && 0 === t.hi ? t : o.zeroIn(t) ? a.WHOLE : t.hi < 0 ? r(Number.NEGATIVE_INFINITY, i.divHi(t.hi, n)) : r(i.divLo(t.lo, n), Number.POSITIVE_INFINITY) },
+                negative: function(t, n) { return 0 === t.lo && 0 === t.hi ? t : o.zeroIn(t) ? a.WHOLE : t.hi < 0 ? r(i.divLo(t.hi, n), Number.POSITIVE_INFINITY) : r(Number.NEGATIVE_INFINITY, i.divHi(t.lo, n)) },
+                zero: function(t) { return 0 === t.lo && 0 === t.hi ? t : a.WHOLE }
+            };
+        t.exports = s
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(70);
+        t.exports = Number.isSafeInteger || function(t) { return "number" == typeof t && t == t && t !== 1 / 0 && t !== -1 / 0 && parseInt(t, 10) === t && Math.abs(t) <= r }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = 9007199254740991
+    }, function(t, n, e) {
+        "use strict";
+        var r = e(7),
+            i = e(5),
+            o = e(4),
+            a = e(3),
+            s = e(34),
+            u = e(33),
+            c = e(12),
+            h = {};
+
+        function l(t) { return !isFinite(t.lo) && t.lo === t.hi }
+
+        function f(t) {
+            if (t.lo < 0)
+                if (t.lo === -1 / 0) t.lo = 0, t.hi = 1 / 0;
+                else {
+                    var n = Math.ceil(-t.lo / r.PI_TWICE_LOW);
+                    t.lo += r.PI_TWICE_LOW * n, t.hi += r.PI_TWICE_LOW * n
                 }
-                if (!encoding) encoding = "utf8";
-                var loweredCase = false;
-                for (;;) {
-                    switch (encoding) {
-                        case "hex":
-                            return hexWrite(this, string, offset, length);
-                        case "utf8":
-                        case "utf-8":
-                            return utf8Write(this, string, offset, length);
-                        case "ascii":
-                            return asciiWrite(this, string, offset, length);
-                        case "latin1":
-                        case "binary":
-                            return latin1Write(this, string, offset, length);
-                        case "base64":
-                            return base64Write(this, string, offset, length);
-                        case "ucs2":
-                        case "ucs-2":
-                        case "utf16le":
-                        case "utf-16le":
-                            return ucs2Write(this, string, offset, length);
+            return t
+        }
+        h.cos = function(t) {
+            var n, e;
+            if (a.isEmpty(t) || l(t)) return r.EMPTY;
+            var p = i();
+            p.set(t.lo, t.hi), f(p);
+            var m = r.PI_TWICE,
+                y = u.fmod(p, m);
+            if (s.width(y) >= m.lo) return i(-1, 1);
+            if (y.lo >= r.PI_HIGH) { var d = h.cos(c.sub(y, r.PI)); return c.negative(d) }
+            var v = y.lo,
+                g = y.hi;
+            return n = o.cosLo(g), e = o.cosHi(v), g <= r.PI_LOW ? i(n, e) : g <= m.lo ? i(-1, Math.max(n, e)) : i(-1, 1)
+        }, h.sin = function(t) { return a.isEmpty(t) || l(t) ? r.EMPTY : h.cos(c.sub(t, r.PI_HALF)) }, h.tan = function(t) {
+            if (a.isEmpty(t) || l(t)) return r.EMPTY;
+            var n = i();
+            n.set(t.lo, t.hi), f(n);
+            var e = r.PI,
+                s = u.fmod(n, e);
+            return s.lo >= r.PI_HALF_LOW && (s = c.sub(s, e)), s.lo <= -r.PI_HALF_LOW || s.hi >= r.PI_HALF_LOW ? r.WHOLE : i(o.tanLo(s.lo), o.tanHi(s.hi))
+        }, h.asin = function(t) {
+            if (a.isEmpty(t) || t.hi < -1 || t.lo > 1) return r.EMPTY;
+            var n = t.lo <= -1 ? -r.PI_HALF_HIGH : o.asinLo(t.lo),
+                e = t.hi >= 1 ? r.PI_HALF_HIGH : o.asinHi(t.hi);
+            return i(n, e)
+        }, h.acos = function(t) {
+            if (a.isEmpty(t) || t.hi < -1 || t.lo > 1) return r.EMPTY;
+            var n = t.hi >= 1 ? 0 : o.acosLo(t.hi),
+                e = t.lo <= -1 ? r.PI_HIGH : o.acosHi(t.lo);
+            return i(n, e)
+        }, h.atan = function(t) { return a.isEmpty(t) ? r.EMPTY : i(o.atanLo(t.lo), o.atanHi(t.hi)) }, h.sinh = function(t) { return a.isEmpty(t) ? r.EMPTY : i(o.sinhLo(t.lo), o.sinhHi(t.hi)) }, h.cosh = function(t) { return a.isEmpty(t) ? r.EMPTY : t.hi < 0 ? i(o.coshLo(t.hi), o.coshHi(t.lo)) : t.lo >= 0 ? i(o.coshLo(t.lo), o.coshHi(t.hi)) : i(1, o.coshHi(-t.lo > t.hi ? t.lo : t.hi)) }, h.tanh = function(t) { return a.isEmpty(t) ? r.EMPTY : i(o.tanhLo(t.lo), o.tanhHi(t.hi)) }, t.exports = h
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = function(t) { t.mod = t.fmod, t.lessThan = t.lt, t.lessEqualThan = t.leq, t.greaterThan = t.gt, t.greaterEqualThan = t.geq, t.strictlyEqual = t.equal, t.strictlyNotEqual = t.notEqual, t.logicalAND = function(t, n) { return t && n }, t.logicalXOR = function(t, n) { return t ^ n }, t.logicalOR = function(t, n) { return t || n } }
+    }, function(t, n, e) {
+        "use strict";
+        t.exports = function(t) { return { disableRounding: function() { t.rmath.disable() }, enableRounding: function() { t.rmath.enable() } } }
+    }, function(t, n) {
+        ! function(t, n) {
+            try { t.querySelector(":scope body") } catch (e) {
+                ["querySelector", "querySelectorAll"].forEach((function(e) {
+                    var r = n[e];
+                    n[e] = function(n) {
+                        if (/(^|,)\s*:scope/.test(n)) {
+                            var i = this.id;
+                            this.id = "ID_" + Date.now(), n = n.replace(/((^|,)\s*):scope/g, "$1#" + this.id);
+                            var o = t[e](n);
+                            return this.id = i, o
+                        }
+                        return r.call(this, n)
+                    }
+                }))
+            }
+        }(window.document, Element.prototype)
+    }, function(t, n, e) {
+        "use strict";
+        e.r(n);
+        var r = {};
+        e.r(r), e.d(r, "polyline", (function() { return Hi })), e.d(r, "interval", (function() { return zi })), e.d(r, "scatter", (function() { return Bi }));
+        const i = Math.PI,
+            o = 2 * i,
+            a = o - 1e-6;
+
+        function s() { this._x0 = this._y0 = this._x1 = this._y1 = null, this._ = "" }
+
+        function u() { return new s }
+        s.prototype = u.prototype = {
+            constructor: s,
+            moveTo: function(t, n) { this._ += "M" + (this._x0 = this._x1 = +t) + "," + (this._y0 = this._y1 = +n) },
+            closePath: function() { null !== this._x1 && (this._x1 = this._x0, this._y1 = this._y0, this._ += "Z") },
+            lineTo: function(t, n) { this._ += "L" + (this._x1 = +t) + "," + (this._y1 = +n) },
+            quadraticCurveTo: function(t, n, e, r) { this._ += "Q" + +t + "," + +n + "," + (this._x1 = +e) + "," + (this._y1 = +r) },
+            bezierCurveTo: function(t, n, e, r, i, o) { this._ += "C" + +t + "," + +n + "," + +e + "," + +r + "," + (this._x1 = +i) + "," + (this._y1 = +o) },
+            arcTo: function(t, n, e, r, o) {
+                t = +t, n = +n, e = +e, r = +r, o = +o;
+                var a = this._x1,
+                    s = this._y1,
+                    u = e - t,
+                    c = r - n,
+                    h = a - t,
+                    l = s - n,
+                    f = h * h + l * l;
+                if (o < 0) throw new Error("negative radius: " + o);
+                if (null === this._x1) this._ += "M" + (this._x1 = t) + "," + (this._y1 = n);
+                else if (f > 1e-6)
+                    if (Math.abs(l * u - c * h) > 1e-6 && o) {
+                        var p = e - a,
+                            m = r - s,
+                            y = u * u + c * c,
+                            d = p * p + m * m,
+                            v = Math.sqrt(y),
+                            g = Math.sqrt(f),
+                            w = o * Math.tan((i - Math.acos((y + f - d) / (2 * v * g))) / 2),
+                            x = w / g,
+                            _ = w / v;
+                        Math.abs(x - 1) > 1e-6 && (this._ += "L" + (t + x * h) + "," + (n + x * l)), this._ += "A" + o + "," + o + ",0,0," + +(l * p > h * m) + "," + (this._x1 = t + _ * u) + "," + (this._y1 = n + _ * c)
+                    } else this._ += "L" + (this._x1 = t) + "," + (this._y1 = n);
+                else;
+            },
+            arc: function(t, n, e, r, s, u) {
+                t = +t, n = +n, u = !!u;
+                var c = (e = +e) * Math.cos(r),
+                    h = e * Math.sin(r),
+                    l = t + c,
+                    f = n + h,
+                    p = 1 ^ u,
+                    m = u ? r - s : s - r;
+                if (e < 0) throw new Error("negative radius: " + e);
+                null === this._x1 ? this._ += "M" + l + "," + f : (Math.abs(this._x1 - l) > 1e-6 || Math.abs(this._y1 - f) > 1e-6) && (this._ += "L" + l + "," + f), e && (m < 0 && (m = m % o + o), m > a ? this._ += "A" + e + "," + e + ",0,1," + p + "," + (t - c) + "," + (n - h) + "A" + e + "," + e + ",0,1," + p + "," + (this._x1 = l) + "," + (this._y1 = f) : m > 1e-6 && (this._ += "A" + e + "," + e + ",0," + +(m >= i) + "," + p + "," + (this._x1 = t + e * Math.cos(s)) + "," + (this._y1 = n + e * Math.sin(s))))
+            },
+            rect: function(t, n, e, r) { this._ += "M" + (this._x0 = this._x1 = +t) + "," + (this._y0 = this._y1 = +n) + "h" + +e + "v" + +r + "h" + -e + "Z" },
+            toString: function() { return this._ }
+        };
+        var c = u,
+            h = (Array.prototype.slice, function(t) { return "object" == typeof t && "length" in t ? t : Array.from(t) }),
+            l = function(t) { return function() { return t } };
+
+        function f(t) { this._context = t }
+        f.prototype = {
+            areaStart: function() { this._line = 0 },
+            areaEnd: function() { this._line = NaN },
+            lineStart: function() { this._point = 0 },
+            lineEnd: function() {
+                (this._line || 0 !== this._line && 1 === this._point) && this._context.closePath(), this._line = 1 - this._line
+            },
+            point: function(t, n) {
+                switch (t = +t, n = +n, this._point) {
+                    case 0:
+                        this._point = 1, this._line ? this._context.lineTo(t, n) : this._context.moveTo(t, n);
+                        break;
+                    case 1:
+                        this._point = 2;
+                    default:
+                        this._context.lineTo(t, n)
+                }
+            }
+        };
+        var p = function(t) { return new f(t) };
+
+        function m(t) { return t[0] }
+
+        function y(t) { return t[1] }
+        var d = function(t, n) {
+            var e = l(!0),
+                r = null,
+                i = p,
+                o = null;
+
+            function a(a) {
+                var s, u, l, f = (a = h(a)).length,
+                    p = !1;
+                for (null == r && (o = i(l = c())), s = 0; s <= f; ++s) !(s < f && e(u = a[s], s, a)) === p && ((p = !p) ? o.lineStart() : o.lineEnd()), p && o.point(+t(u, s, a), +n(u, s, a));
+                if (l) return o = null, l + "" || null
+            }
+            return t = "function" == typeof t ? t : void 0 === t ? m : l(t), n = "function" == typeof n ? n : void 0 === n ? y : l(n), a.x = function(n) { return arguments.length ? (t = "function" == typeof n ? n : l(+n), a) : t }, a.y = function(t) { return arguments.length ? (n = "function" == typeof t ? t : l(+t), a) : n }, a.defined = function(t) { return arguments.length ? (e = "function" == typeof t ? t : l(!!t), a) : e }, a.curve = function(t) { return arguments.length ? (i = t, null != r && (o = i(r)), a) : i }, a.context = function(t) { return arguments.length ? (null == t ? r = o = null : o = i(r = t), a) : r }, a
+        };
+
+        function v(t, n) { if ((e = (t = n ? t.toExponential(n - 1) : t.toExponential()).indexOf("e")) < 0) return null; var e, r = t.slice(0, e); return [r.length > 1 ? r[0] + r.slice(2) : r, +t.slice(e + 1)] }
+        var g = function(t) { return (t = v(Math.abs(t))) ? t[1] : NaN },
+            w = /^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$/i;
+
+        function x(t) { if (!(n = w.exec(t))) throw new Error("invalid format: " + t); var n; return new _({ fill: n[1], align: n[2], sign: n[3], symbol: n[4], zero: n[5], width: n[6], comma: n[7], precision: n[8] && n[8].slice(1), trim: n[9], type: n[10] }) }
+
+        function _(t) { this.fill = void 0 === t.fill ? " " : t.fill + "", this.align = void 0 === t.align ? ">" : t.align + "", this.sign = void 0 === t.sign ? "-" : t.sign + "", this.symbol = void 0 === t.symbol ? "" : t.symbol + "", this.zero = !!t.zero, this.width = void 0 === t.width ? void 0 : +t.width, this.comma = !!t.comma, this.precision = void 0 === t.precision ? void 0 : +t.precision, this.trim = !!t.trim, this.type = void 0 === t.type ? "" : t.type + "" }
+        x.prototype = _.prototype, _.prototype.toString = function() { return this.fill + this.align + this.sign + this.symbol + (this.zero ? "0" : "") + (void 0 === this.width ? "" : Math.max(1, 0 | this.width)) + (this.comma ? "," : "") + (void 0 === this.precision ? "" : "." + Math.max(0, 0 | this.precision)) + (this.trim ? "~" : "") + this.type };
+        var b, E, M, A, T = function(t, n) {
+                var e = v(t, n);
+                if (!e) return t + "";
+                var r = e[0],
+                    i = e[1];
+                return i < 0 ? "0." + new Array(-i).join("0") + r : r.length > i + 1 ? r.slice(0, i + 1) + "." + r.slice(i + 1) : r + new Array(i - r.length + 2).join("0")
+            },
+            k = {
+                "%": (t, n) => (100 * t).toFixed(n),
+                b: t => Math.round(t).toString(2),
+                c: t => t + "",
+                d: function(t) { return Math.abs(t = Math.round(t)) >= 1e21 ? t.toLocaleString("en").replace(/,/g, "") : t.toString(10) },
+                e: (t, n) => t.toExponential(n),
+                f: (t, n) => t.toFixed(n),
+                g: (t, n) => t.toPrecision(n),
+                o: t => Math.round(t).toString(8),
+                p: (t, n) => T(100 * t, n),
+                r: T,
+                s: function(t, n) {
+                    var e = v(t, n);
+                    if (!e) return t + "";
+                    var r = e[0],
+                        i = e[1],
+                        o = i - (b = 3 * Math.max(-8, Math.min(8, Math.floor(i / 3)))) + 1,
+                        a = r.length;
+                    return o === a ? r : o > a ? r + new Array(o - a + 1).join("0") : o > 0 ? r.slice(0, o) + "." + r.slice(o) : "0." + new Array(1 - o).join("0") + v(t, Math.max(0, n + o - 1))[0]
+                },
+                X: t => Math.round(t).toString(16).toUpperCase(),
+                x: t => Math.round(t).toString(16)
+            },
+            I = function(t) { return t },
+            S = Array.prototype.map,
+            N = ["y", "z", "a", "f", "p", "n", "µ", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"];
+        E = function(t) {
+            var n, e, r = void 0 === t.grouping || void 0 === t.thousands ? I : (n = S.call(t.grouping, Number), e = t.thousands + "", function(t, r) { for (var i = t.length, o = [], a = 0, s = n[0], u = 0; i > 0 && s > 0 && (u + s + 1 > r && (s = Math.max(1, r - u)), o.push(t.substring(i -= s, i + s)), !((u += s + 1) > r));) s = n[a = (a + 1) % n.length]; return o.reverse().join(e) }),
+                i = void 0 === t.currency ? "" : t.currency[0] + "",
+                o = void 0 === t.currency ? "" : t.currency[1] + "",
+                a = void 0 === t.decimal ? "." : t.decimal + "",
+                s = void 0 === t.numerals ? I : function(t) { return function(n) { return n.replace(/[0-9]/g, (function(n) { return t[+n] })) } }(S.call(t.numerals, String)),
+                u = void 0 === t.percent ? "%" : t.percent + "",
+                c = void 0 === t.minus ? "−" : t.minus + "",
+                h = void 0 === t.nan ? "NaN" : t.nan + "";
+
+            function l(t) {
+                var n = (t = x(t)).fill,
+                    e = t.align,
+                    l = t.sign,
+                    f = t.symbol,
+                    p = t.zero,
+                    m = t.width,
+                    y = t.comma,
+                    d = t.precision,
+                    v = t.trim,
+                    g = t.type;
+                "n" === g ? (y = !0, g = "g") : k[g] || (void 0 === d && (d = 12), v = !0, g = "g"), (p || "0" === n && "=" === e) && (p = !0, n = "0", e = "=");
+                var w = "$" === f ? i : "#" === f && /[boxX]/.test(g) ? "0" + g.toLowerCase() : "",
+                    _ = "$" === f ? o : /[%p]/.test(g) ? u : "",
+                    E = k[g],
+                    M = /[defgprs%]/.test(g);
+
+                function A(t) {
+                    var i, o, u, f = w,
+                        x = _;
+                    if ("c" === g) x = E(t) + x, t = "";
+                    else {
+                        var A = (t = +t) < 0 || 1 / t < 0;
+                        if (t = isNaN(t) ? h : E(Math.abs(t), d), v && (t = function(t) {
+                                t: for (var n, e = t.length, r = 1, i = -1; r < e; ++r) switch (t[r]) {
+                                    case ".":
+                                        i = n = r;
+                                        break;
+                                    case "0":
+                                        0 === i && (i = r), n = r;
+                                        break;
+                                    default:
+                                        if (!+t[r]) break t;
+                                        i > 0 && (i = 0)
+                                }
+                                return i > 0 ? t.slice(0, i) + t.slice(n + 1) : t
+                            }(t)), A && 0 == +t && "+" !== l && (A = !1), f = (A ? "(" === l ? l : c : "-" === l || "(" === l ? "" : l) + f, x = ("s" === g ? N[8 + b / 3] : "") + x + (A && "(" === l ? ")" : ""), M)
+                            for (i = -1, o = t.length; ++i < o;)
+                                if (48 > (u = t.charCodeAt(i)) || u > 57) { x = (46 === u ? a + t.slice(i + 1) : t.slice(i)) + x, t = t.slice(0, i); break }
+                    }
+                    y && !p && (t = r(t, 1 / 0));
+                    var T = f.length + t.length + x.length,
+                        k = T < m ? new Array(m - T + 1).join(n) : "";
+                    switch (y && p && (t = r(k + t, k.length ? m - x.length : 1 / 0), k = ""), e) {
+                        case "<":
+                            t = f + t + x + k;
+                            break;
+                        case "=":
+                            t = f + k + t + x;
+                            break;
+                        case "^":
+                            t = k.slice(0, T = k.length >> 1) + f + t + x + k.slice(T);
+                            break;
                         default:
-                            if (loweredCase) throw new TypeError("Unknown encoding: " + encoding);
-                            encoding = ("" + encoding).toLowerCase();
-                            loweredCase = true
+                            t = k + f + t + x
                     }
+                    return s(t)
                 }
-            };
-            Buffer.prototype.toJSON = function toJSON() {
-                return {
-                    type: "Buffer",
-                    data: Array.prototype.slice.call(this._arr || this, 0)
-                }
-            };
-
-            function base64Slice(buf, start, end) {
-                if (start === 0 && end === buf.length) {
-                    return base64.fromByteArray(buf)
-                } else {
-                    return base64.fromByteArray(buf.slice(start, end))
+                return d = void 0 === d ? 6 : /[gprs]/.test(g) ? Math.max(1, Math.min(21, d)) : Math.max(0, Math.min(20, d)), A.toString = function() { return t + "" }, A
+            }
+            return {
+                format: l,
+                formatPrefix: function(t, n) {
+                    var e = l(((t = x(t)).type = "f", t)),
+                        r = 3 * Math.max(-8, Math.min(8, Math.floor(g(n) / 3))),
+                        i = Math.pow(10, -r),
+                        o = N[8 + r / 3];
+                    return function(t) { return e(i * t) + o }
                 }
             }
+        }({ thousands: ",", grouping: [3], currency: ["$", ""] }), M = E.format, A = E.formatPrefix;
+        var L = Math.sqrt(50),
+            P = Math.sqrt(10),
+            O = Math.sqrt(2),
+            R = function(t, n, e) {
+                var r, i, o, a, s = -1;
+                if (e = +e, (t = +t) === (n = +n) && e > 0) return [t];
+                if ((r = n < t) && (i = t, t = n, n = i), 0 === (a = H(t, n, e)) || !isFinite(a)) return [];
+                if (a > 0)
+                    for (t = Math.ceil(t / a), n = Math.floor(n / a), o = new Array(i = Math.ceil(n - t + 1)); ++s < i;) o[s] = (t + s) * a;
+                else
+                    for (a = -a, t = Math.ceil(t * a), n = Math.floor(n * a), o = new Array(i = Math.ceil(n - t + 1)); ++s < i;) o[s] = (t + s) / a;
+                return r && o.reverse(), o
+            };
 
-            function utf8Slice(buf, start, end) {
-                end = Math.min(buf.length, end);
-                var res = [];
-                var i = start;
-                while (i < end) {
-                    var firstByte = buf[i];
-                    var codePoint = null;
-                    var bytesPerSequence = firstByte > 239 ? 4 : firstByte > 223 ? 3 : firstByte > 191 ? 2 : 1;
-                    if (i + bytesPerSequence <= end) {
-                        var secondByte, thirdByte, fourthByte, tempCodePoint;
-                        switch (bytesPerSequence) {
-                            case 1:
-                                if (firstByte < 128) {
-                                    codePoint = firstByte
-                                }
-                                break;
-                            case 2:
-                                secondByte = buf[i + 1];
-                                if ((secondByte & 192) === 128) {
-                                    tempCodePoint = (firstByte & 31) << 6 | secondByte & 63;
-                                    if (tempCodePoint > 127) {
-                                        codePoint = tempCodePoint
-                                    }
-                                }
-                                break;
-                            case 3:
-                                secondByte = buf[i + 1];
-                                thirdByte = buf[i + 2];
-                                if ((secondByte & 192) === 128 && (thirdByte & 192) === 128) {
-                                    tempCodePoint = (firstByte & 15) << 12 | (secondByte & 63) << 6 | thirdByte & 63;
-                                    if (tempCodePoint > 2047 && (tempCodePoint < 55296 || tempCodePoint > 57343)) {
-                                        codePoint = tempCodePoint
-                                    }
-                                }
-                                break;
-                            case 4:
-                                secondByte = buf[i + 1];
-                                thirdByte = buf[i + 2];
-                                fourthByte = buf[i + 3];
-                                if ((secondByte & 192) === 128 && (thirdByte & 192) === 128 && (fourthByte & 192) === 128) {
-                                    tempCodePoint = (firstByte & 15) << 18 | (secondByte & 63) << 12 | (thirdByte & 63) << 6 | fourthByte & 63;
-                                    if (tempCodePoint > 65535 && tempCodePoint < 1114112) {
-                                        codePoint = tempCodePoint
-                                    }
-                                }
+        function H(t, n, e) {
+            var r = (n - t) / Math.max(0, e),
+                i = Math.floor(Math.log(r) / Math.LN10),
+                o = r / Math.pow(10, i);
+            return i >= 0 ? (o >= L ? 10 : o >= P ? 5 : o >= O ? 2 : 1) * Math.pow(10, i) : -Math.pow(10, -i) / (o >= L ? 10 : o >= P ? 5 : o >= O ? 2 : 1)
+        }
+        var Y = function(t, n) { return t < n ? -1 : t > n ? 1 : t >= n ? 0 : NaN },
+            j = function(t) {
+                let n = t,
+                    e = t;
+
+                function r(t, n, r, i) {
+                    for (null == r && (r = 0), null == i && (i = t.length); r < i;) {
+                        const o = r + i >>> 1;
+                        e(t[o], n) < 0 ? r = o + 1 : i = o
+                    }
+                    return r
+                }
+                return 1 === t.length && (n = (n, e) => t(n) - e, e = function(t) { return (n, e) => Y(t(n), e) }(t)), {
+                    left: r,
+                    center: function(t, e, i, o) { null == i && (i = 0), null == o && (o = t.length); const a = r(t, e, i, o - 1); return a > i && n(t[a - 1], e) > -n(t[a], e) ? a - 1 : a },
+                    right: function(t, n, r, i) {
+                        for (null == r && (r = 0), null == i && (i = t.length); r < i;) {
+                            const o = r + i >>> 1;
+                            e(t[o], n) > 0 ? i = o : r = o + 1
                         }
+                        return r
                     }
-                    if (codePoint === null) {
-                        codePoint = 65533;
-                        bytesPerSequence = 1
-                    } else if (codePoint > 65535) {
-                        codePoint -= 65536;
-                        res.push(codePoint >>> 10 & 1023 | 55296);
-                        codePoint = 56320 | codePoint & 1023
+                }
+            };
+        const C = j(Y),
+            z = C.right;
+        C.left, j((function(t) { return null === t ? NaN : +t })).center;
+        var B = z,
+            U = function(t, n, e) { t.prototype = n.prototype = e, e.constructor = t };
+
+        function F(t, n) { var e = Object.create(t.prototype); for (var r in n) e[r] = n[r]; return e }
+
+        function D() {}
+        var q = "\\s*([+-]?\\d+)\\s*",
+            X = "\\s*([+-]?\\d*\\.?\\d+(?:[eE][+-]?\\d+)?)\\s*",
+            $ = "\\s*([+-]?\\d*\\.?\\d+(?:[eE][+-]?\\d+)?)%\\s*",
+            V = /^#([0-9a-f]{3,8})$/,
+            W = new RegExp("^rgb\\(" + [q, q, q] + "\\)$"),
+            G = new RegExp("^rgb\\(" + [$, $, $] + "\\)$"),
+            Z = new RegExp("^rgba\\(" + [q, q, q, X] + "\\)$"),
+            K = new RegExp("^rgba\\(" + [$, $, $, X] + "\\)$"),
+            Q = new RegExp("^hsl\\(" + [X, $, $] + "\\)$"),
+            J = new RegExp("^hsla\\(" + [X, $, $, X] + "\\)$"),
+            tt = { aliceblue: 15792383, antiquewhite: 16444375, aqua: 65535, aquamarine: 8388564, azure: 15794175, beige: 16119260, bisque: 16770244, black: 0, blanchedalmond: 16772045, blue: 255, blueviolet: 9055202, brown: 10824234, burlywood: 14596231, cadetblue: 6266528, chartreuse: 8388352, chocolate: 13789470, coral: 16744272, cornflowerblue: 6591981, cornsilk: 16775388, crimson: 14423100, cyan: 65535, darkblue: 139, darkcyan: 35723, darkgoldenrod: 12092939, darkgray: 11119017, darkgreen: 25600, darkgrey: 11119017, darkkhaki: 12433259, darkmagenta: 9109643, darkolivegreen: 5597999, darkorange: 16747520, darkorchid: 10040012, darkred: 9109504, darksalmon: 15308410, darkseagreen: 9419919, darkslateblue: 4734347, darkslategray: 3100495, darkslategrey: 3100495, darkturquoise: 52945, darkviolet: 9699539, deeppink: 16716947, deepskyblue: 49151, dimgray: 6908265, dimgrey: 6908265, dodgerblue: 2003199, firebrick: 11674146, floralwhite: 16775920, forestgreen: 2263842, fuchsia: 16711935, gainsboro: 14474460, ghostwhite: 16316671, gold: 16766720, goldenrod: 14329120, gray: 8421504, green: 32768, greenyellow: 11403055, grey: 8421504, honeydew: 15794160, hotpink: 16738740, indianred: 13458524, indigo: 4915330, ivory: 16777200, khaki: 15787660, lavender: 15132410, lavenderblush: 16773365, lawngreen: 8190976, lemonchiffon: 16775885, lightblue: 11393254, lightcoral: 15761536, lightcyan: 14745599, lightgoldenrodyellow: 16448210, lightgray: 13882323, lightgreen: 9498256, lightgrey: 13882323, lightpink: 16758465, lightsalmon: 16752762, lightseagreen: 2142890, lightskyblue: 8900346, lightslategray: 7833753, lightslategrey: 7833753, lightsteelblue: 11584734, lightyellow: 16777184, lime: 65280, limegreen: 3329330, linen: 16445670, magenta: 16711935, maroon: 8388608, mediumaquamarine: 6737322, mediumblue: 205, mediumorchid: 12211667, mediumpurple: 9662683, mediumseagreen: 3978097, mediumslateblue: 8087790, mediumspringgreen: 64154, mediumturquoise: 4772300, mediumvioletred: 13047173, midnightblue: 1644912, mintcream: 16121850, mistyrose: 16770273, moccasin: 16770229, navajowhite: 16768685, navy: 128, oldlace: 16643558, olive: 8421376, olivedrab: 7048739, orange: 16753920, orangered: 16729344, orchid: 14315734, palegoldenrod: 15657130, palegreen: 10025880, paleturquoise: 11529966, palevioletred: 14381203, papayawhip: 16773077, peachpuff: 16767673, peru: 13468991, pink: 16761035, plum: 14524637, powderblue: 11591910, purple: 8388736, rebeccapurple: 6697881, red: 16711680, rosybrown: 12357519, royalblue: 4286945, saddlebrown: 9127187, salmon: 16416882, sandybrown: 16032864, seagreen: 3050327, seashell: 16774638, sienna: 10506797, silver: 12632256, skyblue: 8900331, slateblue: 6970061, slategray: 7372944, slategrey: 7372944, snow: 16775930, springgreen: 65407, steelblue: 4620980, tan: 13808780, teal: 32896, thistle: 14204888, tomato: 16737095, turquoise: 4251856, violet: 15631086, wheat: 16113331, white: 16777215, whitesmoke: 16119285, yellow: 16776960, yellowgreen: 10145074 };
+
+        function nt() { return this.rgb().formatHex() }
+
+        function et() { return this.rgb().formatRgb() }
+
+        function rt(t) { var n, e; return t = (t + "").trim().toLowerCase(), (n = V.exec(t)) ? (e = n[1].length, n = parseInt(n[1], 16), 6 === e ? it(n) : 3 === e ? new ut(n >> 8 & 15 | n >> 4 & 240, n >> 4 & 15 | 240 & n, (15 & n) << 4 | 15 & n, 1) : 8 === e ? ot(n >> 24 & 255, n >> 16 & 255, n >> 8 & 255, (255 & n) / 255) : 4 === e ? ot(n >> 12 & 15 | n >> 8 & 240, n >> 8 & 15 | n >> 4 & 240, n >> 4 & 15 | 240 & n, ((15 & n) << 4 | 15 & n) / 255) : null) : (n = W.exec(t)) ? new ut(n[1], n[2], n[3], 1) : (n = G.exec(t)) ? new ut(255 * n[1] / 100, 255 * n[2] / 100, 255 * n[3] / 100, 1) : (n = Z.exec(t)) ? ot(n[1], n[2], n[3], n[4]) : (n = K.exec(t)) ? ot(255 * n[1] / 100, 255 * n[2] / 100, 255 * n[3] / 100, n[4]) : (n = Q.exec(t)) ? ft(n[1], n[2] / 100, n[3] / 100, 1) : (n = J.exec(t)) ? ft(n[1], n[2] / 100, n[3] / 100, n[4]) : tt.hasOwnProperty(t) ? it(tt[t]) : "transparent" === t ? new ut(NaN, NaN, NaN, 0) : null }
+
+        function it(t) { return new ut(t >> 16 & 255, t >> 8 & 255, 255 & t, 1) }
+
+        function ot(t, n, e, r) { return r <= 0 && (t = n = e = NaN), new ut(t, n, e, r) }
+
+        function at(t) { return t instanceof D || (t = rt(t)), t ? new ut((t = t.rgb()).r, t.g, t.b, t.opacity) : new ut }
+
+        function st(t, n, e, r) { return 1 === arguments.length ? at(t) : new ut(t, n, e, null == r ? 1 : r) }
+
+        function ut(t, n, e, r) { this.r = +t, this.g = +n, this.b = +e, this.opacity = +r }
+
+        function ct() { return "#" + lt(this.r) + lt(this.g) + lt(this.b) }
+
+        function ht() { var t = this.opacity; return (1 === (t = isNaN(t) ? 1 : Math.max(0, Math.min(1, t))) ? "rgb(" : "rgba(") + Math.max(0, Math.min(255, Math.round(this.r) || 0)) + ", " + Math.max(0, Math.min(255, Math.round(this.g) || 0)) + ", " + Math.max(0, Math.min(255, Math.round(this.b) || 0)) + (1 === t ? ")" : ", " + t + ")") }
+
+        function lt(t) { return ((t = Math.max(0, Math.min(255, Math.round(t) || 0))) < 16 ? "0" : "") + t.toString(16) }
+
+        function ft(t, n, e, r) { return r <= 0 ? t = n = e = NaN : e <= 0 || e >= 1 ? t = n = NaN : n <= 0 && (t = NaN), new yt(t, n, e, r) }
+
+        function pt(t) {
+            if (t instanceof yt) return new yt(t.h, t.s, t.l, t.opacity);
+            if (t instanceof D || (t = rt(t)), !t) return new yt;
+            if (t instanceof yt) return t;
+            var n = (t = t.rgb()).r / 255,
+                e = t.g / 255,
+                r = t.b / 255,
+                i = Math.min(n, e, r),
+                o = Math.max(n, e, r),
+                a = NaN,
+                s = o - i,
+                u = (o + i) / 2;
+            return s ? (a = n === o ? (e - r) / s + 6 * (e < r) : e === o ? (r - n) / s + 2 : (n - e) / s + 4, s /= u < .5 ? o + i : 2 - o - i, a *= 60) : s = u > 0 && u < 1 ? 0 : a, new yt(a, s, u, t.opacity)
+        }
+
+        function mt(t, n, e, r) { return 1 === arguments.length ? pt(t) : new yt(t, n, e, null == r ? 1 : r) }
+
+        function yt(t, n, e, r) { this.h = +t, this.s = +n, this.l = +e, this.opacity = +r }
+
+        function dt(t, n, e) { return 255 * (t < 60 ? n + (e - n) * t / 60 : t < 180 ? e : t < 240 ? n + (e - n) * (240 - t) / 60 : n) }
+
+        function vt(t, n, e, r, i) {
+            var o = t * t,
+                a = o * t;
+            return ((1 - 3 * t + 3 * o - a) * n + (4 - 6 * o + 3 * a) * e + (1 + 3 * t + 3 * o - 3 * a) * r + a * i) / 6
+        }
+        U(D, rt, { copy: function(t) { return Object.assign(new this.constructor, this, t) }, displayable: function() { return this.rgb().displayable() }, hex: nt, formatHex: nt, formatHsl: function() { return pt(this).formatHsl() }, formatRgb: et, toString: et }), U(ut, st, F(D, { brighter: function(t) { return t = null == t ? 1 / .7 : Math.pow(1 / .7, t), new ut(this.r * t, this.g * t, this.b * t, this.opacity) }, darker: function(t) { return t = null == t ? .7 : Math.pow(.7, t), new ut(this.r * t, this.g * t, this.b * t, this.opacity) }, rgb: function() { return this }, displayable: function() { return -.5 <= this.r && this.r < 255.5 && -.5 <= this.g && this.g < 255.5 && -.5 <= this.b && this.b < 255.5 && 0 <= this.opacity && this.opacity <= 1 }, hex: ct, formatHex: ct, formatRgb: ht, toString: ht })), U(yt, mt, F(D, {
+            brighter: function(t) { return t = null == t ? 1 / .7 : Math.pow(1 / .7, t), new yt(this.h, this.s, this.l * t, this.opacity) },
+            darker: function(t) { return t = null == t ? .7 : Math.pow(.7, t), new yt(this.h, this.s, this.l * t, this.opacity) },
+            rgb: function() {
+                var t = this.h % 360 + 360 * (this.h < 0),
+                    n = isNaN(t) || isNaN(this.s) ? 0 : this.s,
+                    e = this.l,
+                    r = e + (e < .5 ? e : 1 - e) * n,
+                    i = 2 * e - r;
+                return new ut(dt(t >= 240 ? t - 240 : t + 120, i, r), dt(t, i, r), dt(t < 120 ? t + 240 : t - 120, i, r), this.opacity)
+            },
+            displayable: function() { return (0 <= this.s && this.s <= 1 || isNaN(this.s)) && 0 <= this.l && this.l <= 1 && 0 <= this.opacity && this.opacity <= 1 },
+            formatHsl: function() { var t = this.opacity; return (1 === (t = isNaN(t) ? 1 : Math.max(0, Math.min(1, t))) ? "hsl(" : "hsla(") + (this.h || 0) + ", " + 100 * (this.s || 0) + "%, " + 100 * (this.l || 0) + "%" + (1 === t ? ")" : ", " + t + ")") }
+        }));
+        var gt = t => () => t;
+
+        function wt(t, n) { return function(e) { return t + e * n } }
+
+        function xt(t) {
+            return 1 == (t = +t) ? _t : function(n, e) {
+                return e - n ? function(t, n, e) {
+                    return t = Math.pow(t, e), n = Math.pow(n, e) - t, e = 1 / e,
+                        function(r) { return Math.pow(t + r * n, e) }
+                }(n, e, t) : gt(isNaN(n) ? e : n)
+            }
+        }
+
+        function _t(t, n) { var e = n - t; return e ? wt(t, e) : gt(isNaN(t) ? n : t) }
+        var bt = function t(n) {
+            var e = xt(n);
+
+            function r(t, n) {
+                var r = e((t = st(t)).r, (n = st(n)).r),
+                    i = e(t.g, n.g),
+                    o = e(t.b, n.b),
+                    a = _t(t.opacity, n.opacity);
+                return function(n) { return t.r = r(n), t.g = i(n), t.b = o(n), t.opacity = a(n), t + "" }
+            }
+            return r.gamma = t, r
+        }(1);
+
+        function Et(t) {
+            return function(n) {
+                var e, r, i = n.length,
+                    o = new Array(i),
+                    a = new Array(i),
+                    s = new Array(i);
+                for (e = 0; e < i; ++e) r = st(n[e]), o[e] = r.r || 0, a[e] = r.g || 0, s[e] = r.b || 0;
+                return o = t(o), a = t(a), s = t(s), r.opacity = 1,
+                    function(t) { return r.r = o(t), r.g = a(t), r.b = s(t), r + "" }
+            }
+        }
+        Et((function(t) {
+            var n = t.length - 1;
+            return function(e) {
+                var r = e <= 0 ? e = 0 : e >= 1 ? (e = 1, n - 1) : Math.floor(e * n),
+                    i = t[r],
+                    o = t[r + 1],
+                    a = r > 0 ? t[r - 1] : 2 * i - o,
+                    s = r < n - 1 ? t[r + 2] : 2 * o - i;
+                return vt((e - r / n) * n, a, i, o, s)
+            }
+        })), Et((function(t) {
+            var n = t.length;
+            return function(e) {
+                var r = Math.floor(((e %= 1) < 0 ? ++e : e) * n),
+                    i = t[(r + n - 1) % n],
+                    o = t[r % n],
+                    a = t[(r + 1) % n],
+                    s = t[(r + 2) % n];
+                return vt((e - r / n) * n, i, o, a, s)
+            }
+        }));
+        var Mt = function(t, n) {
+            n || (n = []);
+            var e, r = t ? Math.min(n.length, t.length) : 0,
+                i = n.slice();
+            return function(o) { for (e = 0; e < r; ++e) i[e] = t[e] * (1 - o) + n[e] * o; return i }
+        };
+
+        function At(t) { return ArrayBuffer.isView(t) && !(t instanceof DataView) }
+
+        function Tt(t, n) {
+            var e, r = n ? n.length : 0,
+                i = t ? Math.min(r, t.length) : 0,
+                o = new Array(i),
+                a = new Array(r);
+            for (e = 0; e < i; ++e) o[e] = Ot(t[e], n[e]);
+            for (; e < r; ++e) a[e] = n[e];
+            return function(t) { for (e = 0; e < i; ++e) a[e] = o[e](t); return a }
+        }
+        var kt = function(t, n) {
+                var e = new Date;
+                return t = +t, n = +n,
+                    function(r) { return e.setTime(t * (1 - r) + n * r), e }
+            },
+            It = function(t, n) {
+                return t = +t, n = +n,
+                    function(e) { return t * (1 - e) + n * e }
+            },
+            St = function(t, n) {
+                var e, r = {},
+                    i = {};
+                for (e in null !== t && "object" == typeof t || (t = {}), null !== n && "object" == typeof n || (n = {}), n) e in t ? r[e] = Ot(t[e], n[e]) : i[e] = n[e];
+                return function(t) { for (e in r) i[e] = r[e](t); return i }
+            },
+            Nt = /[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?/g,
+            Lt = new RegExp(Nt.source, "g");
+        var Pt = function(t, n) {
+                var e, r, i, o = Nt.lastIndex = Lt.lastIndex = 0,
+                    a = -1,
+                    s = [],
+                    u = [];
+                for (t += "", n += "";
+                    (e = Nt.exec(t)) && (r = Lt.exec(n));)(i = r.index) > o && (i = n.slice(o, i), s[a] ? s[a] += i : s[++a] = i), (e = e[0]) === (r = r[0]) ? s[a] ? s[a] += r : s[++a] = r : (s[++a] = null, u.push({ i: a, x: It(e, r) })), o = Lt.lastIndex;
+                return o < n.length && (i = n.slice(o), s[a] ? s[a] += i : s[++a] = i), s.length < 2 ? u[0] ? function(t) { return function(n) { return t(n) + "" } }(u[0].x) : function(t) { return function() { return t } }(n) : (n = u.length, function(t) { for (var e, r = 0; r < n; ++r) s[(e = u[r]).i] = e.x(t); return s.join("") })
+            },
+            Ot = function(t, n) { var e, r = typeof n; return null == n || "boolean" === r ? gt(n) : ("number" === r ? It : "string" === r ? (e = rt(n)) ? (n = e, bt) : Pt : n instanceof rt ? bt : n instanceof Date ? kt : At(n) ? Mt : Array.isArray(n) ? Tt : "function" != typeof n.valueOf && "function" != typeof n.toString || isNaN(n) ? St : It)(t, n) },
+            Rt = function(t, n) {
+                return t = +t, n = +n,
+                    function(e) { return Math.round(t * (1 - e) + n * e) }
+            },
+            Ht = function(t) { return +t },
+            Yt = [0, 1];
+
+        function jt(t) { return t }
+
+        function Ct(t, n) { return (n -= t = +t) ? function(e) { return (e - t) / n } : (e = isNaN(n) ? NaN : .5, function() { return e }); var e }
+
+        function zt(t, n, e) {
+            var r = t[0],
+                i = t[1],
+                o = n[0],
+                a = n[1];
+            return i < r ? (r = Ct(i, r), o = e(a, o)) : (r = Ct(r, i), o = e(o, a)),
+                function(t) { return o(r(t)) }
+        }
+
+        function Bt(t, n, e) {
+            var r = Math.min(t.length, n.length) - 1,
+                i = new Array(r),
+                o = new Array(r),
+                a = -1;
+            for (t[r] < t[0] && (t = t.slice().reverse(), n = n.slice().reverse()); ++a < r;) i[a] = Ct(t[a], t[a + 1]), o[a] = e(n[a], n[a + 1]);
+            return function(n) { var e = B(t, n, 1, r) - 1; return o[e](i[e](n)) }
+        }
+
+        function Ut(t, n) { return n.domain(t.domain()).range(t.range()).interpolate(t.interpolate()).clamp(t.clamp()).unknown(t.unknown()) }
+
+        function Ft() {
+            var t, n, e, r, i, o, a = Yt,
+                s = Yt,
+                u = Ot,
+                c = jt;
+
+            function h() { var t, n, e, u = Math.min(a.length, s.length); return c !== jt && (t = a[0], n = a[u - 1], t > n && (e = t, t = n, n = e), c = function(e) { return Math.max(t, Math.min(n, e)) }), r = u > 2 ? Bt : zt, i = o = null, l }
+
+            function l(n) { return isNaN(n = +n) ? e : (i || (i = r(a.map(t), s, u)))(t(c(n))) }
+            return l.invert = function(e) { return c(n((o || (o = r(s, a.map(t), It)))(e))) }, l.domain = function(t) { return arguments.length ? (a = Array.from(t, Ht), h()) : a.slice() }, l.range = function(t) { return arguments.length ? (s = Array.from(t), h()) : s.slice() }, l.rangeRound = function(t) { return s = Array.from(t), u = Rt, h() }, l.clamp = function(t) { return arguments.length ? (c = !!t || jt, h()) : c !== jt }, l.interpolate = function(t) { return arguments.length ? (u = t, h()) : u }, l.unknown = function(t) { return arguments.length ? (e = t, l) : e },
+                function(e, r) { return t = e, n = r, h() }
+        }
+
+        function Dt() { return Ft()(jt, jt) }
+
+        function qt(t, n) {
+            switch (arguments.length) {
+                case 0:
+                    break;
+                case 1:
+                    this.range(t);
+                    break;
+                default:
+                    this.range(n).domain(t)
+            }
+            return this
+        }
+        var Xt = function(t, n, e, r) {
+            var i, o = function(t, n, e) {
+                var r = Math.abs(n - t) / Math.max(0, e),
+                    i = Math.pow(10, Math.floor(Math.log(r) / Math.LN10)),
+                    o = r / i;
+                return o >= L ? i *= 10 : o >= P ? i *= 5 : o >= O && (i *= 2), n < t ? -i : i
+            }(t, n, e);
+            switch ((r = x(null == r ? ",f" : r)).type) {
+                case "s":
+                    var a = Math.max(Math.abs(t), Math.abs(n));
+                    return null != r.precision || isNaN(i = function(t, n) { return Math.max(0, 3 * Math.max(-8, Math.min(8, Math.floor(g(n) / 3))) - g(Math.abs(t))) }(o, a)) || (r.precision = i), A(r, a);
+                case "":
+                case "e":
+                case "g":
+                case "p":
+                case "r":
+                    null != r.precision || isNaN(i = function(t, n) { return t = Math.abs(t), n = Math.abs(n) - t, Math.max(0, g(n) - g(t)) + 1 }(o, Math.max(Math.abs(t), Math.abs(n)))) || (r.precision = i - ("e" === r.type));
+                    break;
+                case "f":
+                case "%":
+                    null != r.precision || isNaN(i = function(t) { return Math.max(0, -g(Math.abs(t))) }(o)) || (r.precision = i - 2 * ("%" === r.type))
+            }
+            return M(r)
+        };
+
+        function $t(t) {
+            var n = t.domain;
+            return t.ticks = function(t) { var e = n(); return R(e[0], e[e.length - 1], null == t ? 10 : t) }, t.tickFormat = function(t, e) { var r = n(); return Xt(r[0], r[r.length - 1], null == t ? 10 : t, e) }, t.nice = function(e) {
+                null == e && (e = 10);
+                var r, i, o = n(),
+                    a = 0,
+                    s = o.length - 1,
+                    u = o[a],
+                    c = o[s],
+                    h = 10;
+                for (c < u && (i = u, u = c, c = i, i = a, a = s, s = i); h-- > 0;) {
+                    if ((i = H(u, c, e)) === r) return o[a] = u, o[s] = c, n(o);
+                    if (i > 0) u = Math.floor(u / i) * i, c = Math.ceil(c / i) * i;
+                    else {
+                        if (!(i < 0)) break;
+                        u = Math.ceil(u * i) / i, c = Math.floor(c * i) / i
                     }
-                    res.push(codePoint);
-                    i += bytesPerSequence
+                    r = i
                 }
-                return decodeCodePointsArray(res)
-            }
-            var MAX_ARGUMENTS_LENGTH = 4096;
+                return t
+            }, t
+        }
 
-            function decodeCodePointsArray(codePoints) {
-                var len = codePoints.length;
-                if (len <= MAX_ARGUMENTS_LENGTH) {
-                    return String.fromCharCode.apply(String, codePoints)
-                }
-                var res = "";
-                var i = 0;
-                while (i < len) {
-                    res += String.fromCharCode.apply(String, codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH))
-                }
-                return res
-            }
+        function Vt(t) { return Math.log(t) }
 
-            function asciiSlice(buf, start, end) {
-                var ret = "";
-                end = Math.min(buf.length, end);
-                for (var i = start; i < end; ++i) {
-                    ret += String.fromCharCode(buf[i] & 127)
-                }
-                return ret
-            }
+        function Wt(t) { return Math.exp(t) }
 
-            function latin1Slice(buf, start, end) {
-                var ret = "";
-                end = Math.min(buf.length, end);
-                for (var i = start; i < end; ++i) {
-                    ret += String.fromCharCode(buf[i])
-                }
-                return ret
-            }
+        function Gt(t) { return -Math.log(-t) }
 
-            function hexSlice(buf, start, end) {
-                var len = buf.length;
-                if (!start || start < 0) start = 0;
-                if (!end || end < 0 || end > len) end = len;
-                var out = "";
-                for (var i = start; i < end; ++i) {
-                    out += toHex(buf[i])
-                }
-                return out
-            }
+        function Zt(t) { return -Math.exp(-t) }
 
-            function utf16leSlice(buf, start, end) {
-                var bytes = buf.slice(start, end);
-                var res = "";
-                for (var i = 0; i < bytes.length; i += 2) {
-                    res += String.fromCharCode(bytes[i] + bytes[i + 1] * 256)
-                }
-                return res
-            }
-            Buffer.prototype.slice = function slice(start, end) {
-                var len = this.length;
-                start = ~~start;
-                end = end === undefined ? len : ~~end;
-                if (start < 0) {
-                    start += len;
-                    if (start < 0) start = 0
-                } else if (start > len) {
-                    start = len
-                }
-                if (end < 0) {
-                    end += len;
-                    if (end < 0) end = 0
-                } else if (end > len) {
-                    end = len
-                }
-                if (end < start) end = start;
-                var newBuf = this.subarray(start, end);
-                newBuf.__proto__ = Buffer.prototype;
-                return newBuf
-            };
+        function Kt(t) { return isFinite(t) ? +("1e" + t) : t < 0 ? 0 : t }
 
-            function checkOffset(offset, ext, length) {
-                if (offset % 1 !== 0 || offset < 0) throw new RangeError("offset is not uint");
-                if (offset + ext > length) throw new RangeError("Trying to access beyond buffer length")
-            }
-            Buffer.prototype.readUIntLE = function readUIntLE(offset, byteLength, noAssert) {
-                offset = offset >>> 0;
-                byteLength = byteLength >>> 0;
-                if (!noAssert) checkOffset(offset, byteLength, this.length);
-                var val = this[offset];
-                var mul = 1;
-                var i = 0;
-                while (++i < byteLength && (mul *= 256)) {
-                    val += this[offset + i] * mul
-                }
-                return val
-            };
-            Buffer.prototype.readUIntBE = function readUIntBE(offset, byteLength, noAssert) {
-                offset = offset >>> 0;
-                byteLength = byteLength >>> 0;
-                if (!noAssert) {
-                    checkOffset(offset, byteLength, this.length)
-                }
-                var val = this[offset + --byteLength];
-                var mul = 1;
-                while (byteLength > 0 && (mul *= 256)) {
-                    val += this[offset + --byteLength] * mul
-                }
-                return val
-            };
-            Buffer.prototype.readUInt8 = function readUInt8(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 1, this.length);
-                return this[offset]
-            };
-            Buffer.prototype.readUInt16LE = function readUInt16LE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 2, this.length);
-                return this[offset] | this[offset + 1] << 8
-            };
-            Buffer.prototype.readUInt16BE = function readUInt16BE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 2, this.length);
-                return this[offset] << 8 | this[offset + 1]
-            };
-            Buffer.prototype.readUInt32LE = function readUInt32LE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 4, this.length);
-                return (this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16) + this[offset + 3] * 16777216
-            };
-            Buffer.prototype.readUInt32BE = function readUInt32BE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 4, this.length);
-                return this[offset] * 16777216 + (this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3])
-            };
-            Buffer.prototype.readIntLE = function readIntLE(offset, byteLength, noAssert) {
-                offset = offset >>> 0;
-                byteLength = byteLength >>> 0;
-                if (!noAssert) checkOffset(offset, byteLength, this.length);
-                var val = this[offset];
-                var mul = 1;
-                var i = 0;
-                while (++i < byteLength && (mul *= 256)) {
-                    val += this[offset + i] * mul
-                }
-                mul *= 128;
-                if (val >= mul) val -= Math.pow(2, 8 * byteLength);
-                return val
-            };
-            Buffer.prototype.readIntBE = function readIntBE(offset, byteLength, noAssert) {
-                offset = offset >>> 0;
-                byteLength = byteLength >>> 0;
-                if (!noAssert) checkOffset(offset, byteLength, this.length);
-                var i = byteLength;
-                var mul = 1;
-                var val = this[offset + --i];
-                while (i > 0 && (mul *= 256)) {
-                    val += this[offset + --i] * mul
-                }
-                mul *= 128;
-                if (val >= mul) val -= Math.pow(2, 8 * byteLength);
-                return val
-            };
-            Buffer.prototype.readInt8 = function readInt8(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 1, this.length);
-                if (!(this[offset] & 128)) return this[offset];
-                return (255 - this[offset] + 1) * -1
-            };
-            Buffer.prototype.readInt16LE = function readInt16LE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 2, this.length);
-                var val = this[offset] | this[offset + 1] << 8;
-                return val & 32768 ? val | 4294901760 : val
-            };
-            Buffer.prototype.readInt16BE = function readInt16BE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 2, this.length);
-                var val = this[offset + 1] | this[offset] << 8;
-                return val & 32768 ? val | 4294901760 : val
-            };
-            Buffer.prototype.readInt32LE = function readInt32LE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 4, this.length);
-                return this[offset] | this[offset + 1] << 8 | this[offset + 2] << 16 | this[offset + 3] << 24
-            };
-            Buffer.prototype.readInt32BE = function readInt32BE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 4, this.length);
-                return this[offset] << 24 | this[offset + 1] << 16 | this[offset + 2] << 8 | this[offset + 3]
-            };
-            Buffer.prototype.readFloatLE = function readFloatLE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 4, this.length);
-                return ieee754.read(this, offset, true, 23, 4)
-            };
-            Buffer.prototype.readFloatBE = function readFloatBE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 4, this.length);
-                return ieee754.read(this, offset, false, 23, 4)
-            };
-            Buffer.prototype.readDoubleLE = function readDoubleLE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 8, this.length);
-                return ieee754.read(this, offset, true, 52, 8)
-            };
-            Buffer.prototype.readDoubleBE = function readDoubleBE(offset, noAssert) {
-                offset = offset >>> 0;
-                if (!noAssert) checkOffset(offset, 8, this.length);
-                return ieee754.read(this, offset, false, 52, 8)
-            };
+        function Qt(t) { return function(n) { return -t(-n) } }
 
-            function checkInt(buf, value, offset, ext, max, min) {
-                if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance');
-                if (value > max || value < min) throw new RangeError('"value" argument is out of bounds');
-                if (offset + ext > buf.length) throw new RangeError("Index out of range")
-            }
-            Buffer.prototype.writeUIntLE = function writeUIntLE(value, offset, byteLength, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                byteLength = byteLength >>> 0;
-                if (!noAssert) {
-                    var maxBytes = Math.pow(2, 8 * byteLength) - 1;
-                    checkInt(this, value, offset, byteLength, maxBytes, 0)
-                }
-                var mul = 1;
-                var i = 0;
-                this[offset] = value & 255;
-                while (++i < byteLength && (mul *= 256)) {
-                    this[offset + i] = value / mul & 255
-                }
-                return offset + byteLength
-            };
-            Buffer.prototype.writeUIntBE = function writeUIntBE(value, offset, byteLength, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                byteLength = byteLength >>> 0;
-                if (!noAssert) {
-                    var maxBytes = Math.pow(2, 8 * byteLength) - 1;
-                    checkInt(this, value, offset, byteLength, maxBytes, 0)
-                }
-                var i = byteLength - 1;
-                var mul = 1;
-                this[offset + i] = value & 255;
-                while (--i >= 0 && (mul *= 256)) {
-                    this[offset + i] = value / mul & 255
-                }
-                return offset + byteLength
-            };
-            Buffer.prototype.writeUInt8 = function writeUInt8(value, offset, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) checkInt(this, value, offset, 1, 255, 0);
-                this[offset] = value & 255;
-                return offset + 1
-            };
-            Buffer.prototype.writeUInt16LE = function writeUInt16LE(value, offset, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) checkInt(this, value, offset, 2, 65535, 0);
-                this[offset] = value & 255;
-                this[offset + 1] = value >>> 8;
-                return offset + 2
-            };
-            Buffer.prototype.writeUInt16BE = function writeUInt16BE(value, offset, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) checkInt(this, value, offset, 2, 65535, 0);
-                this[offset] = value >>> 8;
-                this[offset + 1] = value & 255;
-                return offset + 2
-            };
-            Buffer.prototype.writeUInt32LE = function writeUInt32LE(value, offset, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) checkInt(this, value, offset, 4, 4294967295, 0);
-                this[offset + 3] = value >>> 24;
-                this[offset + 2] = value >>> 16;
-                this[offset + 1] = value >>> 8;
-                this[offset] = value & 255;
-                return offset + 4
-            };
-            Buffer.prototype.writeUInt32BE = function writeUInt32BE(value, offset, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) checkInt(this, value, offset, 4, 4294967295, 0);
-                this[offset] = value >>> 24;
-                this[offset + 1] = value >>> 16;
-                this[offset + 2] = value >>> 8;
-                this[offset + 3] = value & 255;
-                return offset + 4
-            };
-            Buffer.prototype.writeIntLE = function writeIntLE(value, offset, byteLength, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) {
-                    var limit = Math.pow(2, 8 * byteLength - 1);
-                    checkInt(this, value, offset, byteLength, limit - 1, -limit)
-                }
-                var i = 0;
-                var mul = 1;
-                var sub = 0;
-                this[offset] = value & 255;
-                while (++i < byteLength && (mul *= 256)) {
-                    if (value < 0 && sub === 0 && this[offset + i - 1] !== 0) {
-                        sub = 1
-                    }
-                    this[offset + i] = (value / mul >> 0) - sub & 255
-                }
-                return offset + byteLength
-            };
-            Buffer.prototype.writeIntBE = function writeIntBE(value, offset, byteLength, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) {
-                    var limit = Math.pow(2, 8 * byteLength - 1);
-                    checkInt(this, value, offset, byteLength, limit - 1, -limit)
-                }
-                var i = byteLength - 1;
-                var mul = 1;
-                var sub = 0;
-                this[offset + i] = value & 255;
-                while (--i >= 0 && (mul *= 256)) {
-                    if (value < 0 && sub === 0 && this[offset + i + 1] !== 0) {
-                        sub = 1
-                    }
-                    this[offset + i] = (value / mul >> 0) - sub & 255
-                }
-                return offset + byteLength
-            };
-            Buffer.prototype.writeInt8 = function writeInt8(value, offset, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) checkInt(this, value, offset, 1, 127, -128);
-                if (value < 0) value = 255 + value + 1;
-                this[offset] = value & 255;
-                return offset + 1
-            };
-            Buffer.prototype.writeInt16LE = function writeInt16LE(value, offset, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) checkInt(this, value, offset, 2, 32767, -32768);
-                this[offset] = value & 255;
-                this[offset + 1] = value >>> 8;
-                return offset + 2
-            };
-            Buffer.prototype.writeInt16BE = function writeInt16BE(value, offset, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) checkInt(this, value, offset, 2, 32767, -32768);
-                this[offset] = value >>> 8;
-                this[offset + 1] = value & 255;
-                return offset + 2
-            };
-            Buffer.prototype.writeInt32LE = function writeInt32LE(value, offset, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) checkInt(this, value, offset, 4, 2147483647, -2147483648);
-                this[offset] = value & 255;
-                this[offset + 1] = value >>> 8;
-                this[offset + 2] = value >>> 16;
-                this[offset + 3] = value >>> 24;
-                return offset + 4
-            };
-            Buffer.prototype.writeInt32BE = function writeInt32BE(value, offset, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) checkInt(this, value, offset, 4, 2147483647, -2147483648);
-                if (value < 0) value = 4294967295 + value + 1;
-                this[offset] = value >>> 24;
-                this[offset + 1] = value >>> 16;
-                this[offset + 2] = value >>> 8;
-                this[offset + 3] = value & 255;
-                return offset + 4
-            };
+        function Jt(t) {
+            var n, e, r = t(Vt, Wt),
+                i = r.domain,
+                o = 10;
 
-            function checkIEEE754(buf, value, offset, ext, max, min) {
-                if (offset + ext > buf.length) throw new RangeError("Index out of range");
-                if (offset < 0) throw new RangeError("Index out of range")
-            }
+            function a() { return n = function(t) { return t === Math.E ? Math.log : 10 === t && Math.log10 || 2 === t && Math.log2 || (t = Math.log(t), function(n) { return Math.log(n) / t }) }(o), e = function(t) { return 10 === t ? Kt : t === Math.E ? Math.exp : function(n) { return Math.pow(t, n) } }(o), i()[0] < 0 ? (n = Qt(n), e = Qt(e), t(Gt, Zt)) : t(Vt, Wt), r }
+            return r.base = function(t) { return arguments.length ? (o = +t, a()) : o }, r.domain = function(t) { return arguments.length ? (i(t), a()) : i() }, r.ticks = function(t) {
+                var r, a = i(),
+                    s = a[0],
+                    u = a[a.length - 1];
+                (r = u < s) && (f = s, s = u, u = f);
+                var c, h, l, f = n(s),
+                    p = n(u),
+                    m = null == t ? 10 : +t,
+                    y = [];
+                if (!(o % 1) && p - f < m) {
+                    if (f = Math.floor(f), p = Math.ceil(p), s > 0) {
+                        for (; f <= p; ++f)
+                            for (h = 1, c = e(f); h < o; ++h)
+                                if (!((l = c * h) < s)) {
+                                    if (l > u) break;
+                                    y.push(l)
+                                }
+                    } else
+                        for (; f <= p; ++f)
+                            for (h = o - 1, c = e(f); h >= 1; --h)
+                                if (!((l = c * h) < s)) {
+                                    if (l > u) break;
+                                    y.push(l)
+                                }
+                    2 * y.length < m && (y = R(s, u, m))
+                } else y = R(f, p, Math.min(p - f, m)).map(e);
+                return r ? y.reverse() : y
+            }, r.tickFormat = function(t, i) {
+                if (null == i && (i = 10 === o ? ".0e" : ","), "function" != typeof i && (i = M(i)), t === 1 / 0) return i;
+                null == t && (t = 10);
+                var a = Math.max(1, o * t / r.ticks().length);
+                return function(t) { var r = t / e(Math.round(n(t))); return r * o < o - .5 && (r *= o), r <= a ? i(t) : "" }
+            }, r.nice = function() {
+                return i(function(t, n) {
+                    var e, r = 0,
+                        i = (t = t.slice()).length - 1,
+                        o = t[r],
+                        a = t[i];
+                    return a < o && (e = r, r = i, i = e, e = o, o = a, a = e), t[r] = n.floor(o), t[i] = n.ceil(a), t
+                }(i(), { floor: function(t) { return e(Math.floor(n(t))) }, ceil: function(t) { return e(Math.ceil(n(t))) } }))
+            }, r
+        }
+        var tn = Array.prototype.slice,
+            nn = function(t) { return t };
 
-            function writeFloat(buf, value, offset, littleEndian, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) {
-                    checkIEEE754(buf, value, offset, 4, 34028234663852886e22, -34028234663852886e22)
-                }
-                ieee754.write(buf, value, offset, littleEndian, 23, 4);
-                return offset + 4
-            }
-            Buffer.prototype.writeFloatLE = function writeFloatLE(value, offset, noAssert) {
-                return writeFloat(this, value, offset, true, noAssert)
-            };
-            Buffer.prototype.writeFloatBE = function writeFloatBE(value, offset, noAssert) {
-                return writeFloat(this, value, offset, false, noAssert)
-            };
+        function en(t) { return "translate(" + (t + .5) + ",0)" }
 
-            function writeDouble(buf, value, offset, littleEndian, noAssert) {
-                value = +value;
-                offset = offset >>> 0;
-                if (!noAssert) {
-                    checkIEEE754(buf, value, offset, 8, 17976931348623157e292, -17976931348623157e292)
-                }
-                ieee754.write(buf, value, offset, littleEndian, 52, 8);
-                return offset + 8
+        function rn(t) { return "translate(0," + (t + .5) + ")" }
+
+        function on(t) { return n => +t(n) }
+
+        function an(t) {
+            var n = Math.max(0, t.bandwidth() - 1) / 2;
+            return t.round() && (n = Math.round(n)),
+                function(e) { return +t(e) + n }
+        }
+
+        function sn() { return !this.__axis }
+
+        function un(t, n) {
+            var e = [],
+                r = null,
+                i = null,
+                o = 6,
+                a = 6,
+                s = 3,
+                u = 1 === t || 4 === t ? -1 : 1,
+                c = 4 === t || 2 === t ? "x" : "y",
+                h = 1 === t || 3 === t ? en : rn;
+
+            function l(l) {
+                var f = null == r ? n.ticks ? n.ticks.apply(n, e) : n.domain() : r,
+                    p = null == i ? n.tickFormat ? n.tickFormat.apply(n, e) : nn : i,
+                    m = Math.max(o, 0) + s,
+                    y = n.range(),
+                    d = +y[0] + .5,
+                    v = +y[y.length - 1] + .5,
+                    g = (n.bandwidth ? an : on)(n.copy()),
+                    w = l.selection ? l.selection() : l,
+                    x = w.selectAll(".domain").data([null]),
+                    _ = w.selectAll(".tick").data(f, n).order(),
+                    b = _.exit(),
+                    E = _.enter().append("g").attr("class", "tick"),
+                    M = _.select("line"),
+                    A = _.select("text");
+                x = x.merge(x.enter().insert("path", ".tick").attr("class", "domain").attr("stroke", "currentColor")), _ = _.merge(E), M = M.merge(E.append("line").attr("stroke", "currentColor").attr(c + "2", u * o)), A = A.merge(E.append("text").attr("fill", "currentColor").attr(c, u * m).attr("dy", 1 === t ? "0em" : 3 === t ? "0.71em" : "0.32em")), l !== w && (x = x.transition(l), _ = _.transition(l), M = M.transition(l), A = A.transition(l), b = b.transition(l).attr("opacity", 1e-6).attr("transform", (function(t) { return isFinite(t = g(t)) ? h(t) : this.getAttribute("transform") })), E.attr("opacity", 1e-6).attr("transform", (function(t) { var n = this.parentNode.__axis; return h(n && isFinite(n = n(t)) ? n : g(t)) }))), b.remove(), x.attr("d", 4 === t || 2 == t ? a ? "M" + u * a + "," + d + "H0.5V" + v + "H" + u * a : "M0.5," + d + "V" + v : a ? "M" + d + "," + u * a + "V0.5H" + v + "V" + u * a : "M" + d + ",0.5H" + v), _.attr("opacity", 1).attr("transform", (function(t) { return h(g(t)) })), M.attr(c + "2", u * o), A.attr(c, u * m).text(p), w.filter(sn).attr("fill", "none").attr("font-size", 10).attr("font-family", "sans-serif").attr("text-anchor", 2 === t ? "start" : 4 === t ? "end" : "middle"), w.each((function() { this.__axis = g }))
             }
-            Buffer.prototype.writeDoubleLE = function writeDoubleLE(value, offset, noAssert) {
-                return writeDouble(this, value, offset, true, noAssert)
-            };
-            Buffer.prototype.writeDoubleBE = function writeDoubleBE(value, offset, noAssert) {
-                return writeDouble(this, value, offset, false, noAssert)
-            };
-            Buffer.prototype.copy = function copy(target, targetStart, start, end) {
-                if (!Buffer.isBuffer(target)) throw new TypeError("argument should be a Buffer");
-                if (!start) start = 0;
-                if (!end && end !== 0) end = this.length;
-                if (targetStart >= target.length) targetStart = target.length;
-                if (!targetStart) targetStart = 0;
-                if (end > 0 && end < start) end = start;
-                if (end === start) return 0;
-                if (target.length === 0 || this.length === 0) return 0;
-                if (targetStart < 0) {
-                    throw new RangeError("targetStart out of bounds")
-                }
-                if (start < 0 || start >= this.length) throw new RangeError("Index out of range");
-                if (end < 0) throw new RangeError("sourceEnd out of bounds");
-                if (end > this.length) end = this.length;
-                if (target.length - targetStart < end - start) {
-                    end = target.length - targetStart + start
-                }
-                var len = end - start;
-                if (this === target && typeof Uint8Array.prototype.copyWithin === "function") {
-                    this.copyWithin(targetStart, start, end)
-                } else if (this === target && start < targetStart && targetStart < end) {
-                    for (var i = len - 1; i >= 0; --i) {
-                        target[i + targetStart] = this[i + start]
-                    }
-                } else {
-                    Uint8Array.prototype.set.call(target, this.subarray(start, end), targetStart)
-                }
-                return len
-            };
-            Buffer.prototype.fill = function fill(val, start, end, encoding) {
-                if (typeof val === "string") {
-                    if (typeof start === "string") {
-                        encoding = start;
-                        start = 0;
-                        end = this.length
-                    } else if (typeof end === "string") {
-                        encoding = end;
-                        end = this.length
-                    }
-                    if (encoding !== undefined && typeof encoding !== "string") {
-                        throw new TypeError("encoding must be a string")
-                    }
-                    if (typeof encoding === "string" && !Buffer.isEncoding(encoding)) {
-                        throw new TypeError("Unknown encoding: " + encoding)
-                    }
-                    if (val.length === 1) {
-                        var code = val.charCodeAt(0);
-                        if (encoding === "utf8" && code < 128 || encoding === "latin1") {
-                            val = code
-                        }
-                    }
-                } else if (typeof val === "number") {
-                    val = val & 255
-                }
-                if (start < 0 || this.length < start || this.length < end) {
-                    throw new RangeError("Out of range index")
-                }
-                if (end <= start) {
+            return l.scale = function(t) { return arguments.length ? (n = t, l) : n }, l.ticks = function() { return e = tn.call(arguments), l }, l.tickArguments = function(t) { return arguments.length ? (e = null == t ? [] : tn.call(t), l) : e.slice() }, l.tickValues = function(t) { return arguments.length ? (r = null == t ? null : tn.call(t), l) : r && r.slice() }, l.tickFormat = function(t) { return arguments.length ? (i = t, l) : i }, l.tickSize = function(t) { return arguments.length ? (o = a = +t, l) : o }, l.tickSizeInner = function(t) { return arguments.length ? (o = +t, l) : o }, l.tickSizeOuter = function(t) { return arguments.length ? (a = +t, l) : a }, l.tickPadding = function(t) { return arguments.length ? (s = +t, l) : s }, l
+        }
+        var cn = { value: () => {} };
+
+        function hn() {
+            for (var t, n = 0, e = arguments.length, r = {}; n < e; ++n) {
+                if (!(t = arguments[n] + "") || t in r || /[\s.]/.test(t)) throw new Error("illegal type: " + t);
+                r[t] = []
+            }
+            return new ln(r)
+        }
+
+        function ln(t) { this._ = t }
+
+        function fn(t, n) {
+            return t.trim().split(/^|\s+/).map((function(t) {
+                var e = "",
+                    r = t.indexOf(".");
+                if (r >= 0 && (e = t.slice(r + 1), t = t.slice(0, r)), t && !n.hasOwnProperty(t)) throw new Error("unknown type: " + t);
+                return { type: t, name: e }
+            }))
+        }
+
+        function pn(t, n) {
+            for (var e, r = 0, i = t.length; r < i; ++r)
+                if ((e = t[r]).name === n) return e.value
+        }
+
+        function mn(t, n, e) {
+            for (var r = 0, i = t.length; r < i; ++r)
+                if (t[r].name === n) { t[r] = cn, t = t.slice(0, r).concat(t.slice(r + 1)); break }
+            return null != e && t.push({ name: n, value: e }), t
+        }
+        ln.prototype = hn.prototype = {
+            constructor: ln,
+            on: function(t, n) {
+                var e, r = this._,
+                    i = fn(t + "", r),
+                    o = -1,
+                    a = i.length;
+                if (!(arguments.length < 2)) {
+                    if (null != n && "function" != typeof n) throw new Error("invalid callback: " + n);
+                    for (; ++o < a;)
+                        if (e = (t = i[o]).type) r[e] = mn(r[e], t.name, n);
+                        else if (null == n)
+                        for (e in r) r[e] = mn(r[e], t.name, null);
                     return this
                 }
-                start = start >>> 0;
-                end = end === undefined ? this.length : end >>> 0;
-                if (!val) val = 0;
-                var i;
-                if (typeof val === "number") {
-                    for (i = start; i < end; ++i) {
-                        this[i] = val
-                    }
-                } else {
-                    var bytes = Buffer.isBuffer(val) ? val : Buffer.from(val, encoding);
-                    var len = bytes.length;
-                    if (len === 0) {
-                        throw new TypeError('The value "' + val + '" is invalid for argument "value"')
-                    }
-                    for (i = 0; i < end - start; ++i) {
-                        this[i + start] = bytes[i % len]
-                    }
+                for (; ++o < a;)
+                    if ((e = (t = i[o]).type) && (e = pn(r[e], t.name))) return e
+            },
+            copy: function() {
+                var t = {},
+                    n = this._;
+                for (var e in n) t[e] = n[e].slice();
+                return new ln(t)
+            },
+            call: function(t, n) {
+                if ((e = arguments.length - 2) > 0)
+                    for (var e, r, i = new Array(e), o = 0; o < e; ++o) i[o] = arguments[o + 2];
+                if (!this._.hasOwnProperty(t)) throw new Error("unknown type: " + t);
+                for (o = 0, e = (r = this._[t]).length; o < e; ++o) r[o].value.apply(n, i)
+            },
+            apply: function(t, n, e) { if (!this._.hasOwnProperty(t)) throw new Error("unknown type: " + t); for (var r = this._[t], i = 0, o = r.length; i < o; ++i) r[i].value.apply(n, e) }
+        };
+        var yn = hn;
+
+        function dn() {}
+        var vn = function(t) { return null == t ? dn : function() { return this.querySelector(t) } },
+            gn = function(t) { return "object" == typeof t && "length" in t ? t : Array.from(t) };
+
+        function wn() { return [] }
+        var xn = function(t) { return null == t ? wn : function() { return this.querySelectorAll(t) } };
+        var _n = function(t) { return function() { return this.matches(t) } };
+
+        function bn(t) { return function(n) { return n.matches(t) } }
+        var En = Array.prototype.find;
+
+        function Mn() { return this.firstElementChild }
+        var An = Array.prototype.filter;
+
+        function Tn() { return this.children }
+        var kn = function(t) { return new Array(t.length) };
+
+        function In(t, n) { this.ownerDocument = t.ownerDocument, this.namespaceURI = t.namespaceURI, this._next = null, this._parent = t, this.__data__ = n }
+        In.prototype = { constructor: In, appendChild: function(t) { return this._parent.insertBefore(t, this._next) }, insertBefore: function(t, n) { return this._parent.insertBefore(t, n) }, querySelector: function(t) { return this._parent.querySelector(t) }, querySelectorAll: function(t) { return this._parent.querySelectorAll(t) } };
+        var Sn = function(t) { return function() { return t } };
+
+        function Nn(t, n, e, r, i, o) { for (var a, s = 0, u = n.length, c = o.length; s < c; ++s)(a = n[s]) ? (a.__data__ = o[s], r[s] = a) : e[s] = new In(t, o[s]); for (; s < u; ++s)(a = n[s]) && (i[s] = a) }
+
+        function Ln(t, n, e, r, i, o, a) {
+            var s, u, c, h = new Map,
+                l = n.length,
+                f = o.length,
+                p = new Array(l);
+            for (s = 0; s < l; ++s)(u = n[s]) && (p[s] = c = a.call(u, u.__data__, s, n) + "", h.has(c) ? i[s] = u : h.set(c, u));
+            for (s = 0; s < f; ++s) c = a.call(t, o[s], s, o) + "", (u = h.get(c)) ? (r[s] = u, u.__data__ = o[s], h.delete(c)) : e[s] = new In(t, o[s]);
+            for (s = 0; s < l; ++s)(u = n[s]) && h.get(p[s]) === u && (i[s] = u)
+        }
+
+        function Pn(t) { return t.__data__ }
+
+        function On(t, n) { return t < n ? -1 : t > n ? 1 : t >= n ? 0 : NaN }
+        var Rn = "http://www.w3.org/1999/xhtml",
+            Hn = { svg: "http://www.w3.org/2000/svg", xhtml: Rn, xlink: "http://www.w3.org/1999/xlink", xml: "http://www.w3.org/XML/1998/namespace", xmlns: "http://www.w3.org/2000/xmlns/" },
+            Yn = function(t) {
+                var n = t += "",
+                    e = n.indexOf(":");
+                return e >= 0 && "xmlns" !== (n = t.slice(0, e)) && (t = t.slice(e + 1)), Hn.hasOwnProperty(n) ? { space: Hn[n], local: t } : t
+            };
+
+        function jn(t) { return function() { this.removeAttribute(t) } }
+
+        function Cn(t) { return function() { this.removeAttributeNS(t.space, t.local) } }
+
+        function zn(t, n) { return function() { this.setAttribute(t, n) } }
+
+        function Bn(t, n) { return function() { this.setAttributeNS(t.space, t.local, n) } }
+
+        function Un(t, n) {
+            return function() {
+                var e = n.apply(this, arguments);
+                null == e ? this.removeAttribute(t) : this.setAttribute(t, e)
+            }
+        }
+
+        function Fn(t, n) {
+            return function() {
+                var e = n.apply(this, arguments);
+                null == e ? this.removeAttributeNS(t.space, t.local) : this.setAttributeNS(t.space, t.local, e)
+            }
+        }
+        var Dn = function(t) { return t.ownerDocument && t.ownerDocument.defaultView || t.document && t || t.defaultView };
+
+        function qn(t) { return function() { this.style.removeProperty(t) } }
+
+        function Xn(t, n, e) { return function() { this.style.setProperty(t, n, e) } }
+
+        function $n(t, n, e) {
+            return function() {
+                var r = n.apply(this, arguments);
+                null == r ? this.style.removeProperty(t) : this.style.setProperty(t, r, e)
+            }
+        }
+
+        function Vn(t, n) { return t.style.getPropertyValue(n) || Dn(t).getComputedStyle(t, null).getPropertyValue(n) }
+
+        function Wn(t) { return function() { delete this[t] } }
+
+        function Gn(t, n) { return function() { this[t] = n } }
+
+        function Zn(t, n) {
+            return function() {
+                var e = n.apply(this, arguments);
+                null == e ? delete this[t] : this[t] = e
+            }
+        }
+
+        function Kn(t) { return t.trim().split(/^|\s+/) }
+
+        function Qn(t) { return t.classList || new Jn(t) }
+
+        function Jn(t) { this._node = t, this._names = Kn(t.getAttribute("class") || "") }
+
+        function te(t, n) { for (var e = Qn(t), r = -1, i = n.length; ++r < i;) e.add(n[r]) }
+
+        function ne(t, n) { for (var e = Qn(t), r = -1, i = n.length; ++r < i;) e.remove(n[r]) }
+
+        function ee(t) { return function() { te(this, t) } }
+
+        function re(t) { return function() { ne(this, t) } }
+
+        function ie(t, n) {
+            return function() {
+                (n.apply(this, arguments) ? te : ne)(this, t)
+            }
+        }
+        Jn.prototype = {
+            add: function(t) { this._names.indexOf(t) < 0 && (this._names.push(t), this._node.setAttribute("class", this._names.join(" "))) },
+            remove: function(t) {
+                var n = this._names.indexOf(t);
+                n >= 0 && (this._names.splice(n, 1), this._node.setAttribute("class", this._names.join(" ")))
+            },
+            contains: function(t) { return this._names.indexOf(t) >= 0 }
+        };
+
+        function oe() { this.textContent = "" }
+
+        function ae(t) { return function() { this.textContent = t } }
+
+        function se(t) {
+            return function() {
+                var n = t.apply(this, arguments);
+                this.textContent = null == n ? "" : n
+            }
+        }
+
+        function ue() { this.innerHTML = "" }
+
+        function ce(t) { return function() { this.innerHTML = t } }
+
+        function he(t) {
+            return function() {
+                var n = t.apply(this, arguments);
+                this.innerHTML = null == n ? "" : n
+            }
+        }
+
+        function le() { this.nextSibling && this.parentNode.appendChild(this) }
+
+        function fe() { this.previousSibling && this.parentNode.insertBefore(this, this.parentNode.firstChild) }
+
+        function pe(t) {
+            return function() {
+                var n = this.ownerDocument,
+                    e = this.namespaceURI;
+                return e === Rn && n.documentElement.namespaceURI === Rn ? n.createElement(t) : n.createElementNS(e, t)
+            }
+        }
+
+        function me(t) { return function() { return this.ownerDocument.createElementNS(t.space, t.local) } }
+        var ye = function(t) { var n = Yn(t); return (n.local ? me : pe)(n) };
+
+        function de() { return null }
+
+        function ve() {
+            var t = this.parentNode;
+            t && t.removeChild(this)
+        }
+
+        function ge() {
+            var t = this.cloneNode(!1),
+                n = this.parentNode;
+            return n ? n.insertBefore(t, this.nextSibling) : t
+        }
+
+        function we() {
+            var t = this.cloneNode(!0),
+                n = this.parentNode;
+            return n ? n.insertBefore(t, this.nextSibling) : t
+        }
+
+        function xe(t) {
+            return t.trim().split(/^|\s+/).map((function(t) {
+                var n = "",
+                    e = t.indexOf(".");
+                return e >= 0 && (n = t.slice(e + 1), t = t.slice(0, e)), { type: t, name: n }
+            }))
+        }
+
+        function _e(t) { return function() { var n = this.__on; if (n) { for (var e, r = 0, i = -1, o = n.length; r < o; ++r) e = n[r], t.type && e.type !== t.type || e.name !== t.name ? n[++i] = e : this.removeEventListener(e.type, e.listener, e.options);++i ? n.length = i : delete this.__on } } }
+
+        function be(t, n, e) {
+            return function() {
+                var r, i = this.__on,
+                    o = function(t) { return function(n) { t.call(this, n, this.__data__) } }(n);
+                if (i)
+                    for (var a = 0, s = i.length; a < s; ++a)
+                        if ((r = i[a]).type === t.type && r.name === t.name) return this.removeEventListener(r.type, r.listener, r.options), this.addEventListener(r.type, r.listener = o, r.options = e), void(r.value = n);
+                this.addEventListener(t.type, o, e), r = { type: t.type, name: t.name, value: n, listener: o, options: e }, i ? i.push(r) : this.__on = [r]
+            }
+        }
+
+        function Ee(t, n, e) {
+            var r = Dn(t),
+                i = r.CustomEvent;
+            "function" == typeof i ? i = new i(n, e) : (i = r.document.createEvent("Event"), e ? (i.initEvent(n, e.bubbles, e.cancelable), i.detail = e.detail) : i.initEvent(n, !1, !1)), t.dispatchEvent(i)
+        }
+
+        function Me(t, n) { return function() { return Ee(this, t, n) } }
+
+        function Ae(t, n) { return function() { return Ee(this, t, n.apply(this, arguments)) } }
+        var Te = [null];
+
+        function ke(t, n) { this._groups = t, this._parents = n }
+
+        function Ie() {
+            return new ke([
+                [document.documentElement]
+            ], Te)
+        }
+        ke.prototype = Ie.prototype = {
+            constructor: ke,
+            select: function(t) {
+                "function" != typeof t && (t = vn(t));
+                for (var n = this._groups, e = n.length, r = new Array(e), i = 0; i < e; ++i)
+                    for (var o, a, s = n[i], u = s.length, c = r[i] = new Array(u), h = 0; h < u; ++h)(o = s[h]) && (a = t.call(o, o.__data__, h, s)) && ("__data__" in o && (a.__data__ = o.__data__), c[h] = a);
+                return new ke(r, this._parents)
+            },
+            selectAll: function(t) {
+                t = "function" == typeof t ? function(t) { return function() { var n = t.apply(this, arguments); return null == n ? [] : gn(n) } }(t) : xn(t);
+                for (var n = this._groups, e = n.length, r = [], i = [], o = 0; o < e; ++o)
+                    for (var a, s = n[o], u = s.length, c = 0; c < u; ++c)(a = s[c]) && (r.push(t.call(a, a.__data__, c, s)), i.push(a));
+                return new ke(r, i)
+            },
+            selectChild: function(t) { return this.select(null == t ? Mn : function(t) { return function() { return En.call(this.children, t) } }("function" == typeof t ? t : bn(t))) },
+            selectChildren: function(t) { return this.selectAll(null == t ? Tn : function(t) { return function() { return An.call(this.children, t) } }("function" == typeof t ? t : bn(t))) },
+            filter: function(t) {
+                "function" != typeof t && (t = _n(t));
+                for (var n = this._groups, e = n.length, r = new Array(e), i = 0; i < e; ++i)
+                    for (var o, a = n[i], s = a.length, u = r[i] = [], c = 0; c < s; ++c)(o = a[c]) && t.call(o, o.__data__, c, a) && u.push(o);
+                return new ke(r, this._parents)
+            },
+            data: function(t, n) {
+                if (!arguments.length) return Array.from(this, Pn);
+                var e = n ? Ln : Nn,
+                    r = this._parents,
+                    i = this._groups;
+                "function" != typeof t && (t = Sn(t));
+                for (var o = i.length, a = new Array(o), s = new Array(o), u = new Array(o), c = 0; c < o; ++c) {
+                    var h = r[c],
+                        l = i[c],
+                        f = l.length,
+                        p = gn(t.call(h, h && h.__data__, c, r)),
+                        m = p.length,
+                        y = s[c] = new Array(m),
+                        d = a[c] = new Array(m),
+                        v = u[c] = new Array(f);
+                    e(h, l, y, d, v, p, n);
+                    for (var g, w, x = 0, _ = 0; x < m; ++x)
+                        if (g = y[x]) {
+                            for (x >= _ && (_ = x + 1); !(w = d[_]) && ++_ < m;);
+                            g._next = w || null
+                        }
                 }
+                return (a = new ke(a, r))._enter = s, a._exit = u, a
+            },
+            enter: function() { return new ke(this._enter || this._groups.map(kn), this._parents) },
+            exit: function() { return new ke(this._exit || this._groups.map(kn), this._parents) },
+            join: function(t, n, e) {
+                var r = this.enter(),
+                    i = this,
+                    o = this.exit();
+                return r = "function" == typeof t ? t(r) : r.append(t + ""), null != n && (i = n(i)), null == e ? o.remove() : e(o), r && i ? r.merge(i).order() : i
+            },
+            merge: function(t) {
+                if (!(t instanceof ke)) throw new Error("invalid merge");
+                for (var n = this._groups, e = t._groups, r = n.length, i = e.length, o = Math.min(r, i), a = new Array(r), s = 0; s < o; ++s)
+                    for (var u, c = n[s], h = e[s], l = c.length, f = a[s] = new Array(l), p = 0; p < l; ++p)(u = c[p] || h[p]) && (f[p] = u);
+                for (; s < r; ++s) a[s] = n[s];
+                return new ke(a, this._parents)
+            },
+            selection: function() { return this },
+            order: function() {
+                for (var t = this._groups, n = -1, e = t.length; ++n < e;)
+                    for (var r, i = t[n], o = i.length - 1, a = i[o]; --o >= 0;)(r = i[o]) && (a && 4 ^ r.compareDocumentPosition(a) && a.parentNode.insertBefore(r, a), a = r);
                 return this
-            };
-            var INVALID_BASE64_RE = /[^+/0-9A-Za-z-_]/g;
-
-            function base64clean(str) {
-                str = str.split("=")[0];
-                str = str.trim().replace(INVALID_BASE64_RE, "");
-                if (str.length < 2) return "";
-                while (str.length % 4 !== 0) {
-                    str = str + "="
+            },
+            sort: function(t) {
+                function n(n, e) { return n && e ? t(n.__data__, e.__data__) : !n - !e }
+                t || (t = On);
+                for (var e = this._groups, r = e.length, i = new Array(r), o = 0; o < r; ++o) {
+                    for (var a, s = e[o], u = s.length, c = i[o] = new Array(u), h = 0; h < u; ++h)(a = s[h]) && (c[h] = a);
+                    c.sort(n)
                 }
-                return str
+                return new ke(i, this._parents).order()
+            },
+            call: function() { var t = arguments[0]; return arguments[0] = this, t.apply(null, arguments), this },
+            nodes: function() { return Array.from(this) },
+            node: function() {
+                for (var t = this._groups, n = 0, e = t.length; n < e; ++n)
+                    for (var r = t[n], i = 0, o = r.length; i < o; ++i) { var a = r[i]; if (a) return a }
+                return null
+            },
+            size: function() { let t = 0; for (const n of this) ++t; return t },
+            empty: function() { return !this.node() },
+            each: function(t) {
+                for (var n = this._groups, e = 0, r = n.length; e < r; ++e)
+                    for (var i, o = n[e], a = 0, s = o.length; a < s; ++a)(i = o[a]) && t.call(i, i.__data__, a, o);
+                return this
+            },
+            attr: function(t, n) { var e = Yn(t); if (arguments.length < 2) { var r = this.node(); return e.local ? r.getAttributeNS(e.space, e.local) : r.getAttribute(e) } return this.each((null == n ? e.local ? Cn : jn : "function" == typeof n ? e.local ? Fn : Un : e.local ? Bn : zn)(e, n)) },
+            style: function(t, n, e) { return arguments.length > 1 ? this.each((null == n ? qn : "function" == typeof n ? $n : Xn)(t, n, null == e ? "" : e)) : Vn(this.node(), t) },
+            property: function(t, n) { return arguments.length > 1 ? this.each((null == n ? Wn : "function" == typeof n ? Zn : Gn)(t, n)) : this.node()[t] },
+            classed: function(t, n) {
+                var e = Kn(t + "");
+                if (arguments.length < 2) {
+                    for (var r = Qn(this.node()), i = -1, o = e.length; ++i < o;)
+                        if (!r.contains(e[i])) return !1;
+                    return !0
+                }
+                return this.each(("function" == typeof n ? ie : n ? ee : re)(e, n))
+            },
+            text: function(t) { return arguments.length ? this.each(null == t ? oe : ("function" == typeof t ? se : ae)(t)) : this.node().textContent },
+            html: function(t) { return arguments.length ? this.each(null == t ? ue : ("function" == typeof t ? he : ce)(t)) : this.node().innerHTML },
+            raise: function() { return this.each(le) },
+            lower: function() { return this.each(fe) },
+            append: function(t) { var n = "function" == typeof t ? t : ye(t); return this.select((function() { return this.appendChild(n.apply(this, arguments)) })) },
+            insert: function(t, n) {
+                var e = "function" == typeof t ? t : ye(t),
+                    r = null == n ? de : "function" == typeof n ? n : vn(n);
+                return this.select((function() { return this.insertBefore(e.apply(this, arguments), r.apply(this, arguments) || null) }))
+            },
+            remove: function() { return this.each(ve) },
+            clone: function(t) { return this.select(t ? we : ge) },
+            datum: function(t) { return arguments.length ? this.property("__data__", t) : this.node().__data__ },
+            on: function(t, n, e) {
+                var r, i, o = xe(t + ""),
+                    a = o.length;
+                if (!(arguments.length < 2)) { for (s = n ? be : _e, r = 0; r < a; ++r) this.each(s(o[r], n, e)); return this }
+                var s = this.node().__on;
+                if (s)
+                    for (var u, c = 0, h = s.length; c < h; ++c)
+                        for (r = 0, u = s[c]; r < a; ++r)
+                            if ((i = o[r]).type === u.type && i.name === u.name) return u.value
+            },
+            dispatch: function(t, n) { return this.each(("function" == typeof n ? Ae : Me)(t, n)) },
+            [Symbol.iterator]: function*() {
+                for (var t = this._groups, n = 0, e = t.length; n < e; ++n)
+                    for (var r, i = t[n], o = 0, a = i.length; o < a; ++o)(r = i[o]) && (yield r)
             }
+        };
+        var Se = Ie,
+            Ne = function(t) {
+                return "string" == typeof t ? new ke([
+                    [document.querySelector(t)]
+                ], [document.documentElement]) : new ke([
+                    [t]
+                ], Te)
+            };
+        var Le = function(t) { t.preventDefault(), t.stopImmediatePropagation() },
+            Pe = function(t) {
+                var n = t.document.documentElement,
+                    e = Ne(t).on("dragstart.drag", Le, !0);
+                "onselectstart" in n ? e.on("selectstart.drag", Le, !0) : (n.__noselect = n.style.MozUserSelect, n.style.MozUserSelect = "none")
+            };
 
-            function toHex(n) {
-                if (n < 16) return "0" + n.toString(16);
-                return n.toString(16)
+        function Oe(t, n) {
+            var e = t.document.documentElement,
+                r = Ne(t).on("dragstart.drag", null);
+            n && (r.on("click.drag", Le, !0), setTimeout((function() { r.on("click.drag", null) }), 0)), "onselectstart" in e ? r.on("selectstart.drag", null) : (e.style.MozUserSelect = e.__noselect, delete e.__noselect)
+        }
+
+        function Re(t) { return ((t = Math.exp(t)) + 1 / t) / 2 }
+        var He, Ye, je = function t(n, e, r) {
+                function i(t, i) {
+                    var o, a, s = t[0],
+                        u = t[1],
+                        c = t[2],
+                        h = i[0],
+                        l = i[1],
+                        f = i[2],
+                        p = h - s,
+                        m = l - u,
+                        y = p * p + m * m;
+                    if (y < 1e-12) a = Math.log(f / c) / n, o = function(t) { return [s + t * p, u + t * m, c * Math.exp(n * t * a)] };
+                    else {
+                        var d = Math.sqrt(y),
+                            v = (f * f - c * c + r * y) / (2 * c * e * d),
+                            g = (f * f - c * c - r * y) / (2 * f * e * d),
+                            w = Math.log(Math.sqrt(v * v + 1) - v),
+                            x = Math.log(Math.sqrt(g * g + 1) - g);
+                        a = (x - w) / n, o = function(t) {
+                            var r, i = t * a,
+                                o = Re(w),
+                                h = c / (e * d) * (o * (r = n * i + w, ((r = Math.exp(2 * r)) - 1) / (r + 1)) - function(t) { return ((t = Math.exp(t)) - 1 / t) / 2 }(w));
+                            return [s + h * p, u + h * m, c * o / Re(n * i + w)]
+                        }
+                    }
+                    return o.duration = 1e3 * a * n / Math.SQRT2, o
+                }
+                return i.rho = function(n) {
+                    var e = Math.max(.001, +n),
+                        r = e * e;
+                    return t(e, r, r * r)
+                }, i
+            }(Math.SQRT2, 2, 4),
+            Ce = function(t, n) { if (t = function(t) { let n; for (; n = t.sourceEvent;) t = n; return t }(t), void 0 === n && (n = t.currentTarget), n) { var e = n.ownerSVGElement || n; if (e.createSVGPoint) { var r = e.createSVGPoint(); return r.x = t.clientX, r.y = t.clientY, [(r = r.matrixTransform(n.getScreenCTM().inverse())).x, r.y] } if (n.getBoundingClientRect) { var i = n.getBoundingClientRect(); return [t.clientX - i.left - n.clientLeft, t.clientY - i.top - n.clientTop] } } return [t.pageX, t.pageY] },
+            ze = 0,
+            Be = 0,
+            Ue = 0,
+            Fe = 0,
+            De = 0,
+            qe = 0,
+            Xe = "object" == typeof performance && performance.now ? performance : Date,
+            $e = "object" == typeof window && window.requestAnimationFrame ? window.requestAnimationFrame.bind(window) : function(t) { setTimeout(t, 17) };
+
+        function Ve() { return De || ($e(We), De = Xe.now() + qe) }
+
+        function We() { De = 0 }
+
+        function Ge() { this._call = this._time = this._next = null }
+
+        function Ze(t, n, e) { var r = new Ge; return r.restart(t, n, e), r }
+
+        function Ke() {
+            De = (Fe = Xe.now()) + qe, ze = Be = 0;
+            try {! function() { Ve(), ++ze; for (var t, n = He; n;)(t = De - n._time) >= 0 && n._call.call(null, t), n = n._next;--ze }() } finally {
+                ze = 0,
+                    function() {
+                        var t, n, e = He,
+                            r = 1 / 0;
+                        for (; e;) e._call ? (r > e._time && (r = e._time), t = e, e = e._next) : (n = e._next, e._next = null, e = t ? t._next = n : He = n);
+                        Ye = t, Je(r)
+                    }(), De = 0
             }
+        }
 
-            function utf8ToBytes(string, units) {
-                units = units || Infinity;
-                var codePoint;
-                var length = string.length;
-                var leadSurrogate = null;
-                var bytes = [];
-                for (var i = 0; i < length; ++i) {
-                    codePoint = string.charCodeAt(i);
-                    if (codePoint > 55295 && codePoint < 57344) {
-                        if (!leadSurrogate) {
-                            if (codePoint > 56319) {
-                                if ((units -= 3) > -1) bytes.push(239, 191, 189);
-                                continue
-                            } else if (i + 1 === length) {
-                                if ((units -= 3) > -1) bytes.push(239, 191, 189);
-                                continue
+        function Qe() {
+            var t = Xe.now(),
+                n = t - Fe;
+            n > 1e3 && (qe -= n, Fe = t)
+        }
+
+        function Je(t) { ze || (Be && (Be = clearTimeout(Be)), t - De > 24 ? (t < 1 / 0 && (Be = setTimeout(Ke, t - Xe.now() - qe)), Ue && (Ue = clearInterval(Ue))) : (Ue || (Fe = Xe.now(), Ue = setInterval(Qe, 1e3)), ze = 1, $e(Ke))) }
+        Ge.prototype = Ze.prototype = {
+            constructor: Ge,
+            restart: function(t, n, e) {
+                if ("function" != typeof t) throw new TypeError("callback is not a function");
+                e = (null == e ? Ve() : +e) + (null == n ? 0 : +n), this._next || Ye === this || (Ye ? Ye._next = this : He = this, Ye = this), this._call = t, this._time = e, Je()
+            },
+            stop: function() { this._call && (this._call = null, this._time = 1 / 0, Je()) }
+        };
+        var tr = function(t, n, e) { var r = new Ge; return n = null == n ? 0 : +n, r.restart(e => { r.stop(), t(e + n) }, n, e), r },
+            nr = yn("start", "end", "cancel", "interrupt"),
+            er = [],
+            rr = function(t, n, e, r, i, o) {
+                var a = t.__transition;
+                if (a) { if (e in a) return } else t.__transition = {};
+                ! function(t, n, e) {
+                    var r, i = t.__transition;
+
+                    function o(u) {
+                        var c, h, l, f;
+                        if (1 !== e.state) return s();
+                        for (c in i)
+                            if ((f = i[c]).name === e.name) {
+                                if (3 === f.state) return tr(o);
+                                4 === f.state ? (f.state = 6, f.timer.stop(), f.on.call("interrupt", t, t.__data__, f.index, f.group), delete i[c]) : +c < n && (f.state = 6, f.timer.stop(), f.on.call("cancel", t, t.__data__, f.index, f.group), delete i[c])
                             }
-                            leadSurrogate = codePoint;
-                            continue
+                        if (tr((function() { 3 === e.state && (e.state = 4, e.timer.restart(a, e.delay, e.time), a(u)) })), e.state = 2, e.on.call("start", t, t.__data__, e.index, e.group), 2 === e.state) {
+                            for (e.state = 3, r = new Array(l = e.tween.length), c = 0, h = -1; c < l; ++c)(f = e.tween[c].value.call(t, t.__data__, e.index, e.group)) && (r[++h] = f);
+                            r.length = h + 1
                         }
-                        if (codePoint < 56320) {
-                            if ((units -= 3) > -1) bytes.push(239, 191, 189);
-                            leadSurrogate = codePoint;
-                            continue
-                        }
-                        codePoint = (leadSurrogate - 55296 << 10 | codePoint - 56320) + 65536
-                    } else if (leadSurrogate) {
-                        if ((units -= 3) > -1) bytes.push(239, 191, 189)
                     }
-                    leadSurrogate = null;
-                    if (codePoint < 128) {
-                        if ((units -= 1) < 0) break;
-                        bytes.push(codePoint)
-                    } else if (codePoint < 2048) {
-                        if ((units -= 2) < 0) break;
-                        bytes.push(codePoint >> 6 | 192, codePoint & 63 | 128)
-                    } else if (codePoint < 65536) {
-                        if ((units -= 3) < 0) break;
-                        bytes.push(codePoint >> 12 | 224, codePoint >> 6 & 63 | 128, codePoint & 63 | 128)
-                    } else if (codePoint < 1114112) {
-                        if ((units -= 4) < 0) break;
-                        bytes.push(codePoint >> 18 | 240, codePoint >> 12 & 63 | 128, codePoint >> 6 & 63 | 128, codePoint & 63 | 128)
-                    } else {
-                        throw new Error("Invalid code point")
-                    }
-                }
-                return bytes
-            }
 
-            function asciiToBytes(str) {
-                var byteArray = [];
-                for (var i = 0; i < str.length; ++i) {
-                    byteArray.push(str.charCodeAt(i) & 255)
-                }
-                return byteArray
-            }
+                    function a(n) {
+                        for (var i = n < e.duration ? e.ease.call(null, n / e.duration) : (e.timer.restart(s), e.state = 5, 1), o = -1, a = r.length; ++o < a;) r[o].call(t, i);
+                        5 === e.state && (e.on.call("end", t, t.__data__, e.index, e.group), s())
+                    }
 
-            function utf16leToBytes(str, units) {
-                var c, hi, lo;
-                var byteArray = [];
-                for (var i = 0; i < str.length; ++i) {
-                    if ((units -= 2) < 0) break;
-                    c = str.charCodeAt(i);
-                    hi = c >> 8;
-                    lo = c % 256;
-                    byteArray.push(lo);
-                    byteArray.push(hi)
-                }
-                return byteArray
-            }
-
-            function base64ToBytes(str) {
-                return base64.toByteArray(base64clean(str))
-            }
-
-            function blitBuffer(src, dst, offset, length) {
-                for (var i = 0; i < length; ++i) {
-                    if (i + offset >= dst.length || i >= src.length) break;
-                    dst[i + offset] = src[i]
-                }
-                return i
-            }
-
-            function isInstance(obj, type) {
-                return obj instanceof type || obj != null && obj.constructor != null && obj.constructor.name != null && obj.constructor.name === type.name
-            }
-
-            function numberIsNaN(obj) {
-                return obj !== obj
-            }
-        }, {
-            "base64-js": 23,
-            ieee754: 32
-        }],
-        26: [function(require, module, exports) {
-            "use strict";
-            module.exports = require("./lib/eval")
-        }, {
-            "./lib/eval": 28
-        }],
-        27: [function(require, module, exports) {
-            "use strict";
-            module.exports = function() {
-                var math = Object.create(Math);
-                math.factory = function(a) {
-                    if (typeof a !== "number") {
-                        throw new TypeError("built-in math factory only accepts numbers")
+                    function s() {
+                        for (var r in e.state = 6, e.timer.stop(), delete i[n], i) return;
+                        delete t.__transition
                     }
-                    return Number(a)
-                };
-                math.add = function(a, b) {
-                    return a + b
-                };
-                math.sub = function(a, b) {
-                    return a - b
-                };
-                math.mul = function(a, b) {
-                    return a * b
-                };
-                math.div = function(a, b) {
-                    return a / b
-                };
-                math.mod = function(a, b) {
-                    return a % b
-                };
-                math.factorial = function(a) {
-                    var res = 1;
-                    for (var i = 2; i <= a; i += 1) {
-                        res *= i
-                    }
-                    return res
-                };
-                math.nthRoot = function(a, root) {
-                    var inv = root < 0;
-                    if (inv) {
-                        root = -root
-                    }
-                    if (root === 0) {
-                        throw new Error("Root must be non-zero")
-                    }
-                    if (a < 0 && Math.abs(root) % 2 !== 1) {
-                        throw new Error("Root must be odd when a is negative.")
-                    }
-                    if (a === 0) {
-                        return 0
-                    }
-                    if (!isFinite(a)) {
-                        return inv ? 0 : a
-                    }
-                    var x = Math.pow(Math.abs(a), 1 / root);
-                    x = a < 0 ? -x : x;
-                    return inv ? 1 / x : x
-                };
-                math.logicalOR = function(a, b) {
-                    return a || b
-                };
-                math.logicalXOR = function(a, b) {
-                    return a != b
-                };
-                math.logicalAND = function(a, b) {
-                    return a && b
-                };
-                math.bitwiseOR = function(a, b) {
-                    return a | b
-                };
-                math.bitwiseXOR = function(a, b) {
-                    return a ^ b
-                };
-                math.bitwiseAND = function(a, b) {
-                    return a & b
-                };
-                math.lessThan = function(a, b) {
-                    return a < b
-                };
-                math.lessEqualThan = function(a, b) {
-                    return a <= b
-                };
-                math.greaterThan = function(a, b) {
-                    return a > b
-                };
-                math.greaterEqualThan = function(a, b) {
-                    return a >= b
-                };
-                math.equal = function(a, b) {
-                    return a == b
-                };
-                math.strictlyEqual = function(a, b) {
-                    return a === b
-                };
-                math.notEqual = function(a, b) {
-                    return a != b
-                };
-                math.strictlyNotEqual = function(a, b) {
-                    return a !== b
-                };
-                math.shiftRight = function(a, b) {
-                    return a >> b
-                };
-                math.shiftLeft = function(a, b) {
-                    return a << b
-                };
-                math.unsignedRightShift = function(a, b) {
-                    return a >>> b
-                };
-                math.negative = function(a) {
-                    return -a
-                };
-                math.positive = function(a) {
-                    return a
-                };
-                return math
-            }
-        }, {}],
-        28: [function(require, module, exports) {
-            "use strict";
-            var CodeGenerator = require("math-codegen");
-            var math = require("./adapter")();
-
-            function processScope(scope) {
-                Object.keys(scope).forEach(function(k) {
-                    var value = scope[k];
-                    scope[k] = math.factory(value)
-                })
-            }
-            module.exports = function(expression) {
-                return (new CodeGenerator).setDefs({
-                    $$processScope: processScope
-                }).parse(expression).compile(math)
+                    i[n] = e, e.timer = Ze((function(t) { e.state = 1, e.timer.restart(o, e.delay, e.time), e.delay <= t && o(t - e.delay) }), 0, e.time)
+                }(t, e, { name: n, index: r, group: i, on: nr, tween: er, time: o.time, delay: o.delay, duration: o.duration, ease: o.ease, timer: null, state: 0 })
             };
-            module.exports.math = math
-        }, {
-            "./adapter": 27,
-            "math-codegen": 58
-        }],
-        29: [function(require, module, exports) {
-            module.exports = clamp;
 
-            function clamp(value, min, max) {
-                return min < max ? value < min ? min : value > max ? max : value : value < max ? max : value > min ? min : value
+        function ir(t, n) { var e = ar(t, n); if (e.state > 0) throw new Error("too late; already scheduled"); return e }
+
+        function or(t, n) { var e = ar(t, n); if (e.state > 3) throw new Error("too late; already running"); return e }
+
+        function ar(t, n) { var e = t.__transition; if (!e || !(e = e[n])) throw new Error("transition not found"); return e }
+        var sr, ur = function(t, n) {
+                var e, r, i, o = t.__transition,
+                    a = !0;
+                if (o) {
+                    for (i in n = null == n ? null : n + "", o)(e = o[i]).name === n ? (r = e.state > 2 && e.state < 5, e.state = 6, e.timer.stop(), e.on.call(r ? "interrupt" : "cancel", t, t.__data__, e.index, e.group), delete o[i]) : a = !1;
+                    a && delete t.__transition
+                }
+            },
+            cr = 180 / Math.PI,
+            hr = { translateX: 0, translateY: 0, rotate: 0, skewX: 0, scaleX: 1, scaleY: 1 },
+            lr = function(t, n, e, r, i, o) { var a, s, u; return (a = Math.sqrt(t * t + n * n)) && (t /= a, n /= a), (u = t * e + n * r) && (e -= t * u, r -= n * u), (s = Math.sqrt(e * e + r * r)) && (e /= s, r /= s, u /= s), t * r < n * e && (t = -t, n = -n, u = -u, a = -a), { translateX: i, translateY: o, rotate: Math.atan2(n, t) * cr, skewX: Math.atan(u) * cr, scaleX: a, scaleY: s } };
+
+        function fr(t, n, e, r) {
+            function i(t) { return t.length ? t.pop() + " " : "" }
+            return function(o, a) {
+                var s = [],
+                    u = [];
+                return o = t(o), a = t(a),
+                    function(t, r, i, o, a, s) {
+                        if (t !== i || r !== o) {
+                            var u = a.push("translate(", null, n, null, e);
+                            s.push({ i: u - 4, x: It(t, i) }, { i: u - 2, x: It(r, o) })
+                        } else(i || o) && a.push("translate(" + i + n + o + e)
+                    }(o.translateX, o.translateY, a.translateX, a.translateY, s, u),
+                    function(t, n, e, o) { t !== n ? (t - n > 180 ? n += 360 : n - t > 180 && (t += 360), o.push({ i: e.push(i(e) + "rotate(", null, r) - 2, x: It(t, n) })) : n && e.push(i(e) + "rotate(" + n + r) }(o.rotate, a.rotate, s, u),
+                    function(t, n, e, o) { t !== n ? o.push({ i: e.push(i(e) + "skewX(", null, r) - 2, x: It(t, n) }) : n && e.push(i(e) + "skewX(" + n + r) }(o.skewX, a.skewX, s, u),
+                    function(t, n, e, r, o, a) {
+                        if (t !== e || n !== r) {
+                            var s = o.push(i(o) + "scale(", null, ",", null, ")");
+                            a.push({ i: s - 4, x: It(t, e) }, { i: s - 2, x: It(n, r) })
+                        } else 1 === e && 1 === r || o.push(i(o) + "scale(" + e + "," + r + ")")
+                    }(o.scaleX, o.scaleY, a.scaleX, a.scaleY, s, u), o = a = null,
+                    function(t) { for (var n, e = -1, r = u.length; ++e < r;) s[(n = u[e]).i] = n.x(t); return s.join("") }
             }
-        }, {}],
-        30: [function(require, module, exports) {
-            (function(Buffer) {
-                var hasTypedArrays = false;
-                if (typeof Float64Array !== "undefined") {
-                    var DOUBLE_VIEW = new Float64Array(1),
-                        UINT_VIEW = new Uint32Array(DOUBLE_VIEW.buffer);
-                    DOUBLE_VIEW[0] = 1;
-                    hasTypedArrays = true;
-                    if (UINT_VIEW[1] === 1072693248) {
-                        module.exports = function doubleBitsLE(n) {
-                            DOUBLE_VIEW[0] = n;
-                            return [UINT_VIEW[0], UINT_VIEW[1]]
-                        };
+        }
+        var pr = fr((function(t) { const n = new("function" == typeof DOMMatrix ? DOMMatrix : WebKitCSSMatrix)(t + ""); return n.isIdentity ? hr : lr(n.a, n.b, n.c, n.d, n.e, n.f) }), "px, ", "px)", "deg)"),
+            mr = fr((function(t) { return null == t ? hr : (sr || (sr = document.createElementNS("http://www.w3.org/2000/svg", "g")), sr.setAttribute("transform", t), (t = sr.transform.baseVal.consolidate()) ? (t = t.matrix, lr(t.a, t.b, t.c, t.d, t.e, t.f)) : hr) }), ", ", ")", ")");
 
-                        function toDoubleLE(lo, hi) {
-                            UINT_VIEW[0] = lo;
-                            UINT_VIEW[1] = hi;
-                            return DOUBLE_VIEW[0]
+        function yr(t, n) {
+            var e, r;
+            return function() {
+                var i = or(this, t),
+                    o = i.tween;
+                if (o !== e)
+                    for (var a = 0, s = (r = e = o).length; a < s; ++a)
+                        if (r[a].name === n) {
+                            (r = r.slice()).splice(a, 1);
+                            break
                         }
-                        module.exports.pack = toDoubleLE;
+                i.tween = r
+            }
+        }
 
-                        function lowUintLE(n) {
-                            DOUBLE_VIEW[0] = n;
-                            return UINT_VIEW[0]
+        function dr(t, n, e) {
+            var r, i;
+            if ("function" != typeof e) throw new Error;
+            return function() {
+                var o = or(this, t),
+                    a = o.tween;
+                if (a !== r) {
+                    i = (r = a).slice();
+                    for (var s = { name: n, value: e }, u = 0, c = i.length; u < c; ++u)
+                        if (i[u].name === n) { i[u] = s; break }
+                    u === c && i.push(s)
+                }
+                o.tween = i
+            }
+        }
+
+        function vr(t, n, e) {
+            var r = t._id;
+            return t.each((function() {
+                    var t = or(this, r);
+                    (t.value || (t.value = {}))[n] = e.apply(this, arguments)
+                })),
+                function(t) { return ar(t, r).value[n] }
+        }
+        var gr = function(t, n) { var e; return ("number" == typeof n ? It : n instanceof rt ? bt : (e = rt(n)) ? (n = e, bt) : Pt)(t, n) };
+
+        function wr(t) { return function() { this.removeAttribute(t) } }
+
+        function xr(t) { return function() { this.removeAttributeNS(t.space, t.local) } }
+
+        function _r(t, n, e) { var r, i, o = e + ""; return function() { var a = this.getAttribute(t); return a === o ? null : a === r ? i : i = n(r = a, e) } }
+
+        function br(t, n, e) { var r, i, o = e + ""; return function() { var a = this.getAttributeNS(t.space, t.local); return a === o ? null : a === r ? i : i = n(r = a, e) } }
+
+        function Er(t, n, e) {
+            var r, i, o;
+            return function() {
+                var a, s, u = e(this);
+                if (null != u) return (a = this.getAttribute(t)) === (s = u + "") ? null : a === r && s === i ? o : (i = s, o = n(r = a, u));
+                this.removeAttribute(t)
+            }
+        }
+
+        function Mr(t, n, e) {
+            var r, i, o;
+            return function() {
+                var a, s, u = e(this);
+                if (null != u) return (a = this.getAttributeNS(t.space, t.local)) === (s = u + "") ? null : a === r && s === i ? o : (i = s, o = n(r = a, u));
+                this.removeAttributeNS(t.space, t.local)
+            }
+        }
+
+        function Ar(t, n) { return function(e) { this.setAttribute(t, n.call(this, e)) } }
+
+        function Tr(t, n) { return function(e) { this.setAttributeNS(t.space, t.local, n.call(this, e)) } }
+
+        function kr(t, n) {
+            var e, r;
+
+            function i() { var i = n.apply(this, arguments); return i !== r && (e = (r = i) && Tr(t, i)), e }
+            return i._value = n, i
+        }
+
+        function Ir(t, n) {
+            var e, r;
+
+            function i() { var i = n.apply(this, arguments); return i !== r && (e = (r = i) && Ar(t, i)), e }
+            return i._value = n, i
+        }
+
+        function Sr(t, n) { return function() { ir(this, t).delay = +n.apply(this, arguments) } }
+
+        function Nr(t, n) {
+            return n = +n,
+                function() { ir(this, t).delay = n }
+        }
+
+        function Lr(t, n) { return function() { or(this, t).duration = +n.apply(this, arguments) } }
+
+        function Pr(t, n) {
+            return n = +n,
+                function() { or(this, t).duration = n }
+        }
+
+        function Or(t, n) { if ("function" != typeof n) throw new Error; return function() { or(this, t).ease = n } }
+
+        function Rr(t, n, e) {
+            var r, i, o = function(t) { return (t + "").trim().split(/^|\s+/).every((function(t) { var n = t.indexOf("."); return n >= 0 && (t = t.slice(0, n)), !t || "start" === t })) }(n) ? ir : or;
+            return function() {
+                var a = o(this, t),
+                    s = a.on;
+                s !== r && (i = (r = s).copy()).on(n, e), a.on = i
+            }
+        }
+        var Hr = Se.prototype.constructor;
+
+        function Yr(t) { return function() { this.style.removeProperty(t) } }
+
+        function jr(t, n, e) { return function(r) { this.style.setProperty(t, n.call(this, r), e) } }
+
+        function Cr(t, n, e) {
+            var r, i;
+
+            function o() { var o = n.apply(this, arguments); return o !== i && (r = (i = o) && jr(t, o, e)), r }
+            return o._value = n, o
+        }
+
+        function zr(t) { return function(n) { this.textContent = t.call(this, n) } }
+
+        function Br(t) {
+            var n, e;
+
+            function r() { var r = t.apply(this, arguments); return r !== e && (n = (e = r) && zr(r)), n }
+            return r._value = t, r
+        }
+        var Ur = 0;
+
+        function Fr(t, n, e, r) { this._groups = t, this._parents = n, this._name = e, this._id = r }
+
+        function Dr() { return ++Ur }
+        var qr = Se.prototype;
+        Fr.prototype = function(t) { return Se().transition(t) }.prototype = {
+            constructor: Fr,
+            select: function(t) {
+                var n = this._name,
+                    e = this._id;
+                "function" != typeof t && (t = vn(t));
+                for (var r = this._groups, i = r.length, o = new Array(i), a = 0; a < i; ++a)
+                    for (var s, u, c = r[a], h = c.length, l = o[a] = new Array(h), f = 0; f < h; ++f)(s = c[f]) && (u = t.call(s, s.__data__, f, c)) && ("__data__" in s && (u.__data__ = s.__data__), l[f] = u, rr(l[f], n, e, f, l, ar(s, e)));
+                return new Fr(o, this._parents, n, e)
+            },
+            selectAll: function(t) {
+                var n = this._name,
+                    e = this._id;
+                "function" != typeof t && (t = xn(t));
+                for (var r = this._groups, i = r.length, o = [], a = [], s = 0; s < i; ++s)
+                    for (var u, c = r[s], h = c.length, l = 0; l < h; ++l)
+                        if (u = c[l]) {
+                            for (var f, p = t.call(u, u.__data__, l, c), m = ar(u, e), y = 0, d = p.length; y < d; ++y)(f = p[y]) && rr(f, n, e, y, p, m);
+                            o.push(p), a.push(u)
                         }
-                        module.exports.lo = lowUintLE;
-
-                        function highUintLE(n) {
-                            DOUBLE_VIEW[0] = n;
-                            return UINT_VIEW[1]
+                return new Fr(o, a, n, e)
+            },
+            filter: function(t) {
+                "function" != typeof t && (t = _n(t));
+                for (var n = this._groups, e = n.length, r = new Array(e), i = 0; i < e; ++i)
+                    for (var o, a = n[i], s = a.length, u = r[i] = [], c = 0; c < s; ++c)(o = a[c]) && t.call(o, o.__data__, c, a) && u.push(o);
+                return new Fr(r, this._parents, this._name, this._id)
+            },
+            merge: function(t) {
+                if (t._id !== this._id) throw new Error;
+                for (var n = this._groups, e = t._groups, r = n.length, i = e.length, o = Math.min(r, i), a = new Array(r), s = 0; s < o; ++s)
+                    for (var u, c = n[s], h = e[s], l = c.length, f = a[s] = new Array(l), p = 0; p < l; ++p)(u = c[p] || h[p]) && (f[p] = u);
+                for (; s < r; ++s) a[s] = n[s];
+                return new Fr(a, this._parents, this._name, this._id)
+            },
+            selection: function() { return new Hr(this._groups, this._parents) },
+            transition: function() {
+                for (var t = this._name, n = this._id, e = Dr(), r = this._groups, i = r.length, o = 0; o < i; ++o)
+                    for (var a, s = r[o], u = s.length, c = 0; c < u; ++c)
+                        if (a = s[c]) {
+                            var h = ar(a, n);
+                            rr(a, t, e, c, s, { time: h.time + h.delay + h.duration, delay: 0, duration: h.duration, ease: h.ease })
                         }
-                        module.exports.hi = highUintLE
-                    } else if (UINT_VIEW[0] === 1072693248) {
-                        module.exports = function doubleBitsBE(n) {
-                            DOUBLE_VIEW[0] = n;
-                            return [UINT_VIEW[1], UINT_VIEW[0]]
-                        };
+                return new Fr(r, this._parents, t, e)
+            },
+            call: qr.call,
+            nodes: qr.nodes,
+            node: qr.node,
+            size: qr.size,
+            empty: qr.empty,
+            each: qr.each,
+            on: function(t, n) { var e = this._id; return arguments.length < 2 ? ar(this.node(), e).on.on(t) : this.each(Rr(e, t, n)) },
+            attr: function(t, n) {
+                var e = Yn(t),
+                    r = "transform" === e ? mr : gr;
+                return this.attrTween(t, "function" == typeof n ? (e.local ? Mr : Er)(e, r, vr(this, "attr." + t, n)) : null == n ? (e.local ? xr : wr)(e) : (e.local ? br : _r)(e, r, n))
+            },
+            attrTween: function(t, n) { var e = "attr." + t; if (arguments.length < 2) return (e = this.tween(e)) && e._value; if (null == n) return this.tween(e, null); if ("function" != typeof n) throw new Error; var r = Yn(t); return this.tween(e, (r.local ? kr : Ir)(r, n)) },
+            style: function(t, n, e) {
+                var r = "transform" == (t += "") ? pr : gr;
+                return null == n ? this.styleTween(t, function(t, n) {
+                    var e, r, i;
+                    return function() {
+                        var o = Vn(this, t),
+                            a = (this.style.removeProperty(t), Vn(this, t));
+                        return o === a ? null : o === e && a === r ? i : i = n(e = o, r = a)
+                    }
+                }(t, r)).on("end.style." + t, Yr(t)) : "function" == typeof n ? this.styleTween(t, function(t, n, e) {
+                    var r, i, o;
+                    return function() {
+                        var a = Vn(this, t),
+                            s = e(this),
+                            u = s + "";
+                        return null == s && (this.style.removeProperty(t), u = s = Vn(this, t)), a === u ? null : a === r && u === i ? o : (i = u, o = n(r = a, s))
+                    }
+                }(t, r, vr(this, "style." + t, n))).each(function(t, n) {
+                    var e, r, i, o, a = "style." + n,
+                        s = "end." + a;
+                    return function() {
+                        var u = or(this, t),
+                            c = u.on,
+                            h = null == u.value[a] ? o || (o = Yr(n)) : void 0;
+                        c === e && i === h || (r = (e = c).copy()).on(s, i = h), u.on = r
+                    }
+                }(this._id, t)) : this.styleTween(t, function(t, n, e) { var r, i, o = e + ""; return function() { var a = Vn(this, t); return a === o ? null : a === r ? i : i = n(r = a, e) } }(t, r, n), e).on("end.style." + t, null)
+            },
+            styleTween: function(t, n, e) { var r = "style." + (t += ""); if (arguments.length < 2) return (r = this.tween(r)) && r._value; if (null == n) return this.tween(r, null); if ("function" != typeof n) throw new Error; return this.tween(r, Cr(t, n, null == e ? "" : e)) },
+            text: function(t) {
+                return this.tween("text", "function" == typeof t ? function(t) {
+                    return function() {
+                        var n = t(this);
+                        this.textContent = null == n ? "" : n
+                    }
+                }(vr(this, "text", t)) : function(t) { return function() { this.textContent = t } }(null == t ? "" : t + ""))
+            },
+            textTween: function(t) { var n = "text"; if (arguments.length < 1) return (n = this.tween(n)) && n._value; if (null == t) return this.tween(n, null); if ("function" != typeof t) throw new Error; return this.tween(n, Br(t)) },
+            remove: function() {
+                return this.on("end.remove", (t = this._id, function() {
+                    var n = this.parentNode;
+                    for (var e in this.__transition)
+                        if (+e !== t) return;
+                    n && n.removeChild(this)
+                }));
+                var t
+            },
+            tween: function(t, n) {
+                var e = this._id;
+                if (t += "", arguments.length < 2) {
+                    for (var r, i = ar(this.node(), e).tween, o = 0, a = i.length; o < a; ++o)
+                        if ((r = i[o]).name === t) return r.value;
+                    return null
+                }
+                return this.each((null == n ? yr : dr)(e, t, n))
+            },
+            delay: function(t) { var n = this._id; return arguments.length ? this.each(("function" == typeof t ? Sr : Nr)(n, t)) : ar(this.node(), n).delay },
+            duration: function(t) { var n = this._id; return arguments.length ? this.each(("function" == typeof t ? Lr : Pr)(n, t)) : ar(this.node(), n).duration },
+            ease: function(t) { var n = this._id; return arguments.length ? this.each(Or(n, t)) : ar(this.node(), n).ease },
+            easeVarying: function(t) {
+                if ("function" != typeof t) throw new Error;
+                return this.each(function(t, n) {
+                    return function() {
+                        var e = n.apply(this, arguments);
+                        if ("function" != typeof e) throw new Error;
+                        or(this, t).ease = e
+                    }
+                }(this._id, t))
+            },
+            end: function() {
+                var t, n, e = this,
+                    r = e._id,
+                    i = e.size();
+                return new Promise((function(o, a) {
+                    var s = { value: a },
+                        u = { value: function() { 0 == --i && o() } };
+                    e.each((function() {
+                        var e = or(this, r),
+                            i = e.on;
+                        i !== t && ((n = (t = i).copy())._.cancel.push(s), n._.interrupt.push(s), n._.end.push(u)), e.on = n
+                    })), 0 === i && o()
+                }))
+            },
+            [Symbol.iterator]: qr[Symbol.iterator]
+        };
+        var Xr = { time: null, delay: 0, duration: 250, ease: function(t) { return ((t *= 2) <= 1 ? t * t * t : (t -= 2) * t * t + 2) / 2 } };
 
-                        function toDoubleBE(lo, hi) {
-                            UINT_VIEW[1] = lo;
-                            UINT_VIEW[0] = hi;
-                            return DOUBLE_VIEW[0]
+        function $r(t, n) {
+            for (var e; !(e = t.__transition) || !(e = e[n]);)
+                if (!(t = t.parentNode)) throw new Error(`transition ${n} not found`);
+            return e
+        }
+        Se.prototype.interrupt = function(t) { return this.each((function() { ur(this, t) })) }, Se.prototype.transition = function(t) {
+            var n, e;
+            t instanceof Fr ? (n = t._id, t = t._name) : (n = Dr(), (e = Xr).time = Ve(), t = null == t ? null : t + "");
+            for (var r = this._groups, i = r.length, o = 0; o < i; ++o)
+                for (var a, s = r[o], u = s.length, c = 0; c < u; ++c)(a = s[c]) && rr(a, t, n, c, s, e || $r(a, n));
+            return new Fr(r, this._parents, t, n)
+        };
+        var Vr = t => () => t;
+
+        function Wr(t, { sourceEvent: n, target: e, transform: r, dispatch: i }) { Object.defineProperties(this, { type: { value: t, enumerable: !0, configurable: !0 }, sourceEvent: { value: n, enumerable: !0, configurable: !0 }, target: { value: e, enumerable: !0, configurable: !0 }, transform: { value: r, enumerable: !0, configurable: !0 }, _: { value: i } }) }
+
+        function Gr(t, n, e) { this.k = t, this.x = n, this.y = e }
+        Gr.prototype = { constructor: Gr, scale: function(t) { return 1 === t ? this : new Gr(this.k * t, this.x, this.y) }, translate: function(t, n) { return 0 === t & 0 === n ? this : new Gr(this.k, this.x + this.k * t, this.y + this.k * n) }, apply: function(t) { return [t[0] * this.k + this.x, t[1] * this.k + this.y] }, applyX: function(t) { return t * this.k + this.x }, applyY: function(t) { return t * this.k + this.y }, invert: function(t) { return [(t[0] - this.x) / this.k, (t[1] - this.y) / this.k] }, invertX: function(t) { return (t - this.x) / this.k }, invertY: function(t) { return (t - this.y) / this.k }, rescaleX: function(t) { return t.copy().domain(t.range().map(this.invertX, this).map(t.invert, t)) }, rescaleY: function(t) { return t.copy().domain(t.range().map(this.invertY, this).map(t.invert, t)) }, toString: function() { return "translate(" + this.x + "," + this.y + ") scale(" + this.k + ")" } };
+        var Zr = new Gr(1, 0, 0);
+
+        function Kr(t) { t.stopImmediatePropagation() }
+        Gr.prototype;
+        var Qr = function(t) { t.preventDefault(), t.stopImmediatePropagation() };
+
+        function Jr(t) { return !(t.ctrlKey && "wheel" !== t.type || t.button) }
+
+        function ti() {
+            var t = this;
+            return t instanceof SVGElement ? (t = t.ownerSVGElement || t).hasAttribute("viewBox") ? [
+                [(t = t.viewBox.baseVal).x, t.y],
+                [t.x + t.width, t.y + t.height]
+            ] : [
+                [0, 0],
+                [t.width.baseVal.value, t.height.baseVal.value]
+            ] : [
+                [0, 0],
+                [t.clientWidth, t.clientHeight]
+            ]
+        }
+
+        function ni() { return this.__zoom || Zr }
+
+        function ei(t) { return -t.deltaY * (1 === t.deltaMode ? .05 : t.deltaMode ? 1 : .002) * (t.ctrlKey ? 10 : 1) }
+
+        function ri() { return navigator.maxTouchPoints || "ontouchstart" in this }
+
+        function ii(t, n, e) {
+            var r = t.invertX(n[0][0]) - e[0][0],
+                i = t.invertX(n[1][0]) - e[1][0],
+                o = t.invertY(n[0][1]) - e[0][1],
+                a = t.invertY(n[1][1]) - e[1][1];
+            return t.translate(i > r ? (r + i) / 2 : Math.min(0, r) || Math.max(0, i), a > o ? (o + a) / 2 : Math.min(0, o) || Math.max(0, a))
+        }
+        var oi = e(35),
+            ai = e.n(oi);
+        var si = e(6),
+            ui = e.n(si);
+        const ci = { COLORS: ["steelblue", "red", "#05b378", "orange", "#4040e8", "yellow", "brown", "magenta", "cyan"].map((function(t) { return mt(t) })), DEFAULT_WIDTH: 550, DEFAULT_HEIGHT: 350, TIP_X_EPS: 1, DEFAULT_ITERATIONS: null };
+        ci.MAX_ITERATIONS = 10 * ci.DEFAULT_WIDTH;
+        var hi = ci,
+            li = e(9),
+            fi = e.n(li),
+            pi = e(36),
+            mi = e.n(pi),
+            yi = e(15),
+            di = e.n(yi);
+        var vi = {
+                isValidNumber: function(t) { return "number" == typeof t && !isNaN(t) },
+                space: function(t, n, e) {
+                    var r = n[0],
+                        i = n[1];
+                    return "log" === t.options.xAxis.type ? mi()(di()(r), di()(i), e) : fi()(r, i, e)
+                },
+                getterSetter: function(t, n) {
+                    var e = this;
+                    this[n] = function(r) { return arguments.length ? (t[n] = r, e) : t[n] }
+                },
+                sgn: function(t) { return t < 0 ? -1 : t > 0 ? 1 : 0 },
+                color: function(t, n) { return t.color || hi.COLORS[n] }
+            },
+            gi = e(0);
+
+        function wi(t, n, e, r, i) {
+            if (!i) return { asymptote: !0, d0: t, d1: n };
+            const o = t[0],
+                a = n[0],
+                s = fi()(o, a, 10);
+            let u, c;
+            for (let t = 0; t < 10; t += 1) {
+                const n = s[t],
+                    o = Object(gi.builtIn)(e, "fn", { x: n });
+                if (t && u) { const t = o - u; if (vi.sgn(t) === r) return wi([c, u], [n, o], e, r, i - 1) }
+                u = o, c = n
+            }
+            return { asymptote: !1, d0: t, d1: n }
+        }
+
+        function xi(t, n, e, r) {
+            const i = vi.space(t, e, r),
+                o = t.meta.yScale.domain(),
+                a = o[1] - o[0],
+                s = o[0] - 1e5 * a,
+                u = o[1] + 1e5 * a;
+            let c = [];
+            for (let t = 0; t < i.length; t += 1) {
+                const e = i[t],
+                    r = Object(gi.builtIn)(n, "fn", { x: e });
+                vi.isValidNumber(e) && vi.isValidNumber(r) && c.push([e, ui()(r, s, u)])
+            }
+            return c = function(t, n, e) {
+                let r, i, o, a = [];
+                const s = [],
+                    u = t.meta.yScale.domain(),
+                    c = u[0],
+                    h = u[1];
+
+                function l(t) { return t[1] = Math.min(t[1], h), t[1] = Math.max(t[1], c), t }
+                for (e[0] && (a.push(e[0]), o = e[1][0] - e[0][0], i = vi.sgn(e[1][1] - e[0][1])), r = 1; r < e.length;) {
+                    const t = e[r - 1][1],
+                        u = e[r][1] - t,
+                        c = vi.sgn(u);
+                    if (i !== c && Math.abs(u / o) > 1) {
+                        const t = wi(e[r - 1], e[r], n, c, 3);
+                        t.asymptote && (a.push(l(t.d0)), s.push(a), a = [l(t.d1)])
+                    }
+                    i = c, a.push(e[r]), ++r
+                }
+                return a.length && s.push(a), s
+            }(t, n, c), c
+        }
+
+        function _i(t, n, e, r) {
+            const i = n.range || [0, 2 * Math.PI],
+                o = vi.space(t, i, r),
+                a = [];
+            for (let t = 0; t < o.length; t += 1) {
+                const e = o[t],
+                    r = Object(gi.builtIn)(n, "x", { t: e }),
+                    i = Object(gi.builtIn)(n, "y", { t: e });
+                a.push([r, i])
+            }
+            return [a]
+        }
+
+        function bi(t, n, e, r) {
+            const i = n.range || [-Math.PI, Math.PI],
+                o = vi.space(t, i, r),
+                a = [];
+            for (let t = 0; t < o.length; t += 1) {
+                const e = o[t],
+                    r = Object(gi.builtIn)(n, "r", { theta: e }),
+                    i = r * Math.cos(e),
+                    s = r * Math.sin(e);
+                a.push([i, s])
+            }
+            return [a]
+        }
+
+        function Ei(t, n, e, r) { return [n.points] }
+
+        function Mi(t, n, e, r) {
+            return n.offset = n.offset || [0, 0], [
+                [n.offset, [n.vector[0] + n.offset[0], n.vector[1] + n.offset[1]]]
+            ]
+        }
+        var Ai = function(t, n, e, r) { const i = { parametric: _i, polar: bi, points: Ei, vector: Mi, linear: xi }; if (!(n.fnType in i)) throw Error(n.fnType + " is not supported in the `builtIn` sampler"); return i[n.fnType].apply(null, arguments) },
+            Ti = e(10),
+            ki = e.n(Ti);
+        const Ii = ki.a.Interval;
+
+        function Si(t, n, e, r) {
+            const i = vi.space(t, e, r),
+                o = t.meta.xScale,
+                a = t.meta.yScale,
+                s = a.domain()[0],
+                u = a.domain()[1],
+                c = [];
+            let h;
+            for (h = 0; h < i.length - 1; h += 1) {
+                const t = { lo: i[h], hi: i[h + 1] },
+                    e = Object(gi.interval)(n, "fn", { x: t });
+                Ii.isEmpty(e) || Ii.isWhole(e) || c.push([t, e]), Ii.isWhole(e) && c.push(null)
+            }
+            for (h = 1; h < c.length - 1; h += 1)
+                if (!c[h]) {
+                    const t = c[h - 1],
+                        n = c[h + 1];
+                    t && n && !Ii.intervalsOverlap(t[1], n[1]) && (t[1].lo > n[1].hi && (t[1].hi = Math.max(u, t[1].hi), n[1].lo = Math.min(s, n[1].lo)), t[1].hi < n[1].lo && (t[1].lo = Math.min(s, t[1].lo), n[1].hi = Math.max(u, n[1].hi)))
+                }
+            return c.scaledDx = o(i[1]) - o(i[0]), [c]
+        }
+        let Ni;
+
+        function Li(t, n, e) {
+            const r = Object(gi.interval)(e, "fn", { x: t, y: n });
+            if (!Ii.zeroIn(r)) return this;
+            if (function(t, n) { return Ii.width(t) < Ni }(t)) return this.push([t, n]), this;
+            const i = t.lo + (t.hi - t.lo) / 2,
+                o = n.lo + (n.hi - n.lo) / 2,
+                a = { lo: i, hi: t.hi },
+                s = { lo: t.lo, hi: i },
+                u = { lo: o, hi: n.hi },
+                c = { lo: n.lo, hi: o };
+            Li.call(this, a, u, e), Li.call(this, a, c, e), Li.call(this, s, u, e), Li.call(this, s, c, e)
+        }
+
+        function Pi(t, n) {
+            const e = t.meta.xScale,
+                r = t.meta.xScale.domain(),
+                i = t.meta.yScale.domain(),
+                o = { lo: r[0], hi: r[1] },
+                a = { lo: i[0], hi: i[1] },
+                s = [];
+            return Ni = e.invert(1) - e.invert(0), Li.call(s, o, a, n), s.scaledDx = 1, [s]
+        }
+        ki.a.policies.disableRounding();
+        const Oi = { interval: function(t, n, e, r) { const i = { implicit: Pi, linear: Si }; if (!i.hasOwnProperty(n.fnType)) throw Error(n.fnType + " is not supported in the `interval` sampler"); return i[n.fnType].apply(null, arguments) }, builtIn: Ai };
+        var Ri = function(t, n) {
+            const e = function(t, n) { const e = n.range || [-1 / 0, 1 / 0]; return [Math.max(t.domain()[0], e[0]), Math.min(t.domain()[1], e[1])] }(t.meta.xScale, n),
+                r = (0, Oi[n.sampler])(t, n, e, n.nSamples || Math.min(hi.MAX_ITERATIONS, hi.DEFAULT_ITERATIONS || 2 * t.meta.width));
+            return t.emit("eval", r, n.index, n.isHelper), r
+        };
+
+        function Hi(t) {
+            return function n(e) {
+                e.each((function(e) {
+                    const r = n.el = Ne(this),
+                        i = e.index,
+                        o = Ri(t, e),
+                        a = vi.color(e, i),
+                        s = r.selectAll(":scope > path.line").data(o),
+                        u = t.meta.yScale.range();
+                    let f = u[0],
+                        v = u[1];
+                    const g = f - v;
+
+                    function w(n) { return ui()(t.meta.yScale(n[1]), v, f) }
+                    f += 1e6 * g, v -= 1e6 * g, e.skipBoundsCheck && (f = 1 / 0, v = -1 / 0);
+                    const x = d().curve(p).x((function(n) { return t.meta.xScale(n[0]) })).y(w),
+                        _ = function(t, n, e) {
+                            var r = null,
+                                i = l(!0),
+                                o = null,
+                                a = p,
+                                s = null;
+
+                            function u(u) {
+                                var l, f, p, m, y, d = (u = h(u)).length,
+                                    v = !1,
+                                    g = new Array(d),
+                                    w = new Array(d);
+                                for (null == o && (s = a(y = c())), l = 0; l <= d; ++l) {
+                                    if (!(l < d && i(m = u[l], l, u)) === v)
+                                        if (v = !v) f = l, s.areaStart(), s.lineStart();
+                                        else {
+                                            for (s.lineEnd(), s.lineStart(), p = l - 1; p >= f; --p) s.point(g[p], w[p]);
+                                            s.lineEnd(), s.areaEnd()
+                                        }
+                                    v && (g[l] = +t(m, l, u), w[l] = +n(m, l, u), s.point(r ? +r(m, l, u) : g[l], e ? +e(m, l, u) : w[l]))
+                                }
+                                if (y) return s = null, y + "" || null
+                            }
+
+                            function f() { return d().defined(i).curve(a).context(o) }
+                            return t = "function" == typeof t ? t : void 0 === t ? m : l(+t), n = "function" == typeof n ? n : l(void 0 === n ? 0 : +n), e = "function" == typeof e ? e : void 0 === e ? y : l(+e), u.x = function(n) { return arguments.length ? (t = "function" == typeof n ? n : l(+n), r = null, u) : t }, u.x0 = function(n) { return arguments.length ? (t = "function" == typeof n ? n : l(+n), u) : t }, u.x1 = function(t) { return arguments.length ? (r = null == t ? null : "function" == typeof t ? t : l(+t), u) : r }, u.y = function(t) { return arguments.length ? (n = "function" == typeof t ? t : l(+t), e = null, u) : n }, u.y0 = function(t) { return arguments.length ? (n = "function" == typeof t ? t : l(+t), u) : n }, u.y1 = function(t) { return arguments.length ? (e = null == t ? null : "function" == typeof t ? t : l(+t), u) : e }, u.lineX0 = u.lineY0 = function() { return f().x(t).y(n) }, u.lineY1 = function() { return f().x(t).y(e) }, u.lineX1 = function() { return f().x(r).y(n) }, u.defined = function(t) { return arguments.length ? (i = "function" == typeof t ? t : l(!!t), u) : i }, u.curve = function(t) { return arguments.length ? (a = t, null != o && (s = a(o)), u) : a }, u.context = function(t) { return arguments.length ? (null == t ? o = s = null : s = a(o = t), u) : o }, u
+                        }().x((function(n) { return t.meta.yScale(n[0]) })).y0(t.meta.yScale(0)).y1(w),
+                        b = s.enter().append("path").attr("class", "line line-" + i).attr("stroke-width", 1).attr("stroke-linecap", "round");
+                    s.merge(b).each((function() {
+                        const n = Ne(this);
+                        let r;
+                        e.closed ? (n.attr("fill", a), n.attr("fill-opacity", .3), r = _) : (n.attr("fill", "none"), r = x), n.attr("stroke", a).attr("marker-end", (function() { return "vector" === e.fnType ? "url(#" + t.markerId + ")" : null })).attr("d", r)
+                    })), s.exit().remove()
+                }))
+            }
+        }
+
+        function Yi(t) { return t.hasOwnProperty("graphType") || (t.graphType = "interval"), t.hasOwnProperty("sampler") || (t.sampler = "interval" !== t.graphType ? "builtIn" : "interval"), t.hasOwnProperty("fnType") || (t.fnType = "linear"), t }
+
+        function ji(t) {
+            const n = Yi({ isHelper: !0, skipTip: !0, skipBoundsCheck: !0, nSamples: 2, graphType: "polyline" });
+            let e;
+
+            function r(t) { if (!t.derivative) return []; const e = "number" == typeof t.derivative.x0 ? t.derivative.x0 : 1 / 0; return n.index = t.index, n.scope = { m: Object(gi.builtIn)(t.derivative, "fn", { x: e }), x0: e, y0: Object(gi.builtIn)(t, "fn", { x: e }) }, n.fn = "m * (x - x0) + y0", [n] }
+
+            function i(n) {
+                const r = this;
+                n.derivative && n.derivative.updateOnMouseMove && !n.derivative.$$mouseListener && (n.derivative.$$mouseListener = function(t) { n.derivative && (n.derivative.x0 = t), e(r) }, t.on("tip:update", n.derivative.$$mouseListener))
+            }
+            return e = function(n) {
+                n.each((function(e) {
+                    const o = Ne(this),
+                        a = r.call(n, e);
+                    i.call(n, e);
+                    const s = o.selectAll("g.derivative").data(a);
+                    s.enter().append("g").attr("class", "derivative"), s.call(Hi(t)), s.selectAll("path").attr("opacity", .5), s.exit().remove()
+                }))
+            }, e
+        }
+
+        function Ci(t) {
+            const n = Yi({ isHelper: !0, skipTip: !0, skipBoundsCheck: !0, nSamples: 2, graphType: "polyline" });
+            let e;
+
+            function r(t, n) {
+                if (!n.hasOwnProperty("x0")) throw Error("secant must have the property `x0` defined");
+                n.scope = n.scope || {};
+                const e = n.x0,
+                    r = "number" == typeof n.x1 ? n.x1 : 1 / 0;
+                var i;
+                Object.assign(n.scope, { x0: e, x1: r, y0: Object(gi.builtIn)(t, "fn", { x: e }), y1: Object(gi.builtIn)(t, "fn", { x: r }) }), (i = n.scope).m = (i.y1 - i.y0) / (i.x1 - i.x0)
+            }
+
+            function i(t, n) { r(t, n), n.fn = "m * (x - x0) + y0" }
+
+            function o(n, i) {
+                const o = this;
+                i.updateOnMouseMove && !i.$$mouseListener && (i.$$mouseListener = function(t) { i.x1 = t, r(n, i), e(o) }, t.on("tip:update", i.$$mouseListener))
+            }
+
+            function a(t) {
+                const e = this,
+                    r = [];
+                t.secants = t.secants || [];
+                for (let a = 0; a < t.secants.length; a += 1) {
+                    const s = t.secants[a] = Object.assign({}, n, t.secants[a]);
+                    s.index = t.index, s.fn || (i.call(e, t, s), o.call(e, t, s)), r.push(s)
+                }
+                return r
+            }
+            return e = function(n) {
+                n.each((function(e) {
+                    const r = Ne(this),
+                        i = a.call(n, e),
+                        o = r.selectAll("g.secant").data(i),
+                        s = o.enter().append("g").attr("class", "secant");
+                    o.merge(s).call(Hi(t)), o.merge(s).selectAll("path").attr("opacity", .5), o.exit().remove()
+                }))
+            }, e
+        }
+
+        function zi(t) {
+            let n;
+            const e = t.meta.xScale,
+                r = t.meta.yScale;
+
+            function i(t, e, r, i) {
+                if (r > i) {
+                    const t = r;
+                    r = i, i = t
+                }
+                const o = Math.min(e, i),
+                    a = Math.max(t, r);
+                return a > o ? [-n, 0] : [a, o]
+            }
+            return function o(a) {
+                a.each((function(a) {
+                    const s = o.el = Ne(this),
+                        u = a.index,
+                        c = a.closed,
+                        h = Ri(t, a),
+                        l = s.selectAll(":scope > path.line").data(h);
+                    n = Math.max(h[0].scaledDx, 1);
+                    const f = l.enter().append("path").attr("class", "line line-" + u).attr("fill", "none");
+                    l.merge(f).attr("stroke-width", n).attr("stroke", vi.color(a, u)).attr("opacity", c ? .5 : 1).attr("d", (function(t) {
+                        return function(t, o) {
+                            let a = "";
+                            const s = r.range(),
+                                u = Math.min.apply(Math, s),
+                                c = Math.max.apply(Math, s);
+                            for (let s = 0, h = t.length; s < h; s += 1)
+                                if (t[s]) {
+                                    const h = t[s][0],
+                                        l = t[s][1];
+                                    let f = l.lo,
+                                        p = l.hi;
+                                    o && (f = Math.min(f, 0), p = Math.max(p, 0));
+                                    const m = e(h.lo) + t.scaledDx / 2,
+                                        y = i(u, c, isFinite(p) ? r(p) : -1 / 0, isFinite(f) ? r(f) : 1 / 0),
+                                        d = y[0],
+                                        v = y[1];
+                                    a += " M " + m + " " + d, a += " v " + Math.max(v - d, n)
+                                }
+                            return a
+                        }(t, c)
+                    })).attr(a.attr), l.exit().remove()
+                }))
+            }
+        }
+
+        function Bi(t) {
+            const n = t.meta.xScale,
+                e = t.meta.yScale;
+            return function(r) {
+                r.each((function(r) {
+                    let i, o;
+                    const a = r.index,
+                        s = vi.color(r, a),
+                        u = Ri(t, r),
+                        c = [];
+                    for (i = 0; i < u.length; i += 1)
+                        for (o = 0; o < u[i].length; o += 1) c.push(u[i][o]);
+                    const h = Ne(this).selectAll(":scope > circle").data(c),
+                        l = h.enter().append("circle");
+                    h.merge(l).attr("fill", mt(s.toString()).brighter(1.5)).attr("stroke", s).attr("opacity", .7).attr("r", 1).attr("cx", (function(t) { return n(t[0]) })).attr("cy", (function(t) { return e(t[1]) })).attr(r.attr), h.exit().remove()
+                }))
+            }
+        }
+        e(74);
+        const Ui = { linear: function t() { var n = Dt(); return n.copy = function() { return Ut(n, t()) }, qt.apply(n, arguments), $t(n) }, log: function t() { var n = Jt(Ft()).domain([1, 10]); return n.copy = function() { return Ut(n, t()).base(n.base()) }, qt.apply(n, arguments), n } };
+        class Fi extends ai.a {
+            constructor(t) {
+                super();
+                const n = Math.random(),
+                    e = String.fromCharCode(Math.floor(26 * n) + 97);
+                this.id = t.id = e + n.toString(16).substr(2), Fi.cache[this.id] = this, this.linkedGraphs = [this], this.options = t, this.meta = {}, this.setUpEventListeners()
+            }
+            build() { return this.internalVars(), this.drawGraphWrapper(), this }
+            internalVars() {
+                const t = this;
+                let n = this.meta.margin = { left: 40, right: 20, top: 20, bottom: 20 };
+                this.options.title && (this.meta.margin.top = 40), this.meta.width = (this.options.width || hi.DEFAULT_WIDTH) - n.left - n.right, this.meta.height = (this.options.height || hi.DEFAULT_HEIGHT) - n.top - n.bottom, this.initializeAxes(), this.meta.zoomBehavior || (this.meta.zoomBehavior = function() {
+                    var t, n, e, r = Jr,
+                        i = ti,
+                        o = ii,
+                        a = ei,
+                        s = ri,
+                        u = [0, 1 / 0],
+                        c = [
+                            [-1 / 0, -1 / 0],
+                            [1 / 0, 1 / 0]
+                        ],
+                        h = 250,
+                        l = je,
+                        f = yn("start", "zoom", "end"),
+                        p = 0,
+                        m = 10;
+
+                    function y(t) { t.property("__zoom", ni).on("wheel.zoom", b).on("mousedown.zoom", E).on("dblclick.zoom", M).filter(s).on("touchstart.zoom", A).on("touchmove.zoom", T).on("touchend.zoom touchcancel.zoom", k).style("-webkit-tap-highlight-color", "rgba(0,0,0,0)") }
+
+                    function d(t, n) { return (n = Math.max(u[0], Math.min(u[1], n))) === t.k ? t : new Gr(n, t.x, t.y) }
+
+                    function v(t, n, e) {
+                        var r = n[0] - e[0] * t.k,
+                            i = n[1] - e[1] * t.k;
+                        return r === t.x && i === t.y ? t : new Gr(t.k, r, i)
+                    }
+
+                    function g(t) { return [(+t[0][0] + +t[1][0]) / 2, (+t[0][1] + +t[1][1]) / 2] }
+
+                    function w(t, n, e, r) {
+                        t.on("start.zoom", (function() { x(this, arguments).event(r).start() })).on("interrupt.zoom end.zoom", (function() { x(this, arguments).event(r).end() })).tween("zoom", (function() {
+                            var t = this,
+                                o = arguments,
+                                a = x(t, o).event(r),
+                                s = i.apply(t, o),
+                                u = null == e ? g(s) : "function" == typeof e ? e.apply(t, o) : e,
+                                c = Math.max(s[1][0] - s[0][0], s[1][1] - s[0][1]),
+                                h = t.__zoom,
+                                f = "function" == typeof n ? n.apply(t, o) : n,
+                                p = l(h.invert(u).concat(c / h.k), f.invert(u).concat(c / f.k));
+                            return function(t) {
+                                if (1 === t) t = f;
+                                else {
+                                    var n = p(t),
+                                        e = c / n[2];
+                                    t = new Gr(e, u[0] - n[0] * e, u[1] - n[1] * e)
+                                }
+                                a.zoom(null, t)
+                            }
+                        }))
+                    }
+
+                    function x(t, n, e) { return !e && t.__zooming || new _(t, n) }
+
+                    function _(t, n) { this.that = t, this.args = n, this.active = 0, this.sourceEvent = null, this.extent = i.apply(t, n), this.taps = 0 }
+
+                    function b(t, ...n) {
+                        if (r.apply(this, arguments)) {
+                            var e = x(this, n).event(t),
+                                i = this.__zoom,
+                                s = Math.max(u[0], Math.min(u[1], i.k * Math.pow(2, a.apply(this, arguments)))),
+                                h = Ce(t);
+                            if (e.wheel) e.mouse[0][0] === h[0] && e.mouse[0][1] === h[1] || (e.mouse[1] = i.invert(e.mouse[0] = h)), clearTimeout(e.wheel);
+                            else {
+                                if (i.k === s) return;
+                                e.mouse = [h, i.invert(h)], ur(this), e.start()
+                            }
+                            Qr(t), e.wheel = setTimeout(l, 150), e.zoom("mouse", o(v(d(i, s), e.mouse[0], e.mouse[1]), e.extent, c))
                         }
-                        module.exports.pack = toDoubleBE;
 
-                        function lowUintBE(n) {
-                            DOUBLE_VIEW[0] = n;
-                            return UINT_VIEW[1]
+                        function l() { e.wheel = null, e.end() }
+                    }
+
+                    function E(t, ...n) {
+                        if (!e && r.apply(this, arguments)) {
+                            var i = x(this, n, !0).event(t),
+                                a = Ne(t.view).on("mousemove.zoom", f, !0).on("mouseup.zoom", m, !0),
+                                s = Ce(t, u),
+                                u = t.currentTarget,
+                                h = t.clientX,
+                                l = t.clientY;
+                            Pe(t.view), Kr(t), i.mouse = [s, this.__zoom.invert(s)], ur(this), i.start()
                         }
-                        module.exports.lo = lowUintBE;
 
-                        function highUintBE(n) {
-                            DOUBLE_VIEW[0] = n;
-                            return UINT_VIEW[0]
+                        function f(t) {
+                            if (Qr(t), !i.moved) {
+                                var n = t.clientX - h,
+                                    e = t.clientY - l;
+                                i.moved = n * n + e * e > p
+                            }
+                            i.event(t).zoom("mouse", o(v(i.that.__zoom, i.mouse[0] = Ce(t, u), i.mouse[1]), i.extent, c))
                         }
-                        module.exports.hi = highUintBE
-                    } else {
-                        hasTypedArrays = false
-                    }
-                }
-                if (!hasTypedArrays) {
-                    var buffer = new Buffer(8);
-                    module.exports = function doubleBits(n) {
-                        buffer.writeDoubleLE(n, 0, true);
-                        return [buffer.readUInt32LE(0, true), buffer.readUInt32LE(4, true)]
-                    };
 
-                    function toDouble(lo, hi) {
-                        buffer.writeUInt32LE(lo, 0, true);
-                        buffer.writeUInt32LE(hi, 4, true);
-                        return buffer.readDoubleLE(0, true)
+                        function m(t) { a.on("mousemove.zoom mouseup.zoom", null), Oe(t.view, i.moved), Qr(t), i.event(t).end() }
                     }
-                    module.exports.pack = toDouble;
 
-                    function lowUint(n) {
-                        buffer.writeDoubleLE(n, 0, true);
-                        return buffer.readUInt32LE(0, true)
+                    function M(t, ...n) {
+                        if (r.apply(this, arguments)) {
+                            var e = this.__zoom,
+                                a = Ce(t.changedTouches ? t.changedTouches[0] : t, this),
+                                s = e.invert(a),
+                                u = e.k * (t.shiftKey ? .5 : 2),
+                                l = o(v(d(e, u), a, s), i.apply(this, n), c);
+                            Qr(t), h > 0 ? Ne(this).transition().duration(h).call(w, l, a, t) : Ne(this).call(y.transform, l, a, t)
+                        }
                     }
-                    module.exports.lo = lowUint;
 
-                    function highUint(n) {
-                        buffer.writeDoubleLE(n, 0, true);
-                        return buffer.readUInt32LE(4, true)
+                    function A(e, ...i) {
+                        if (r.apply(this, arguments)) {
+                            var o, a, s, u, c = e.touches,
+                                h = c.length,
+                                l = x(this, i, e.changedTouches.length === h).event(e);
+                            for (Kr(e), a = 0; a < h; ++a) s = c[a], u = [u = Ce(s, this), this.__zoom.invert(u), s.identifier], l.touch0 ? l.touch1 || l.touch0[2] === u[2] || (l.touch1 = u, l.taps = 0) : (l.touch0 = u, o = !0, l.taps = 1 + !!t);
+                            t && (t = clearTimeout(t)), o && (l.taps < 2 && (n = u[0], t = setTimeout((function() { t = null }), 500)), ur(this), l.start())
+                        }
                     }
-                    module.exports.hi = highUint
-                }
-                module.exports.sign = function(n) {
-                    return module.exports.hi(n) >>> 31
-                };
-                module.exports.exponent = function(n) {
-                    var b = module.exports.hi(n);
-                    return (b << 1 >>> 21) - 1023
-                };
-                module.exports.fraction = function(n) {
-                    var lo = module.exports.lo(n);
-                    var hi = module.exports.hi(n);
-                    var b = hi & (1 << 20) - 1;
-                    if (hi & 2146435072) {
-                        b += 1 << 20
+
+                    function T(t, ...n) {
+                        if (this.__zooming) {
+                            var e, r, i, a, s = x(this, n).event(t),
+                                u = t.changedTouches,
+                                h = u.length;
+                            for (Qr(t), e = 0; e < h; ++e) r = u[e], i = Ce(r, this), s.touch0 && s.touch0[2] === r.identifier ? s.touch0[0] = i : s.touch1 && s.touch1[2] === r.identifier && (s.touch1[0] = i);
+                            if (r = s.that.__zoom, s.touch1) {
+                                var l = s.touch0[0],
+                                    f = s.touch0[1],
+                                    p = s.touch1[0],
+                                    m = s.touch1[1],
+                                    y = (y = p[0] - l[0]) * y + (y = p[1] - l[1]) * y,
+                                    g = (g = m[0] - f[0]) * g + (g = m[1] - f[1]) * g;
+                                r = d(r, Math.sqrt(y / g)), i = [(l[0] + p[0]) / 2, (l[1] + p[1]) / 2], a = [(f[0] + m[0]) / 2, (f[1] + m[1]) / 2]
+                            } else {
+                                if (!s.touch0) return;
+                                i = s.touch0[0], a = s.touch0[1]
+                            }
+                            s.zoom("touch", o(v(r, i, a), s.extent, c))
+                        }
                     }
-                    return [lo, b]
-                };
-                module.exports.denormalized = function(n) {
-                    var hi = module.exports.hi(n);
-                    return !(hi & 2146435072)
-                }
-            }).call(this, require("buffer").Buffer)
-        }, {
-            buffer: 25
-        }],
-        31: [function(require, module, exports) {
-            "use strict";
-            var hasOwn = Object.prototype.hasOwnProperty;
-            var toStr = Object.prototype.toString;
-            var defineProperty = Object.defineProperty;
-            var gOPD = Object.getOwnPropertyDescriptor;
-            var isArray = function isArray(arr) {
-                if (typeof Array.isArray === "function") {
-                    return Array.isArray(arr)
-                }
-                return toStr.call(arr) === "[object Array]"
-            };
-            var isPlainObject = function isPlainObject(obj) {
-                if (!obj || toStr.call(obj) !== "[object Object]") {
-                    return false
-                }
-                var hasOwnConstructor = hasOwn.call(obj, "constructor");
-                var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, "isPrototypeOf");
-                if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
-                    return false
-                }
-                var key;
-                for (key in obj) {}
-                return typeof key === "undefined" || hasOwn.call(obj, key)
-            };
-            var setProperty = function setProperty(target, options) {
-                if (defineProperty && options.name === "__proto__") {
-                    defineProperty(target, options.name, {
-                        enumerable: true,
-                        configurable: true,
-                        value: options.newValue,
-                        writable: true
-                    })
-                } else {
-                    target[options.name] = options.newValue
-                }
-            };
-            var getProperty = function getProperty(obj, name) {
-                if (name === "__proto__") {
-                    if (!hasOwn.call(obj, name)) {
-                        return void 0
-                    } else if (gOPD) {
-                        return gOPD(obj, name).value
+
+                    function k(t, ...r) {
+                        if (this.__zooming) {
+                            var i, o, a = x(this, r).event(t),
+                                s = t.changedTouches,
+                                u = s.length;
+                            for (Kr(t), e && clearTimeout(e), e = setTimeout((function() { e = null }), 500), i = 0; i < u; ++i) o = s[i], a.touch0 && a.touch0[2] === o.identifier ? delete a.touch0 : a.touch1 && a.touch1[2] === o.identifier && delete a.touch1;
+                            if (a.touch1 && !a.touch0 && (a.touch0 = a.touch1, delete a.touch1), a.touch0) a.touch0[1] = this.__zoom.invert(a.touch0[0]);
+                            else if (a.end(), 2 === a.taps && (o = Ce(o, this), Math.hypot(n[0] - o[0], n[1] - o[1]) < m)) {
+                                var c = Ne(this).on("dblclick.zoom");
+                                c && c.apply(this, arguments)
+                            }
+                        }
                     }
-                }
-                return obj[name]
-            };
-            module.exports = function extend() {
-                var options, name, src, copy, copyIsArray, clone;
-                var target = arguments[0];
-                var i = 1;
-                var length = arguments.length;
-                var deep = false;
-                if (typeof target === "boolean") {
-                    deep = target;
-                    target = arguments[1] || {};
-                    i = 2
-                }
-                if (target == null || typeof target !== "object" && typeof target !== "function") {
-                    target = {}
-                }
-                for (; i < length; ++i) {
-                    options = arguments[i];
-                    if (options != null) {
-                        for (name in options) {
-                            src = getProperty(target, name);
-                            copy = getProperty(options, name);
-                            if (target !== copy) {
-                                if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
-                                    if (copyIsArray) {
-                                        copyIsArray = false;
-                                        clone = src && isArray(src) ? src : []
-                                    } else {
-                                        clone = src && isPlainObject(src) ? src : {}
-                                    }
-                                    setProperty(target, {
-                                        name: name,
-                                        newValue: extend(deep, clone, copy)
-                                    })
-                                } else if (typeof copy !== "undefined") {
-                                    setProperty(target, {
-                                        name: name,
-                                        newValue: copy
-                                    })
+                    return y.transform = function(t, n, e, r) {
+                        var i = t.selection ? t.selection() : t;
+                        i.property("__zoom", ni), t !== i ? w(t, n, e, r) : i.interrupt().each((function() { x(this, arguments).event(r).start().zoom(null, "function" == typeof n ? n.apply(this, arguments) : n).end() }))
+                    }, y.scaleBy = function(t, n, e, r) {
+                        y.scaleTo(t, (function() {
+                            var t = this.__zoom.k,
+                                e = "function" == typeof n ? n.apply(this, arguments) : n;
+                            return t * e
+                        }), e, r)
+                    }, y.scaleTo = function(t, n, e, r) {
+                        y.transform(t, (function() {
+                            var t = i.apply(this, arguments),
+                                r = this.__zoom,
+                                a = null == e ? g(t) : "function" == typeof e ? e.apply(this, arguments) : e,
+                                s = r.invert(a),
+                                u = "function" == typeof n ? n.apply(this, arguments) : n;
+                            return o(v(d(r, u), a, s), t, c)
+                        }), e, r)
+                    }, y.translateBy = function(t, n, e, r) { y.transform(t, (function() { return o(this.__zoom.translate("function" == typeof n ? n.apply(this, arguments) : n, "function" == typeof e ? e.apply(this, arguments) : e), i.apply(this, arguments), c) }), null, r) }, y.translateTo = function(t, n, e, r, a) {
+                        y.transform(t, (function() {
+                            var t = i.apply(this, arguments),
+                                a = this.__zoom,
+                                s = null == r ? g(t) : "function" == typeof r ? r.apply(this, arguments) : r;
+                            return o(Zr.translate(s[0], s[1]).scale(a.k).translate("function" == typeof n ? -n.apply(this, arguments) : -n, "function" == typeof e ? -e.apply(this, arguments) : -e), t, c)
+                        }), r, a)
+                    }, _.prototype = {
+                        event: function(t) { return t && (this.sourceEvent = t), this },
+                        start: function() { return 1 == ++this.active && (this.that.__zooming = this, this.emit("start")), this },
+                        zoom: function(t, n) { return this.mouse && "mouse" !== t && (this.mouse[1] = n.invert(this.mouse[0])), this.touch0 && "touch" !== t && (this.touch0[1] = n.invert(this.touch0[0])), this.touch1 && "touch" !== t && (this.touch1[1] = n.invert(this.touch1[0])), this.that.__zoom = n, this.emit("zoom"), this },
+                        end: function() { return 0 == --this.active && (delete this.that.__zooming, this.emit("end")), this },
+                        emit: function(t) {
+                            var n = Ne(this.that).datum();
+                            f.call(t, this.that, new Wr(t, { sourceEvent: this.sourceEvent, target: y, type: t, transform: this.that.__zoom, dispatch: f }), n)
+                        }
+                    }, y.wheelDelta = function(t) { return arguments.length ? (a = "function" == typeof t ? t : Vr(+t), y) : a }, y.filter = function(t) { return arguments.length ? (r = "function" == typeof t ? t : Vr(!!t), y) : r }, y.touchable = function(t) { return arguments.length ? (s = "function" == typeof t ? t : Vr(!!t), y) : s }, y.extent = function(t) {
+                        return arguments.length ? (i = "function" == typeof t ? t : Vr([
+                            [+t[0][0], +t[0][1]],
+                            [+t[1][0], +t[1][1]]
+                        ]), y) : i
+                    }, y.scaleExtent = function(t) { return arguments.length ? (u[0] = +t[0], u[1] = +t[1], y) : [u[0], u[1]] }, y.translateExtent = function(t) {
+                        return arguments.length ? (c[0][0] = +t[0][0], c[1][0] = +t[1][0], c[0][1] = +t[0][1], c[1][1] = +t[1][1], y) : [
+                            [c[0][0], c[0][1]],
+                            [c[1][0], c[1][1]]
+                        ]
+                    }, y.constrain = function(t) { return arguments.length ? (o = t, y) : o }, y.duration = function(t) { return arguments.length ? (h = +t, y) : h }, y.interpolate = function(t) { return arguments.length ? (l = t, y) : l }, y.on = function() { var t = f.on.apply(f, arguments); return t === f ? y : t }, y.clickDistance = function(t) { return arguments.length ? (p = (t = +t) * t, y) : Math.sqrt(p) }, y.tapDistance = function(t) { return arguments.length ? (m = +t, y) : m }, y
+                }().on("zoom", (function(n) { t.emit("all:zoom", n) })), t.meta.zoomBehavior.xScale = t.meta.xScale.copy(), t.meta.zoomBehavior.yScale = t.meta.yScale.copy()), t.meta.zoomBehavior.xScale.range(t.meta.xScale.range()), t.meta.zoomBehavior.yScale.range(t.meta.yScale.range())
+            }
+            initializeAxes() {
+                const t = this,
+                    n = M("~s"),
+                    e = M("~e"),
+                    r = function(t) { return function(t) { return t === +t && t === (0 | t) ? n(t) : e(t) } };
+                this.options.xAxis = this.options.xAxis || {}, this.options.xAxis.type = this.options.xAxis.type || "linear", this.options.yAxis = this.options.yAxis || {}, this.options.yAxis.type = this.options.yAxis.type || "linear";
+                const i = this.meta.xDomain = function(t) { if (t.domain) return t.domain; if ("linear" === t.type) { const t = 12; return [-t / 2, t / 2] } if ("log" === t.type) return [1, 10]; throw Error("axis type " + t.type + " unsupported") }(this.options.xAxis),
+                    o = this.meta.yDomain = function(n) { if (n.domain) return n.domain; const e = function(n) { const e = n[1] - n[0]; return t.meta.height * e / t.meta.width }(i); if ("linear" === n.type) return [-e / 2, e / 2]; if ("log" === n.type) return [1, 10]; throw Error("axis type " + n.type + " unsupported") }(this.options.yAxis);
+                if (i[0] >= i[1]) throw Error("the pair defining the x-domain is inverted");
+                if (o[0] >= o[1]) throw Error("the pair defining the y-domain is inverted");
+                this.meta.xScale || (this.meta.xScale = Ui[this.options.xAxis.type]()), this.meta.xScale.domain(i).range(this.options.xAxis.invert ? [this.meta.width, 0] : [0, this.meta.width]), this.meta.yScale || (this.meta.yScale = Ui[this.options.yAxis.type]()), this.meta.yScale.domain(o).range(this.options.yAxis.invert ? [0, this.meta.height] : [this.meta.height, 0]), this.meta.xAxis || (this.meta.xAxis = un(3, this.meta.xScale)), this.meta.xAxis.tickSize(this.options.grid ? -this.meta.height : 0).tickFormat(r(this.meta.xScale)), this.meta.yAxis || (this.meta.yAxis = function(t) { return un(4, t) }(this.meta.yScale)), this.meta.yAxis.tickSize(this.options.grid ? -this.meta.width : 0).tickFormat(r(this.meta.yScale)), this.line = d().x((function(n) { return t.meta.xScale(n[0]) })).y((function(n) { return t.meta.yScale(n[1]) }))
+            }
+            drawGraphWrapper() {
+                const t = this.root = Ne(this.options.target).selectAll("svg").data([this.options]);
+                this.root.enter = t.enter().append("svg").attr("class", "function-plot").attr("font-size", this.getFontSize()), t.merge(this.root.enter).attr("width", this.meta.width + this.meta.margin.left + this.meta.margin.right).attr("height", this.meta.height + this.meta.margin.top + this.meta.margin.bottom), this.buildTitle(), this.buildLegend(), this.buildCanvas(), this.buildClip(), this.buildAxis(), this.buildAxisLabel(), this.draw();
+                const n = this.tip = function(t) {
+                    t = Object.assign({ xLine: !1, yLine: !1, renderer: function(t, n, e) { return "(" + t.toFixed(3) + ", " + n.toFixed(3) + ")" }, owner: null }, t);
+                    const n = d().x((function(t) { return t[0] })).y((function(t) { return t[1] }));
+
+                    function e(t, e) { return t.append("path").datum(e).attr("stroke", "grey").attr("stroke-dasharray", "5,5").attr("opacity", .5).attr("d", n) }
+
+                    function r(n) {
+                        const i = n.selectAll("g.tip").data((function(t) { return [t] })),
+                            o = i.enter().append("g").attr("class", "tip").attr("clip-path", "url(#function-plot-clip-" + t.owner.id + ")"),
+                            a = r.join = i.merge(o).selectAll("g.inner-tip").data((function(t) { return [t] })),
+                            s = r.enter = a.enter().append("g").attr("class", "inner-tip").style("display", "none").each((function() {
+                                const n = Ne(this);
+                                e(n, [
+                                    [0, -t.owner.meta.height - 20],
+                                    [0, t.owner.meta.height + 20]
+                                ]).attr("class", "tip-x-line").style("display", "none"), e(n, [
+                                    [-t.owner.meta.width - 20, 0],
+                                    [t.owner.meta.width + 20, 0]
+                                ]).attr("class", "tip-y-line").style("display", "none"), n.append("circle").attr("r", 3), n.append("text").attr("transform", "translate(5,-5)")
+                            }));
+                        a.merge(s).selectAll(".tip-x-line").style("display", t.xLine ? null : "none"), a.merge(s).selectAll(".tip-y-line").style("display", t.yLine ? null : "none")
+                    }
+                    return r.move = function(n) {
+                        let e, i, o, a = 1 / 0,
+                            s = -1;
+                        const u = r.join.merge(r.enter),
+                            c = t.owner.meta,
+                            h = u.datum().data,
+                            l = c.xScale,
+                            f = c.yScale,
+                            p = c.width,
+                            m = c.height,
+                            y = n.x,
+                            d = n.y;
+                        for (e = 0; e < h.length; e += 1) {
+                            if (h[e].skipTip || "linear" !== h[e].fnType) continue;
+                            const t = h[e].range || [-1e8, 1e8];
+                            let n;
+                            if (y > t[0] - hi.TIP_X_EPS && y < t[1] + hi.TIP_X_EPS) {
+                                try { n = Object(gi.builtIn)(h[e], "fn", { x: y }) } catch (t) {}
+                                if (vi.isValidNumber(n)) {
+                                    const t = Math.abs(n - d);
+                                    t < a && (a = t, s = e)
                                 }
                             }
                         }
-                    }
-                }
-                return target
+                        if (-1 !== s) {
+                            i = y, h[s].range && (i = Math.max(i, h[s].range[0]), i = Math.min(i, h[s].range[1])), o = Object(gi.builtIn)(h[s], "fn", { x: i }), r.show(), t.owner.emit("tip:update", i, o, s);
+                            const n = ui()(i, l.invert(-20), l.invert(p + 20)),
+                                e = ui()(o, f.invert(m + 20), f.invert(-20)),
+                                a = vi.color(h[s], s);
+                            u.style("color", "red"), u.attr("transform", "translate(" + l(n) + "," + f(e) + ")"), u.select("circle").attr("fill", a), u.select("text").attr("fill", a).text(t.renderer(i, o, s))
+                        } else r.hide()
+                    }, r.show = function() { r.join.merge(r.enter).style("display", null) }, r.hide = function() { r.join.merge(r.enter).style("display", "none") }, Object.keys(t).forEach((function(n) { vi.getterSetter.call(r, t, n) })), r
+                }(Object.assign(this.options.tip || {}, { owner: this }));
+                this.canvas.merge(this.canvas.enter).call(n), this.buildZoomHelper(), this.setUpPlugins()
             }
-        }, {}],
-        32: [function(require, module, exports) {
-            exports.read = function(buffer, offset, isLE, mLen, nBytes) {
-                var e, m;
-                var eLen = nBytes * 8 - mLen - 1;
-                var eMax = (1 << eLen) - 1;
-                var eBias = eMax >> 1;
-                var nBits = -7;
-                var i = isLE ? nBytes - 1 : 0;
-                var d = isLE ? -1 : 1;
-                var s = buffer[offset + i];
-                i += d;
-                e = s & (1 << -nBits) - 1;
-                s >>= -nBits;
-                nBits += eLen;
-                for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-                m = e & (1 << -nBits) - 1;
-                e >>= -nBits;
-                nBits += mLen;
-                for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-                if (e === 0) {
-                    e = 1 - eBias
-                } else if (e === eMax) {
-                    return m ? NaN : (s ? -1 : 1) * Infinity
-                } else {
-                    m = m + Math.pow(2, mLen);
-                    e = e - eBias
-                }
-                return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-            };
-            exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
-                var e, m, c;
-                var eLen = nBytes * 8 - mLen - 1;
-                var eMax = (1 << eLen) - 1;
-                var eBias = eMax >> 1;
-                var rt = mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0;
-                var i = isLE ? 0 : nBytes - 1;
-                var d = isLE ? 1 : -1;
-                var s = value < 0 || value === 0 && 1 / value < 0 ? 1 : 0;
-                value = Math.abs(value);
-                if (isNaN(value) || value === Infinity) {
-                    m = isNaN(value) ? 1 : 0;
-                    e = eMax
-                } else {
-                    e = Math.floor(Math.log(value) / Math.LN2);
-                    if (value * (c = Math.pow(2, -e)) < 1) {
-                        e--;
-                        c *= 2
-                    }
-                    if (e + eBias >= 1) {
-                        value += rt / c
-                    } else {
-                        value += rt * Math.pow(2, 1 - eBias)
-                    }
-                    if (value * c >= 2) {
-                        e++;
-                        c /= 2
-                    }
-                    if (e + eBias >= eMax) {
-                        m = 0;
-                        e = eMax
-                    } else if (e + eBias >= 1) {
-                        m = (value * c - 1) * Math.pow(2, mLen);
-                        e = e + eBias
-                    } else {
-                        m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
-                        e = 0
-                    }
-                }
-                for (; mLen >= 8; buffer[offset + i] = m & 255, i += d, m /= 256, mLen -= 8) {}
-                e = e << mLen | m;
-                eLen += mLen;
-                for (; eLen > 0; buffer[offset + i] = e & 255, i += d, e /= 256, eLen -= 8) {}
-                buffer[offset + i - d] |= s * 128
+            buildTitle() {
+                const t = this.root.merge(this.root.enter).selectAll("text.title").data((function(t) { return [t.title].filter(Boolean) }));
+                t.enter().append("text").attr("class", "title").attr("y", this.meta.margin.top / 2).attr("x", this.meta.margin.left + this.meta.width / 2).attr("font-size", 25).attr("text-anchor", "middle").attr("alignment-baseline", "middle").text(this.options.title), t.exit().remove()
             }
-        }, {}],
-        33: [function(require, module, exports) {
-            "use strict";
-            module.exports = integrate;
-
-            function adsimp(f, a, b, fa, fm, fb, V0, tol, maxdepth, depth, state) {
-                if (state.nanEncountered) {
-                    return NaN
-                }
-                var h, f1, f2, sl, sr, s2, m, V1, V2, err;
-                h = b - a;
-                f1 = f(a + h * .25);
-                f2 = f(b - h * .25);
-                if (isNaN(f1)) {
-                    state.nanEncountered = true;
-                    return
-                }
-                if (isNaN(f2)) {
-                    state.nanEncountered = true;
-                    return
-                }
-                sl = h * (fa + 4 * f1 + fm) / 12;
-                sr = h * (fm + 4 * f2 + fb) / 12;
-                s2 = sl + sr;
-                err = (s2 - V0) / 15;
-                if (depth > maxdepth) {
-                    state.maxDepthCount++;
-                    return s2 + err
-                } else if (Math.abs(err) < tol) {
-                    return s2 + err
-                } else {
-                    m = a + h * .5;
-                    V1 = adsimp(f, a, m, fa, f1, fm, sl, tol * .5, maxdepth, depth + 1, state);
-                    if (isNaN(V1)) {
-                        state.nanEncountered = true;
-                        return NaN
-                    }
-                    V2 = adsimp(f, m, b, fm, f2, fb, sr, tol * .5, maxdepth, depth + 1, state);
-                    if (isNaN(V2)) {
-                        state.nanEncountered = true;
-                        return NaN
-                    }
-                    return V1 + V2
-                }
+            buildLegend() { this.root.enter.append("text").attr("class", "top-right-legend").attr("text-anchor", "end"), this.root.merge(this.root.enter).select(".top-right-legend").attr("y", this.meta.margin.top / 2).attr("x", this.meta.width + this.meta.margin.left) }
+            buildCanvas() {
+                const t = this.canvas = this.root.merge(this.root.enter).selectAll(".canvas").data((function(t) { return [t] }));
+                this.canvas.enter = t.enter().append("g").attr("class", "canvas")
             }
-
-            function integrate(f, a, b, tol, maxdepth) {
-                var state = {
-                    maxDepthCount: 0,
-                    nanEncountered: false
-                };
-                if (tol === undefined) {
-                    tol = 1e-8
-                }
-                if (maxdepth === undefined) {
-                    maxdepth = 20
-                }
-                var fa = f(a);
-                var fm = f(.5 * (a + b));
-                var fb = f(b);
-                var V0 = (fa + 4 * fm + fb) * (b - a) / 6;
-                var result = adsimp(f, a, b, fa, fm, fb, V0, tol, maxdepth, 1, state);
-                if (state.maxDepthCount > 0 && console && console.warn) {
-                    console.warn("integrate-adaptive-simpson: Warning: maximum recursion depth (" + maxdepth + ") reached " + state.maxDepthCount + " times")
-                }
-                if (state.nanEncountered && console && console.warn) {
-                    console.warn("integrate-adaptive-simpson: Warning: NaN encountered. Halting early.")
-                }
-                return result
+            buildClip() {
+                const t = this.id,
+                    n = this.canvas.enter.append("defs");
+                n.append("clipPath").attr("id", "function-plot-clip-" + t).append("rect").attr("class", "clip static-clip"), this.canvas.merge(this.canvas.enter).selectAll(".clip").attr("width", this.meta.width).attr("height", this.meta.height), this.markerId = this.id + "-marker", n.append("clipPath").append("marker").attr("id", this.markerId).attr("viewBox", "0 -5 10 10").attr("refX", 10).attr("markerWidth", 5).attr("markerHeight", 5).attr("orient", "auto").append("svg:path").attr("d", "M0,-5L10,0L0,5L0,0").attr("stroke-width", "0px").attr("fill-opacity", 1).attr("fill", "#777")
             }
-        }, {}],
-        34: [function(require, module, exports) {
-            "use strict";
-            module.exports = require("./lib/eval")
-        }, {
-            "./lib/eval": 36
-        }],
-        35: [function(require, module, exports) {
-            "use strict";
-            module.exports = function(ns) {
-                ns.mod = ns.fmod;
-                ns.lessThan = ns.lt;
-                ns.lessEqualThan = ns.leq;
-                ns.greaterThan = ns.gt;
-                ns.greaterEqualThan = ns.geq;
-                ns.strictlyEqual = ns.equal;
-                ns.strictlyNotEqual = ns.notEqual;
-                ns.logicalAND = function(a, b) {
-                    return a && b
-                };
-                ns.logicalXOR = function(a, b) {
-                    return a ^ b
-                };
-                ns.logicalOR = function(a, b) {
-                    return a || b
+            buildAxis() {
+                const t = this.canvas.enter;
+                t.append("g").attr("class", "x axis"), t.append("g").attr("class", "y axis"), this.canvas.merge(this.canvas.enter).select(".x.axis").attr("transform", "translate(0," + this.meta.height + ")").call(this.meta.xAxis), this.canvas.merge(this.canvas.enter).select(".y.axis").call(this.meta.yAxis)
+            }
+            buildAxisLabel() {
+                let t, n;
+                const e = this.canvas;
+                t = e.merge(e.enter).selectAll("text.x.axis-label").data((function(t) { return [t.xAxis.label].filter(Boolean) }));
+                const r = t.enter().append("text").attr("class", "x axis-label").attr("text-anchor", "end");
+                t.merge(r).attr("x", this.meta.width).attr("y", this.meta.height - 6).text((function(t) { return t })), t.exit().remove(), n = e.merge(e.enter).selectAll("text.y.axis-label").data((function(t) { return [t.yAxis.label].filter(Boolean) }));
+                const i = n.enter().append("text").attr("class", "y axis-label").attr("y", 6).attr("dy", ".75em").attr("text-anchor", "end").attr("transform", "rotate(-90)");
+                n.merge(i).text((function(t) { return t })), n.exit().remove()
+            }
+            buildContent() {
+                const t = this,
+                    n = this.canvas;
+                n.merge(n.enter).attr("transform", "translate(" + this.meta.margin.left + "," + this.meta.margin.top + ")");
+                const e = this.content = n.merge(n.enter).selectAll(":scope > g.content").data((function(t) { return [t] })),
+                    i = e.enter().append("g").attr("clip-path", "url(#function-plot-clip-" + this.id + ")").attr("class", "content");
+                if ("linear" === this.options.xAxis.type) {
+                    const t = e.merge(i).selectAll(":scope > path.y.origin").data([
+                            [
+                                [0, this.meta.yScale.domain()[0]],
+                                [0, this.meta.yScale.domain()[1]]
+                            ]
+                        ]),
+                        n = t.enter().append("path").attr("class", "y origin").attr("stroke", "black").attr("opacity", .2);
+                    t.merge(n).attr("d", this.line)
                 }
+                if ("linear" === this.options.yAxis.type) {
+                    const t = e.merge(i).selectAll(":scope > path.x.origin").data([
+                            [
+                                [this.meta.xScale.domain()[0], 0],
+                                [this.meta.xScale.domain()[1], 0]
+                            ]
+                        ]),
+                        n = t.enter().append("path").attr("class", "x origin").attr("stroke", "black").attr("opacity", .2);
+                    t.merge(n).attr("d", this.line)
+                }
+                e.merge(i).call(function(t) {
+                    let n;
+                    const e = t.owner.meta.xScale,
+                        r = t.owner.meta.yScale,
+                        i = d().x((function(t) { return t[0] })).y((function(t) { return t[1] }));
+                    return n = function(t) {
+                        t.each((function() {
+                            const t = Ne(this).selectAll("g.annotations").data((function(t) { return t.annotations || [] }));
+                            t.enter().append("g").attr("class", "annotations");
+                            const n = r.range(),
+                                o = e.range(),
+                                a = t.selectAll("path").data((function(t) {
+                                    return t.hasOwnProperty("x") ? [
+                                        [
+                                            [0, n[0]],
+                                            [0, n[1]]
+                                        ]
+                                    ] : [
+                                        [
+                                            [o[0], 0],
+                                            [o[1], 0]
+                                        ]
+                                    ]
+                                }));
+                            a.enter().append("path").attr("stroke", "#eee").attr("d", i), a.exit().remove();
+                            const s = t.selectAll("text").data((function(t) { return [{ text: t.text || "", hasX: t.hasOwnProperty("x") }] }));
+                            s.enter().append("text").attr("y", (function(t) { return t.hasX ? 3 : 0 })).attr("x", (function(t) { return t.hasX ? 0 : 3 })).attr("dy", (function(t) { return t.hasX ? 5 : -5 })).attr("text-anchor", (function(t) { return t.hasX ? "end" : "" })).attr("transform", (function(t) { return t.hasX ? "rotate(-90)" : "" })).text((function(t) { return t.text })), s.exit().remove(), t.attr("transform", (function(t) { return t.hasOwnProperty("x") ? "translate(" + e(t.x) + ", 0)" : "translate(0, " + r(t.y) + ")" })), t.exit().remove()
+                        }))
+                    }, n
+                }({ owner: t }));
+                const o = e.merge(i).selectAll(":scope > g.graph").data(t => t.data.map(Yi)),
+                    a = o.enter().append("g").attr("class", "graph");
+                o.merge(a).each((function(n, e) {
+                    n.index = e;
+                    const i = Ne(this);
+                    var o;
+                    i.call(r[n.graphType](t)), i.call((o = t, function(t) {
+                        t.each((function() {
+                            const t = Ne(this);
+                            t.call(ji(o)), t.call(Ci(o))
+                        }))
+                    }))
+                }))
             }
-        }, {}],
-        36: [function(require, module, exports) {
-            "use strict";
-            var CodeGenerator = require("math-codegen");
-            var Interval = require("interval-arithmetic");
-            require("./adapter")(Interval);
-
-            function processScope(scope) {
-                Object.keys(scope).forEach(function(k) {
-                    var value = scope[k];
-                    if (typeof value === "number" || Array.isArray(value)) {
-                        scope[k] = Interval.factory(value)
-                    } else if (typeof value === "object" && "lo" in value && "hi" in value) {
-                        scope[k] = Interval.factory(value.lo, value.hi)
-                    }
-                })
+            buildZoomHelper() {
+                const t = this;
+                this.canvas.enter.append("rect").call(this.meta.zoomBehavior).attr("class", "zoom-and-drag").style("fill", "none").style("pointer-events", "all").on("mouseover", (function(n) { t.emit("all:mouseover", n) })).on("mouseout", (function(n) { t.emit("all:mouseout", n) })).on("mousemove", (function(n) { t.emit("all:mousemove", n) })), this.draggable = this.canvas.merge(this.canvas.enter).select(".zoom-and-drag").attr("width", this.meta.width).attr("height", this.meta.height)
             }
-            module.exports = function(expression) {
-                return (new CodeGenerator).setDefs({
-                    $$processScope: processScope
-                }).parse(expression).compile(Interval)
-            };
-            module.exports.policies = require("./policies")(Interval);
-            module.exports.Interval = Interval
-        }, {
-            "./adapter": 35,
-            "./policies": 37,
-            "interval-arithmetic": 38,
-            "math-codegen": 58
-        }],
-        37: [function(require, module, exports) {
-            "use strict";
-            module.exports = function(Interval) {
-                return {
-                    disableRounding: function() {
-                        Interval.rmath.disable()
+            setUpPlugins() {
+                const t = this.options.plugins || [],
+                    n = this;
+                t.forEach((function(t) { t(n) }))
+            }
+            addLink() { for (let t = 0; t < arguments.length; t += 1) this.linkedGraphs.push(arguments[t]) }
+            updateAxes() {
+                const t = this.canvas.merge(this.canvas.enter);
+                t.select(".x.axis").call(this.meta.xAxis), t.select(".y.axis").call(this.meta.yAxis), t.selectAll(".axis path, .axis line").attr("fill", "none").attr("stroke", "black").attr("shape-rendering", "crispedges").attr("opacity", .1)
+            }
+            syncOptions() { this.options.xAxis.domain = this.meta.xScale.domain(), this.options.yAxis.domain = this.meta.yScale.domain() }
+            getFontSize() { return Math.max(Math.max(this.meta.width, this.meta.height) / 50, 8) }
+            draw() { this.emit("before:draw"), this.syncOptions(), this.updateAxes(), this.buildContent(), this.emit("after:draw") }
+            setUpEventListeners() {
+                const t = this,
+                    n = {
+                        mousemove: function(n) { t.tip.move(n) },
+                        mouseover: function() { t.tip.show() },
+                        mouseout: function() { t.tip.hide() },
+                        zoom: function({ transform: n }) {
+                            if (t.options.disableZoom) return;
+                            let e = n.rescaleX(t.meta.zoomBehavior.xScale).interpolate(Rt),
+                                r = n.rescaleY(t.meta.zoomBehavior.yScale).interpolate(Rt);
+                            t.meta.xScale.domain(e.domain()).range(e.range()), t.meta.yScale.domain(r.domain()).range(r.range())
+                        },
+                        "tip:update": function(n, e, r) {
+                            const i = t.root.merge(t.root.enter).datum().data[r],
+                                o = i.title || "",
+                                a = i.renderer || function(t, n) { return t.toFixed(3) + ", " + n.toFixed(3) },
+                                s = [];
+                            o && s.push(o), s.push(a(n, e)), t.root.select(".top-right-legend").attr("fill", hi.COLORS[r]).text(s.join(" "))
+                        }
                     },
-                    enableRounding: function() {
-                        Interval.rmath.enable()
-                    }
-                }
+                    e = {
+                        mousemove: function(n) {
+                            const e = Ce(n, t.draggable.node()),
+                                r = { x: t.meta.xScale.invert(e[0]), y: t.meta.yScale.invert(e[1]) };
+                            t.linkedGraphs.forEach((function(t) { t.emit("before:mousemove", r), t.emit("mousemove", r) }))
+                        },
+                        zoom: function(n) { t.linkedGraphs.forEach((function(e, r) { e.draggable.node().__zoom = t.draggable.node().__zoom, e.emit("zoom", n), e.draw() })), t.emit("all:mousemove", n) }
+                    };
+                Object.keys(n).forEach((function(r) {
+                    !e[r] && t.on("all:" + r, (function() {
+                        const n = Array.prototype.slice.call(arguments);
+                        t.linkedGraphs.forEach((function(t) {
+                            const e = n.slice();
+                            e.unshift(r), t.emit.apply(t, e)
+                        }))
+                    })), t.on(r, n[r])
+                })), Object.keys(e).forEach((function(n) { t.on("all:" + n, e[n]) }))
             }
-        }, {}],
-        38: [function(require, module, exports) {
-            "use strict";
-            var extend = require("xtend/mutable");
-            require("./lib/polyfill");
-            module.exports = require("./lib/interval");
-            module.exports.rmath = require("./lib/round-math");
-            module.exports.round = require("./lib/round-math");
-            extend(module.exports, require("./lib/constants"), require("./lib/operations/relational"), require("./lib/operations/arithmetic"), require("./lib/operations/algebra"), require("./lib/operations/trigonometric"), require("./lib/operations/misc"), require("./lib/operations/utils"))
-        }, {
-            "./lib/constants": 39,
-            "./lib/interval": 40,
-            "./lib/operations/algebra": 41,
-            "./lib/operations/arithmetic": 42,
-            "./lib/operations/misc": 44,
-            "./lib/operations/relational": 45,
-            "./lib/operations/trigonometric": 46,
-            "./lib/operations/utils": 47,
-            "./lib/polyfill": 48,
-            "./lib/round-math": 49,
-            "xtend/mutable": 90
-        }],
-        39: [function(require, module, exports) {
-            "use strict";
-            var Interval = require("./interval");
-            var mutate = require("xtend/mutable");
-            var piLow = (3373259426 + 273688 / (1 << 21)) / (1 << 30);
-            var piHigh = (3373259426 + 273689 / (1 << 21)) / (1 << 30);
-            var constants = {};
-            mutate(constants, {
-                PI_LOW: piLow,
-                PI_HIGH: piHigh,
-                PI_HALF_LOW: piLow / 2,
-                PI_HALF_HIGH: piHigh / 2,
-                PI_TWICE_LOW: piLow * 2,
-                PI_TWICE_HIGH: piHigh * 2
-            });
+        }
 
-            function getter(property, fn) {
-                Object.defineProperty(constants, property, {
-                    get: function() {
-                        return fn()
-                    },
-                    enumerable: true
-                })
-            }
-            getter("PI", function() {
-                return Interval(piLow, piHigh)
-            });
-            getter("PI_HALF", function() {
-                return Interval(constants.PI_HALF_LOW, constants.PI_HALF_HIGH)
-            });
-            getter("PI_TWICE", function() {
-                return Interval(constants.PI_TWICE_LOW, constants.PI_TWICE_HIGH)
-            });
-            getter("ZERO", function() {
-                return Interval(0)
-            });
-            getter("ONE", function() {
-                return Interval(1)
-            });
-            getter("WHOLE", function() {
-                return Interval().setWhole()
-            });
-            getter("EMPTY", function() {
-                return Interval().setEmpty()
-            });
-            module.exports = constants
-        }, {
-            "./interval": 40,
-            "xtend/mutable": 90
-        }],
-        40: [function(require, module, exports) {
-            "use strict";
-            var utils = require("./operations/utils");
-            var round = require("./round-math");
-            module.exports = Interval;
-
-            function Interval(lo, hi) {
-                if (!(this instanceof Interval)) {
-                    return new Interval(lo, hi)
-                }
-                if (typeof lo !== "undefined" && typeof hi !== "undefined") {
-                    if (utils.isInterval(lo)) {
-                        if (!utils.isSingleton(lo)) {
-                            throw new TypeError("Interval: interval `lo` must be a singleton")
-                        }
-                        lo = lo.lo
-                    }
-                    if (utils.isInterval(hi)) {
-                        if (!utils.isSingleton(hi)) {
-                            throw TypeError("Interval: interval `hi` must be a singleton")
-                        }
-                        hi = hi.hi
-                    }
-                } else if (typeof lo !== "undefined") {
-                    if (Array.isArray(lo)) {
-                        return Interval(lo[0], lo[1])
-                    }
-                    return Interval(lo, lo)
-                } else {
-                    lo = hi = 0
-                }
-                this.lo = undefined;
-                this.hi = undefined;
-                this.assign(lo, hi)
-            }
-            Interval.factory = Interval;
-            Interval.prototype.singleton = function(v) {
-                return this.set(v, v)
-            };
-            Interval.prototype.bounded = function(lo, hi) {
-                return this.set(round.prev(lo), round.next(hi))
-            };
-            Interval.prototype.boundedSingleton = function(v) {
-                return this.bounded(v, v)
-            };
-            Interval.prototype.set = function(lo, hi) {
-                this.lo = lo;
-                this.hi = hi;
-                return this
-            };
-            Interval.prototype.assign = function(lo, hi) {
-                if (typeof lo !== "number" || typeof hi !== "number") {
-                    throw TypeError("Interval#assign: arguments must be numbers")
-                }
-                if (isNaN(lo) || isNaN(hi) || lo > hi) {
-                    return this.setEmpty()
-                }
-                return this.set(lo, hi)
-            };
-            Interval.prototype.setEmpty = function() {
-                return this.set(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY)
-            };
-            Interval.prototype.setWhole = function() {
-                return this.set(Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY)
-            };
-            Interval.prototype.open = function(lo, hi) {
-                return this.assign(round.safeNext(lo), round.safePrev(hi))
-            };
-            Interval.prototype.halfOpenLeft = function(lo, hi) {
-                return this.assign(round.safeNext(lo), hi)
-            };
-            Interval.prototype.halfOpenRight = function(lo, hi) {
-                return this.assign(lo, round.safePrev(hi))
-            };
-            Interval.prototype.toArray = function() {
-                return [this.lo, this.hi]
-            };
-            Interval.prototype.clone = function() {
-                return Interval().set(this.lo, this.hi)
-            }
-        }, {
-            "./operations/utils": 47,
-            "./round-math": 49
-        }],
-        41: [function(require, module, exports) {
-            "use strict";
-            var isSafeInteger = require("is-safe-integer");
-            var Interval = require("../interval");
-            var rmath = require("../round-math");
-            var utils = require("./utils");
-            var arithmetic = require("./arithmetic");
-            var constants = require("../constants");
-            var algebra = {};
-            algebra.fmod = function(x, y) {
-                if (utils.isEmpty(x) || utils.isEmpty(y)) {
-                    return constants.EMPTY
-                }
-                var yb = x.lo < 0 ? y.lo : y.hi;
-                var n = x.lo / yb;
-                if (n < 0) n = Math.ceil(n);
-                else n = Math.floor(n);
-                return arithmetic.sub(x, arithmetic.mul(y, Interval(n)))
-            };
-            algebra.multiplicativeInverse = function(x) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                if (utils.zeroIn(x)) {
-                    if (x.lo !== 0) {
-                        if (x.hi !== 0) {
-                            return constants.WHOLE
-                        } else {
-                            return Interval(Number.NEGATIVE_INFINITY, rmath.divHi(1, x.lo))
-                        }
-                    } else {
-                        if (x.hi !== 0) {
-                            return Interval(rmath.divLo(1, x.hi), Number.POSITIVE_INFINITY)
-                        } else {
-                            return constants.EMPTY
-                        }
-                    }
-                } else {
-                    return Interval(rmath.divLo(1, x.hi), rmath.divHi(1, x.lo))
-                }
-            };
-            algebra.pow = function(x, power) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                if (typeof power === "object") {
-                    if (!utils.isSingleton(power)) {
-                        return constants.EMPTY
-                    }
-                    power = power.lo
-                }
-                if (power === 0) {
-                    if (x.lo === 0 && x.hi === 0) {
-                        return constants.EMPTY
-                    } else {
-                        return constants.ONE
-                    }
-                } else if (power < 0) {
-                    return algebra.pow(algebra.multiplicativeInverse(x), -power)
-                }
-                if (isSafeInteger(power)) {
-                    if (x.hi < 0) {
-                        var yl = rmath.powLo(-x.hi, power);
-                        var yh = rmath.powHi(-x.lo, power);
-                        if (power & 1) {
-                            return Interval(-yh, -yl)
-                        } else {
-                            return Interval(yl, yh)
-                        }
-                    } else if (x.lo < 0) {
-                        if (power & 1) {
-                            return Interval(-rmath.powLo(-x.lo, power), rmath.powHi(x.hi, power))
-                        } else {
-                            return Interval(0, rmath.powHi(Math.max(-x.lo, x.hi), power))
-                        }
-                    } else {
-                        return Interval(rmath.powLo(x.lo, power), rmath.powHi(x.hi, power))
-                    }
-                } else {
-                    console.warn("power is not an integer, you should use nth-root instead, returning an empty interval");
-                    return constants.EMPTY
-                }
-            };
-            algebra.sqrt = function(x) {
-                return algebra.nthRoot(x, 2)
-            };
-            algebra.nthRoot = function(x, n) {
-                if (utils.isEmpty(x) || n < 0) {
-                    return constants.EMPTY
-                }
-                if (typeof n === "object") {
-                    if (!utils.isSingleton(n)) {
-                        return constants.EMPTY
-                    }
-                    n = n.lo
-                }
-                var power = 1 / n;
-                if (x.hi < 0) {
-                    if (isSafeInteger(n) & (n & 1)) {
-                        var yl = rmath.powHi(-x.lo, power);
-                        var yh = rmath.powLo(-x.hi, power);
-                        return Interval(-yl, -yh)
-                    }
-                    return Interval.EMPTY
-                } else if (x.lo < 0) {
-                    var yp = rmath.powHi(x.hi, power);
-                    if (isSafeInteger(n) & (n & 1)) {
-                        var yn = -rmath.powHi(-x.lo, power);
-                        return Interval(yn, yp)
-                    }
-                    return Interval(0, yp)
-                } else {
-                    return Interval(rmath.powLo(x.lo, power), rmath.powHi(x.hi, power))
-                }
-            };
-            module.exports = algebra
-        }, {
-            "../constants": 39,
-            "../interval": 40,
-            "../round-math": 49,
-            "./arithmetic": 42,
-            "./utils": 47,
-            "is-safe-integer": 51
-        }],
-        42: [function(require, module, exports) {
-            "use strict";
-            var Interval = require("../interval");
-            var rmath = require("../round-math");
-            var utils = require("./utils");
-            var constants = require("../constants");
-            var division = require("./division");
-            var arithmetic = {};
-            arithmetic.add = function(x, y) {
-                return Interval(rmath.addLo(x.lo, y.lo), rmath.addHi(x.hi, y.hi))
-            };
-            arithmetic.subtract = function(x, y) {
-                return Interval(rmath.subLo(x.lo, y.hi), rmath.subHi(x.hi, y.lo))
-            };
-            arithmetic.sub = arithmetic.subtract;
-            arithmetic.multiply = function(x, y) {
-                if (utils.isEmpty(x) || utils.isEmpty(y)) {
-                    return constants.EMPTY
-                }
-                var xl = x.lo;
-                var xh = x.hi;
-                var yl = y.lo;
-                var yh = y.hi;
-                var out = Interval();
-                if (xl < 0) {
-                    if (xh > 0) {
-                        if (yl < 0) {
-                            if (yh > 0) {
-                                out.lo = Math.min(rmath.mulLo(xl, yh), rmath.mulLo(xh, yl));
-                                out.hi = Math.max(rmath.mulHi(xl, yl), rmath.mulHi(xh, yh))
-                            } else {
-                                out.lo = rmath.mulLo(xh, yl);
-                                out.hi = rmath.mulHi(xl, yl)
-                            }
-                        } else {
-                            if (yh > 0) {
-                                out.lo = rmath.mulLo(xl, yh);
-                                out.hi = rmath.mulHi(xh, yh)
-                            } else {
-                                out.lo = 0;
-                                out.hi = 0
-                            }
-                        }
-                    } else {
-                        if (yl < 0) {
-                            if (yh > 0) {
-                                out.lo = rmath.mulLo(xl, yh);
-                                out.hi = rmath.mulHi(xl, yl)
-                            } else {
-                                out.lo = rmath.mulLo(xh, yh);
-                                out.hi = rmath.mulHi(xl, yl)
-                            }
-                        } else {
-                            if (yh > 0) {
-                                out.lo = rmath.mulLo(xl, yh);
-                                out.hi = rmath.mulHi(xh, yl)
-                            } else {
-                                out.lo = 0;
-                                out.hi = 0
-                            }
-                        }
-                    }
-                } else {
-                    if (xh > 0) {
-                        if (yl < 0) {
-                            if (yh > 0) {
-                                out.lo = rmath.mulLo(xh, yl);
-                                out.hi = rmath.mulHi(xh, yh)
-                            } else {
-                                out.lo = rmath.mulLo(xh, yl);
-                                out.hi = rmath.mulHi(xl, yh)
-                            }
-                        } else {
-                            if (yh > 0) {
-                                out.lo = rmath.mulLo(xl, yl);
-                                out.hi = rmath.mulHi(xh, yh)
-                            } else {
-                                out.lo = 0;
-                                out.hi = 0
-                            }
-                        }
-                    } else {
-                        out.lo = 0;
-                        out.hi = 0
-                    }
-                }
-                return out
-            };
-            arithmetic.mul = arithmetic.multiply;
-            arithmetic.divide = function(x, y) {
-                if (utils.isEmpty(x) || utils.isEmpty(y)) {
-                    return constants.EMPTY
-                }
-                if (utils.zeroIn(y)) {
-                    if (y.lo !== 0) {
-                        if (y.hi !== 0) {
-                            return division.zero(x)
-                        } else {
-                            return division.negative(x, y.lo)
-                        }
-                    } else {
-                        if (y.hi !== 0) {
-                            return division.positive(x, y.hi)
-                        } else {
-                            return constants.EMPTY
-                        }
-                    }
-                } else {
-                    return division.nonZero(x, y)
-                }
-            };
-            arithmetic.div = arithmetic.divide;
-            arithmetic.positive = function(x) {
-                return Interval(x.lo, x.hi)
-            };
-            arithmetic.negative = function(x) {
-                return Interval(-x.hi, -x.lo)
-            };
-            module.exports = arithmetic
-        }, {
-            "../constants": 39,
-            "../interval": 40,
-            "../round-math": 49,
-            "./division": 43,
-            "./utils": 47
-        }],
-        43: [function(require, module, exports) {
-            "use strict";
-            var Interval = require("../interval");
-            var rmath = require("../round-math");
-            var utils = require("./utils");
-            var constants = require("../constants");
-            var division = {
-                nonZero: function(x, y) {
-                    var xl = x.lo;
-                    var xh = x.hi;
-                    var yl = y.lo;
-                    var yh = y.hi;
-                    var out = Interval();
-                    if (xh < 0) {
-                        if (yh < 0) {
-                            out.lo = rmath.divLo(xh, yl);
-                            out.hi = rmath.divHi(xl, yh)
-                        } else {
-                            out.lo = rmath.divLo(xl, yl);
-                            out.hi = rmath.divHi(xh, yh)
-                        }
-                    } else if (xl < 0) {
-                        if (yh < 0) {
-                            out.lo = rmath.divLo(xh, yh);
-                            out.hi = rmath.divHi(xl, yh)
-                        } else {
-                            out.lo = rmath.divLo(xl, yl);
-                            out.hi = rmath.divHi(xh, yl)
-                        }
-                    } else {
-                        if (yh < 0) {
-                            out.lo = rmath.divLo(xh, yh);
-                            out.hi = rmath.divHi(xl, yl)
-                        } else {
-                            out.lo = rmath.divLo(xl, yh);
-                            out.hi = rmath.divHi(xh, yl)
-                        }
-                    }
-                    return out
-                },
-                positive: function(x, v) {
-                    if (x.lo === 0 && x.hi === 0) {
-                        return x
-                    }
-                    if (utils.zeroIn(x)) {
-                        return constants.WHOLE
-                    }
-                    if (x.hi < 0) {
-                        return Interval(Number.NEGATIVE_INFINITY, rmath.divHi(x.hi, v))
-                    } else {
-                        return Interval(rmath.divLo(x.lo, v), Number.POSITIVE_INFINITY)
-                    }
-                },
-                negative: function(x, v) {
-                    if (x.lo === 0 && x.hi === 0) {
-                        return x
-                    }
-                    if (utils.zeroIn(x)) {
-                        return constants.WHOLE
-                    }
-                    if (x.hi < 0) {
-                        return Interval(rmath.divLo(x.hi, v), Number.POSITIVE_INFINITY)
-                    } else {
-                        return Interval(Number.NEGATIVE_INFINITY, rmath.divHi(x.lo, v))
-                    }
-                },
-                zero: function(x) {
-                    if (x.lo === 0 && x.hi === 0) {
-                        return x
-                    }
-                    return constants.WHOLE
-                }
-            };
-            module.exports = division
-        }, {
-            "../constants": 39,
-            "../interval": 40,
-            "../round-math": 49,
-            "./utils": 47
-        }],
-        44: [function(require, module, exports) {
-            "use strict";
-            var constants = require("../constants");
-            var Interval = require("../interval");
-            var rmath = require("../round-math");
-            var utils = require("./utils");
-            var arithmetic = require("./arithmetic");
-            var misc = {};
-            misc.exp = function(x) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                return Interval(rmath.expLo(x.lo), rmath.expHi(x.hi))
-            };
-            misc.log = function(x) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                var l = x.lo <= 0 ? Number.NEGATIVE_INFINITY : rmath.logLo(x.lo);
-                return Interval(l, rmath.logHi(x.hi))
-            };
-            misc.ln = misc.log;
-            misc.LOG_EXP_10 = misc.log(Interval(10, 10));
-            misc.log10 = function(x) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                return arithmetic.div(misc.log(x), misc.LOG_EXP_10)
-            };
-            misc.LOG_EXP_2 = misc.log(Interval(2, 2));
-            misc.log2 = function(x) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                return arithmetic.div(misc.log(x), misc.LOG_EXP_2)
-            };
-            misc.hull = function(x, y) {
-                var badX = utils.isEmpty(x);
-                var badY = utils.isEmpty(y);
-                if (badX && badY) {
-                    return constants.EMPTY
-                } else if (badX) {
-                    return y.clone()
-                } else if (badY) {
-                    return x.clone()
-                } else {
-                    return Interval(Math.min(x.lo, y.lo), Math.max(x.hi, y.hi))
-                }
-            };
-            misc.intersection = function(x, y) {
-                if (utils.isEmpty(x) || utils.isEmpty(y)) {
-                    return constants.EMPTY
-                }
-                var lo = Math.max(x.lo, y.lo);
-                var hi = Math.min(x.hi, y.hi);
-                if (lo <= hi) {
-                    return Interval(lo, hi)
-                }
-                return constants.EMPTY
-            };
-            misc.union = function(x, y) {
-                if (!utils.intervalsOverlap(x, y)) {
-                    throw Error("Interval#union: intervals do not overlap")
-                }
-                return Interval(Math.min(x.lo, y.lo), Math.max(x.hi, y.hi))
-            };
-            misc.difference = function(x, y) {
-                if (utils.isEmpty(x) || utils.isWhole(y)) {
-                    return constants.EMPTY
-                }
-                if (utils.intervalsOverlap(x, y)) {
-                    if (x.lo < y.lo && y.hi < x.hi) {
-                        throw Error("Interval.difference: difference creates multiple intervals")
-                    }
-                    if (y.lo <= x.lo && y.hi === Infinity || y.hi >= x.hi && y.lo === -Infinity) {
-                        return constants.EMPTY
-                    }
-                    if (y.lo <= x.lo) {
-                        return Interval().halfOpenLeft(y.hi, x.hi)
-                    }
-                    return Interval().halfOpenRight(x.lo, y.lo)
-                }
-                return Interval.clone(x)
-            };
-            misc.width = function(x) {
-                if (utils.isEmpty(x)) {
-                    return 0
-                }
-                return rmath.subHi(x.hi, x.lo)
-            };
-            misc.wid = misc.width;
-            misc.abs = function(x) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                if (x.lo >= 0) {
-                    return Interval.clone(x)
-                }
-                if (x.hi <= 0) {
-                    return arithmetic.negative(x)
-                }
-                return Interval(0, Math.max(-x.lo, x.hi))
-            };
-            misc.max = function(x, y) {
-                var badX = utils.isEmpty(x);
-                var badY = utils.isEmpty(y);
-                if (badX && badY) {
-                    return constants.EMPTY
-                } else if (badX) {
-                    return y.clone()
-                } else if (badY) {
-                    return x.clone()
-                } else {
-                    return Interval(Math.max(x.lo, y.lo), Math.max(x.hi, y.hi))
-                }
-            };
-            misc.min = function(x, y) {
-                var badX = utils.isEmpty(x);
-                var badY = utils.isEmpty(y);
-                if (badX && badY) {
-                    return constants.EMPTY
-                } else if (badX) {
-                    return y.clone()
-                } else if (badY) {
-                    return x.clone()
-                } else {
-                    return Interval(Math.min(x.lo, y.lo), Math.min(x.hi, y.hi))
-                }
-            };
-            misc.clone = function(x) {
-                return Interval().set(x.lo, x.hi)
-            };
-            module.exports = misc
-        }, {
-            "../constants": 39,
-            "../interval": 40,
-            "../round-math": 49,
-            "./arithmetic": 42,
-            "./utils": 47
-        }],
-        45: [function(require, module, exports) {
-            "use strict";
-            var utils = require("./utils");
-            var relational = {};
-            relational.equal = function(x, y) {
-                if (utils.isEmpty(x)) {
-                    return utils.isEmpty(y)
-                }
-                return !utils.isEmpty(y) && x.lo === y.lo && x.hi === y.hi
-            };
-            var EPS = 1e-7;
-
-            function assert(a, message) {
-                if (!a) {
-                    throw new Error(message || "assertion failed")
-                }
-            }
-
-            function assertEps(a, b) {
-                if (!isFinite(a)) {
-                    return assert(a === b, "[Infinity] expected " + a + " to be " + b)
-                }
-                assert(Math.abs(a - b) < EPS, "expected " + a + " to be close to " + b)
-            }
-            relational.almostEqual = function(x, y) {
-                x = Array.isArray(x) ? x : x.toArray();
-                y = Array.isArray(y) ? y : y.toArray();
-                assertEps(x[0], y[0]);
-                assertEps(x[1], y[1])
-            };
-            relational.assertIncludes = function(x, y) {
-                relational.almostEqual(x, y);
-                x = Array.isArray(x) ? x : x.toArray();
-                y = Array.isArray(y) ? y : y.toArray();
-                assert(x[0] <= y[0], x[0] + " should be less/equal than " + y[0]);
-                assert(y[1] <= x[1], y[1] + " should be less/equal than " + x[1])
-            };
-            relational.notEqual = function(x, y) {
-                if (utils.isEmpty(x)) {
-                    return !utils.isEmpty(y)
-                }
-                return utils.isEmpty(y) || x.hi < y.lo || x.lo > y.hi
-            };
-            relational.lessThan = function(x, y) {
-                if (utils.isEmpty(x) || utils.isEmpty(y)) {
-                    return false
-                }
-                return x.hi < y.lo
-            };
-            relational.lt = relational.lessThan;
-            relational.greaterThan = function(x, y) {
-                if (utils.isEmpty(x) || utils.isEmpty(y)) {
-                    return false
-                }
-                return x.lo > y.hi
-            };
-            relational.gt = relational.greaterThan;
-            relational.lessEqualThan = function(x, y) {
-                if (utils.isEmpty(x) || utils.isEmpty(y)) {
-                    return false
-                }
-                return x.hi <= y.lo
-            };
-            relational.leq = relational.lessEqualThan;
-            relational.greaterEqualThan = function(x, y) {
-                if (utils.isEmpty(x) || utils.isEmpty(y)) {
-                    return false
-                }
-                return x.lo >= y.hi
-            };
-            relational.geq = relational.greaterEqualThan;
-            module.exports = relational
-        }, {
-            "./utils": 47
-        }],
-        46: [function(require, module, exports) {
-            "use strict";
-            var constants = require("../constants");
-            var Interval = require("../interval");
-            var rmath = require("../round-math");
-            var utils = require("./utils");
-            var misc = require("./misc");
-            var algebra = require("./algebra");
-            var arithmetic = require("./arithmetic");
-            var trigonometric = {};
-
-            function onlyInfinity(x) {
-                return !isFinite(x.lo) && x.lo === x.hi
-            }
-
-            function handleNegative(interval) {
-                if (interval.lo < 0) {
-                    if (interval.lo === -Infinity) {
-                        interval.lo = 0;
-                        interval.hi = Infinity
-                    } else {
-                        var n = Math.ceil(-interval.lo / constants.PI_TWICE_LOW);
-                        interval.lo += constants.PI_TWICE_LOW * n;
-                        interval.hi += constants.PI_TWICE_LOW * n
-                    }
-                }
-                return interval
-            }
-            trigonometric.cos = function(x) {
-                var rlo, rhi;
-                if (utils.isEmpty(x) || onlyInfinity(x)) {
-                    return constants.EMPTY
-                }
-                var cache = Interval();
-                cache.set(x.lo, x.hi);
-                handleNegative(cache);
-                var pi2 = constants.PI_TWICE;
-                var t = algebra.fmod(cache, pi2);
-                if (misc.width(t) >= pi2.lo) {
-                    return Interval(-1, 1)
-                }
-                if (t.lo >= constants.PI_HIGH) {
-                    var cos = trigonometric.cos(arithmetic.sub(t, constants.PI));
-                    return arithmetic.negative(cos)
-                }
-                var lo = t.lo;
-                var hi = t.hi;
-                rlo = rmath.cosLo(hi);
-                rhi = rmath.cosHi(lo);
-                if (hi <= constants.PI_LOW) {
-                    return Interval(rlo, rhi)
-                } else if (hi <= pi2.lo) {
-                    return Interval(-1, Math.max(rlo, rhi))
-                } else {
-                    return Interval(-1, 1)
-                }
-            };
-            trigonometric.sin = function(x) {
-                if (utils.isEmpty(x) || onlyInfinity(x)) {
-                    return constants.EMPTY
-                }
-                return trigonometric.cos(arithmetic.sub(x, constants.PI_HALF))
-            };
-            trigonometric.tan = function(x) {
-                if (utils.isEmpty(x) || onlyInfinity(x)) {
-                    return constants.EMPTY
-                }
-                var cache = Interval();
-                cache.set(x.lo, x.hi);
-                handleNegative(cache);
-                var pi = constants.PI;
-                var t = algebra.fmod(cache, pi);
-                if (t.lo >= constants.PI_HALF_LOW) {
-                    t = arithmetic.sub(t, pi)
-                }
-                if (t.lo <= -constants.PI_HALF_LOW || t.hi >= constants.PI_HALF_LOW) {
-                    return constants.WHOLE
-                }
-                return Interval(rmath.tanLo(t.lo), rmath.tanHi(t.hi))
-            };
-            trigonometric.asin = function(x) {
-                if (utils.isEmpty(x) || x.hi < -1 || x.lo > 1) {
-                    return constants.EMPTY
-                }
-                var lo = x.lo <= -1 ? -constants.PI_HALF_HIGH : rmath.asinLo(x.lo);
-                var hi = x.hi >= 1 ? constants.PI_HALF_HIGH : rmath.asinHi(x.hi);
-                return Interval(lo, hi)
-            };
-            trigonometric.acos = function(x) {
-                if (utils.isEmpty(x) || x.hi < -1 || x.lo > 1) {
-                    return constants.EMPTY
-                }
-                var lo = x.hi >= 1 ? 0 : rmath.acosLo(x.hi);
-                var hi = x.lo <= -1 ? constants.PI_HIGH : rmath.acosHi(x.lo);
-                return Interval(lo, hi)
-            };
-            trigonometric.atan = function(x) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                return Interval(rmath.atanLo(x.lo), rmath.atanHi(x.hi))
-            };
-            trigonometric.sinh = function(x) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                return Interval(rmath.sinhLo(x.lo), rmath.sinhHi(x.hi))
-            };
-            trigonometric.cosh = function(x) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                if (x.hi < 0) {
-                    return Interval(rmath.coshLo(x.hi), rmath.coshHi(x.lo))
-                } else if (x.lo >= 0) {
-                    return Interval(rmath.coshLo(x.lo), rmath.coshHi(x.hi))
-                } else {
-                    return Interval(1, rmath.coshHi(-x.lo > x.hi ? x.lo : x.hi))
-                }
-            };
-            trigonometric.tanh = function(x) {
-                if (utils.isEmpty(x)) {
-                    return constants.EMPTY
-                }
-                return Interval(rmath.tanhLo(x.lo), rmath.tanhHi(x.hi))
-            };
-            module.exports = trigonometric
-        }, {
-            "../constants": 39,
-            "../interval": 40,
-            "../round-math": 49,
-            "./algebra": 41,
-            "./arithmetic": 42,
-            "./misc": 44,
-            "./utils": 47
-        }],
-        47: [function(require, module, exports) {
-            "use strict";
-            var utils = {};
-            utils.isInterval = function(x) {
-                return typeof x === "object" && typeof x.lo === "number" && typeof x.hi === "number"
-            };
-            utils.isEmpty = function(x) {
-                return x.lo > x.hi
-            };
-            utils.isWhole = function(x) {
-                return x.lo === -Infinity && x.hi === Infinity
-            };
-            utils.isSingleton = function(x) {
-                return x.lo === x.hi
-            };
-            utils.zeroIn = function(x) {
-                return utils.hasValue(x, 0)
-            };
-            utils.hasValue = function(a, value) {
-                if (utils.isEmpty(a)) {
-                    return false
-                }
-                return a.lo <= value && value <= a.hi
-            };
-            utils.hasInterval = function(x, y) {
-                if (utils.isEmpty(x)) {
-                    return true
-                }
-                return !utils.isEmpty(y) && y.lo <= x.lo && x.hi <= y.hi
-            };
-            utils.intervalsOverlap = function(x, y) {
-                if (utils.isEmpty(x) || utils.isEmpty(y)) {
-                    return false
-                }
-                return x.lo <= y.lo && y.lo <= x.hi || y.lo <= x.lo && x.lo <= y.hi
-            };
-            module.exports = utils
-        }, {}],
-        48: [function(require, module, exports) {
-            "use strict";
-            Math.sinh = Math.sinh || function(x) {
-                var y = Math.exp(x);
-                return (y - 1 / y) / 2
-            };
-            Math.cosh = Math.cosh || function(x) {
-                var y = Math.exp(x);
-                return (y + 1 / y) / 2
-            };
-            Math.tanh = Math.tanh || function(x) {
-                if (x === Number.POSITIVE_INFINITY) {
-                    return 1
-                } else if (x === Number.NEGATIVE_INFINITY) {
-                    return -1
-                } else {
-                    var y = Math.exp(2 * x);
-                    return (y - 1) / (y + 1)
-                }
-            }
-        }, {}],
-        49: [function(require, module, exports) {
-            "use strict";
-            var nextafter = require("nextafter");
-
-            function identity(v) {
-                return v
-            }
-
-            function prev(v) {
-                if (v === Infinity) {
-                    return v
-                }
-                return nextafter(v, -Infinity)
-            }
-
-            function next(v) {
-                if (v === -Infinity) {
-                    return v
-                }
-                return nextafter(v, Infinity)
-            }
-            var round = {
-                safePrev: prev,
-                safeNext: next,
-                prev: prev,
-                next: next
-            };
-            round.addLo = function(x, y) {
-                return this.prev(x + y)
-            };
-            round.addHi = function(x, y) {
-                return this.next(x + y)
-            };
-            round.subLo = function(x, y) {
-                return this.prev(x - y)
-            };
-            round.subHi = function(x, y) {
-                return this.next(x - y)
-            };
-            round.mulLo = function(x, y) {
-                return this.prev(x * y)
-            };
-            round.mulHi = function(x, y) {
-                return this.next(x * y)
-            };
-            round.divLo = function(x, y) {
-                return this.prev(x / y)
-            };
-            round.divHi = function(x, y) {
-                return this.next(x / y)
-            };
-
-            function toInteger(x) {
-                return x < 0 ? Math.ceil(x) : Math.floor(x)
-            }
-            round.intLo = function(x) {
-                return toInteger(this.prev(x))
-            };
-            round.intHi = function(x) {
-                return toInteger(this.next(x))
-            };
-            round.logLo = function(x) {
-                return this.prev(Math.log(x))
-            };
-            round.logHi = function(x) {
-                return this.next(Math.log(x))
-            };
-            round.expLo = function(x) {
-                return this.prev(Math.exp(x))
-            };
-            round.expHi = function(x) {
-                return this.next(Math.exp(x))
-            };
-            round.sinLo = function(x) {
-                return this.prev(Math.sin(x))
-            };
-            round.sinHi = function(x) {
-                return this.next(Math.sin(x))
-            };
-            round.cosLo = function(x) {
-                return this.prev(Math.cos(x))
-            };
-            round.cosHi = function(x) {
-                return this.next(Math.cos(x))
-            };
-            round.tanLo = function(x) {
-                return this.prev(Math.tan(x))
-            };
-            round.tanHi = function(x) {
-                return this.next(Math.tan(x))
-            };
-            round.asinLo = function(x) {
-                return this.prev(Math.asin(x))
-            };
-            round.asinHi = function(x) {
-                return this.next(Math.asin(x))
-            };
-            round.acosLo = function(x) {
-                return this.prev(Math.acos(x))
-            };
-            round.acosHi = function(x) {
-                return this.next(Math.acos(x))
-            };
-            round.atanLo = function(x) {
-                return this.prev(Math.atan(x))
-            };
-            round.atanHi = function(x) {
-                return this.next(Math.atan(x))
-            };
-            round.sinhLo = function(x) {
-                return this.prev(Math.sinh(x))
-            };
-            round.sinhHi = function(x) {
-                return this.next(Math.sinh(x))
-            };
-            round.coshLo = function(x) {
-                return this.prev(Math.cosh(x))
-            };
-            round.coshHi = function(x) {
-                return this.next(Math.cosh(x))
-            };
-            round.tanhLo = function(x) {
-                return this.prev(Math.tanh(x))
-            };
-            round.tanhHi = function(x) {
-                return this.next(Math.tanh(x))
-            };
-            round.powLo = function(x, power) {
-                if (power % 1 !== 0) {
-                    return this.prev(Math.pow(x, power))
-                }
-                var y = power & 1 ? x : 1;
-                power >>= 1;
-                while (power > 0) {
-                    x = round.mulLo(x, x);
-                    if (power & 1) {
-                        y = round.mulLo(x, y)
-                    }
-                    power >>= 1
-                }
-                return y
-            };
-            round.powHi = function(x, power) {
-                if (power % 1 !== 0) {
-                    return this.next(Math.pow(x, power))
-                }
-                var y = power & 1 ? x : 1;
-                power >>= 1;
-                while (power > 0) {
-                    x = round.mulHi(x, x);
-                    if (power & 1) {
-                        y = round.mulHi(x, y)
-                    }
-                    power >>= 1
-                }
-                return y
-            };
-            round.sqrtLo = function(x) {
-                return this.prev(Math.sqrt(x))
-            };
-            round.sqrtHi = function(x) {
-                return this.next(Math.sqrt(x))
-            };
-            round.disable = function() {
-                this.next = this.prev = identity
-            };
-            round.enable = function() {
-                this.next = next;
-                this.prev = prev
-            };
-            module.exports = round
-        }, {
-            nextafter: 87
-        }],
-        50: [function(require, module, exports) {
-            "use strict";
-            module.exports = function isObject(x) {
-                return typeof x === "object" && x !== null
-            }
-        }, {}],
-        51: [function(require, module, exports) {
-            "use strict";
-            var MAX_SAFE_INTEGER = require("max-safe-integer");
-            module.exports = Number.isSafeInteger || function(val) {
-                return typeof val === "number" && val === val && val !== Infinity && val !== -Infinity && parseInt(val, 10) === val && Math.abs(val) <= MAX_SAFE_INTEGER
-            }
-        }, {
-            "max-safe-integer": 71
-        }],
-        52: [function(require, module, exports) {
-            (function(process) {
-                var keys = require("vkey");
-                var list = Object.keys(keys);
-                var down = {};
-                reset();
-                module.exports = pressed;
-                if (process.browser) {
-                    window.addEventListener("keydown", keydown, false);
-                    window.addEventListener("keyup", keyup, false);
-                    window.addEventListener("blur", reset, false)
-                }
-
-                function pressed(key) {
-                    return key ? down[key] : down
-                }
-
-                function reset() {
-                    list.forEach(function(code) {
-                        down[keys[code]] = false
-                    })
-                }
-
-                function keyup(e) {
-                    down[keys[e.keyCode]] = false
-                }
-
-                function keydown(e) {
-                    down[keys[e.keyCode]] = true
-                }
-            }).call(this, require("_process"))
-        }, {
-            _process: 88,
-            vkey: 89
-        }],
-        53: [function(require, module, exports) {
-            var Emitter = require("events").EventEmitter;
-            var vkey = require("vkey");
-            module.exports = function(keys, el) {
-                if (typeof keys === "string") keys = [keys];
-                if (!el) el = window;
-                var emitter = new Emitter;
-                emitter.pressed = {};
-                el.addEventListener("blur", clearPressed);
-                el.addEventListener("focus", clearPressed);
-                el.addEventListener("keydown", function(ev) {
-                    var key = vkey[ev.keyCode];
-                    emitter.pressed[key] = true;
-                    var allPressed = true;
-                    keys.forEach(function(k) {
-                        if (!emitter.pressed[k]) allPressed = false
-                    });
-                    if (allPressed) {
-                        emitter.emit("pressed", emitter.pressed);
-                        clearPressed()
-                    }
-                });
-                el.addEventListener("keyup", function(ev) {
-                    delete emitter.pressed[vkey[ev.keyCode]]
-                });
-
-                function clearPressed() {
-                    emitter.pressed = {}
-                }
-                return emitter
-            }
-        }, {
-            events: 24,
-            vkey: 89
-        }],
-        54: [function(require, module, exports) {
-            var range = require("lodash.range");
-            module.exports = function linspace(a, b, n) {
-                var every = (b - a) / (n - 1),
-                    ranged = range(a, b, every);
-                return ranged.length == n ? ranged : ranged.concat(b)
-            }
-        }, {
-            "lodash.range": 55
-        }],
-        55: [function(require, module, exports) {
-            var INFINITY = 1 / 0,
-                MAX_SAFE_INTEGER = 9007199254740991,
-                MAX_INTEGER = 17976931348623157e292,
-                NAN = 0 / 0;
-            var funcTag = "[object Function]",
-                genTag = "[object GeneratorFunction]",
-                symbolTag = "[object Symbol]";
-            var reTrim = /^\s+|\s+$/g;
-            var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
-            var reIsBinary = /^0b[01]+$/i;
-            var reIsOctal = /^0o[0-7]+$/i;
-            var reIsUint = /^(?:0|[1-9]\d*)$/;
-            var freeParseInt = parseInt;
-
-            function baseProperty(key) {
-                return function(object) {
-                    return object == null ? undefined : object[key]
-                }
-            }
-            var objectProto = Object.prototype;
-            var objectToString = objectProto.toString;
-            var nativeCeil = Math.ceil,
-                nativeMax = Math.max;
-
-            function baseRange(start, end, step, fromRight) {
-                var index = -1,
-                    length = nativeMax(nativeCeil((end - start) / (step || 1)), 0),
-                    result = Array(length);
-                while (length--) {
-                    result[fromRight ? length : ++index] = start;
-                    start += step
-                }
-                return result
-            }
-
-            function createRange(fromRight) {
-                return function(start, end, step) {
-                    if (step && typeof step != "number" && isIterateeCall(start, end, step)) {
-                        end = step = undefined
-                    }
-                    start = toFinite(start);
-                    if (end === undefined) {
-                        end = start;
-                        start = 0
-                    } else {
-                        end = toFinite(end)
-                    }
-                    step = step === undefined ? start < end ? 1 : -1 : toFinite(step);
-                    return baseRange(start, end, step, fromRight)
-                }
-            }
-            var getLength = baseProperty("length");
-
-            function isIndex(value, length) {
-                length = length == null ? MAX_SAFE_INTEGER : length;
-                return !!length && (typeof value == "number" || reIsUint.test(value)) && (value > -1 && value % 1 == 0 && value < length)
-            }
-
-            function isIterateeCall(value, index, object) {
-                if (!isObject(object)) {
-                    return false
-                }
-                var type = typeof index;
-                if (type == "number" ? isArrayLike(object) && isIndex(index, object.length) : type == "string" && index in object) {
-                    return eq(object[index], value)
-                }
-                return false
-            }
-
-            function eq(value, other) {
-                return value === other || value !== value && other !== other
-            }
-
-            function isArrayLike(value) {
-                return value != null && isLength(getLength(value)) && !isFunction(value)
-            }
-
-            function isFunction(value) {
-                var tag = isObject(value) ? objectToString.call(value) : "";
-                return tag == funcTag || tag == genTag
-            }
-
-            function isLength(value) {
-                return typeof value == "number" && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER
-            }
-
-            function isObject(value) {
-                var type = typeof value;
-                return !!value && (type == "object" || type == "function")
-            }
-
-            function isObjectLike(value) {
-                return !!value && typeof value == "object"
-            }
-
-            function isSymbol(value) {
-                return typeof value == "symbol" || isObjectLike(value) && objectToString.call(value) == symbolTag
-            }
-
-            function toFinite(value) {
-                if (!value) {
-                    return value === 0 ? value : 0
-                }
-                value = toNumber(value);
-                if (value === INFINITY || value === -INFINITY) {
-                    var sign = value < 0 ? -1 : 1;
-                    return sign * MAX_INTEGER
-                }
-                return value === value ? value : 0
-            }
-
-            function toNumber(value) {
-                if (typeof value == "number") {
-                    return value
-                }
-                if (isSymbol(value)) {
-                    return NAN
-                }
-                if (isObject(value)) {
-                    var other = isFunction(value.valueOf) ? value.valueOf() : value;
-                    value = isObject(other) ? other + "" : other
-                }
-                if (typeof value != "string") {
-                    return value === 0 ? value : +value
-                }
-                value = value.replace(reTrim, "");
-                var isBinary = reIsBinary.test(value);
-                return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value
-            }
-            var range = createRange();
-            module.exports = range
-        }, {}],
-        56: [function(require, module, exports) {
-            "use strict";
-            module.exports = Math.log10 || function(x) {
-                return Math.log(x) * Math.LOG10E
-            }
-        }, {}],
-        57: [function(require, module, exports) {
-            var linspace = require("linspace");
-            module.exports = function logspace(a, b, n) {
-                return linspace(a, b, n).map(function(x) {
-                    return Math.pow(10, x)
-                })
-            }
-        }, {
-            linspace: 54
-        }],
-        58: [function(require, module, exports) {
-            "use strict";
-            module.exports = require("./lib/CodeGenerator")
-        }, {
-            "./lib/CodeGenerator": 59
-        }],
-        59: [function(require, module, exports) {
-            "use strict";
-            var Parser = require("mr-parser").Parser;
-            var Interpreter = require("./Interpreter");
-            var extend = require("extend");
-
-            function CodeGenerator(options, defs) {
-                this.statements = [];
-                this.defs = defs || {};
-                this.interpreter = new Interpreter(this, options)
-            }
-            CodeGenerator.prototype.setDefs = function(defs) {
-                this.defs = extend(this.defs, defs);
-                return this
-            };
-            CodeGenerator.prototype.compile = function(namespace) {
-                if (!namespace || !(typeof namespace === "object" || typeof namespace === "function")) {
-                    throw TypeError("namespace must be an object")
-                }
-                if (typeof namespace.factory !== "function") {
-                    throw TypeError("namespace.factory must be a function")
-                }
-                this.defs.ns = namespace;
-                this.defs.$$mathCodegen = {
-                    getProperty: function(symbol, scope, ns) {
-                        if (symbol in scope) {
-                            return scope[symbol]
-                        }
-                        if (symbol in ns) {
-                            return ns[symbol]
-                        }
-                        throw SyntaxError('symbol "' + symbol + '" is undefined')
-                    },
-                    functionProxy: function(fn, name) {
-                        if (typeof fn !== "function") {
-                            throw SyntaxError('symbol "' + name + '" must be a function')
-                        }
-                        return fn
-                    }
-                };
-                this.defs.$$processScope = this.defs.$$processScope || function() {};
-                var defsCode = Object.keys(this.defs).map(function(name) {
-                    return "var " + name + ' = defs["' + name + '"]'
-                });
-                if (!this.statements.length) {
-                    throw Error("there are no statements saved in this generator, make sure you parse an expression before compiling it")
-                }
-                this.statements[this.statements.length - 1] = "return " + this.statements[this.statements.length - 1];
-                var code = this.statements.join(";");
-                var factoryCode = defsCode.join("\n") + "\n" + ["return {", "  eval: function (scope) {", "    scope = scope || {}", "    $$processScope(scope)", "    " + code, "  },", "  code: '" + code + "'", "}"].join("\n");
-                var factory = new Function("defs", factoryCode);
-                return factory(this.defs)
-            };
-            CodeGenerator.prototype.parse = function(code) {
-                var self = this;
-                var program = (new Parser).parse(code);
-                this.statements = program.blocks.map(function(statement) {
-                    return self.interpreter.next(statement)
-                });
-                return this
-            };
-            module.exports = CodeGenerator
-        }, {
-            "./Interpreter": 60,
-            extend: 31,
-            "mr-parser": 72
-        }],
-        60: [function(require, module, exports) {
-            "use strict";
-            var extend = require("extend");
-            var types = {
-                ArrayNode: require("./node/ArrayNode"),
-                AssignmentNode: require("./node/AssignmentNode"),
-                ConditionalNode: require("./node/ConditionalNode"),
-                ConstantNode: require("./node/ConstantNode"),
-                FunctionNode: require("./node/FunctionNode"),
-                OperatorNode: require("./node/OperatorNode"),
-                SymbolNode: require("./node/SymbolNode"),
-                UnaryNode: require("./node/UnaryNode")
-            };
-            var Interpreter = function(owner, options) {
-                this.owner = owner;
-                this.options = extend({
-                    factory: "ns.factory",
-                    raw: false,
-                    rawArrayExpressionElements: true,
-                    rawCallExpressionElements: false
-                }, options)
-            };
-            extend(Interpreter.prototype, types);
-            Interpreter.prototype.next = function(node) {
-                if (!(node.type in this)) {
-                    throw new TypeError("the node type " + node.type + " is not implemented")
-                }
-                return this[node.type](node)
-            };
-            Interpreter.prototype.rawify = function(test, fn) {
-                var oldRaw = this.options.raw;
-                if (test) {
-                    this.options.raw = true
-                }
-                fn();
-                if (test) {
-                    this.options.raw = oldRaw
-                }
-            };
-            module.exports = Interpreter
-        }, {
-            "./node/ArrayNode": 63,
-            "./node/AssignmentNode": 64,
-            "./node/ConditionalNode": 65,
-            "./node/ConstantNode": 66,
-            "./node/FunctionNode": 67,
-            "./node/OperatorNode": 68,
-            "./node/SymbolNode": 69,
-            "./node/UnaryNode": 70,
-            extend: 31
-        }],
-        61: [function(require, module, exports) {
-            "use strict";
-            module.exports = {
-                "+": "add",
-                "-": "sub",
-                "*": "mul",
-                "/": "div",
-                "^": "pow",
-                "%": "mod",
-                "!": "factorial",
-                "|": "bitwiseOR",
-                "^|": "bitwiseXOR",
-                "&": "bitwiseAND",
-                "||": "logicalOR",
-                xor: "logicalXOR",
-                "&&": "logicalAND",
-                "<": "lessThan",
-                ">": "greaterThan",
-                "<=": "lessEqualThan",
-                ">=": "greaterEqualThan",
-                "===": "strictlyEqual",
-                "==": "equal",
-                "!==": "strictlyNotEqual",
-                "!=": "notEqual",
-                ">>": "shiftRight",
-                "<<": "shiftLeft",
-                ">>>": "unsignedRightShift"
-            }
-        }, {}],
-        62: [function(require, module, exports) {
-            "use strict";
-            module.exports = {
-                "+": "positive",
-                "-": "negative",
-                "~": "oneComplement"
-            }
-        }, {}],
-        63: [function(require, module, exports) {
-            "use strict";
-            module.exports = function(node) {
-                var self = this;
-                var arr = [];
-                this.rawify(this.options.rawArrayExpressionElements, function() {
-                    arr = node.nodes.map(function(el) {
-                        return self.next(el)
-                    })
-                });
-                var arrString = "[" + arr.join(",") + "]";
-                if (this.options.raw) {
-                    return arrString
-                }
-                return this.options.factory + "(" + arrString + ")"
-            }
-        }, {}],
-        64: [function(require, module, exports) {
-            "use strict";
-            module.exports = function(node) {
-                return 'scope["' + node.name + '"] = ' + this.next(node.expr)
-            }
-        }, {}],
-        65: [function(require, module, exports) {
-            "use strict";
-            module.exports = function(node) {
-                var condition = "!!(" + this.next(node.condition) + ")";
-                var trueExpr = this.next(node.trueExpr);
-                var falseExpr = this.next(node.falseExpr);
-                return "(" + condition + " ? (" + trueExpr + ") : (" + falseExpr + ") )"
-            }
-        }, {}],
-        66: [function(require, module, exports) {
-            "use strict";
-            module.exports = function(node) {
-                if (this.options.raw) {
-                    return node.value
-                }
-                return this.options.factory + "(" + node.value + ")"
-            }
-        }, {}],
-        67: [function(require, module, exports) {
-            "use strict";
-            var SymbolNode = require("mr-parser").nodeTypes.SymbolNode;
-            var functionProxy = function(node) {
-                return "$$mathCodegen.functionProxy(" + this.next(new SymbolNode(node.name)) + ', "' + node.name + '")'
-            };
-            module.exports = function(node) {
-                var self = this;
-                var method = functionProxy.call(this, node);
-                var args = [];
-                this.rawify(this.options.rawCallExpressionElements, function() {
-                    args = node.args.map(function(arg) {
-                        return self.next(arg)
-                    })
-                });
-                return method + "(" + args.join(", ") + ")"
-            };
-            module.exports.functionProxy = functionProxy
-        }, {
-            "mr-parser": 72
-        }],
-        68: [function(require, module, exports) {
-            "use strict";
-            var Operators = require("../misc/Operators");
-            module.exports = function(node) {
-                if (this.options.raw) {
-                    return ["(" + this.next(node.args[0]), node.op, this.next(node.args[1]) + ")"].join(" ")
-                }
-                var namedOperator = Operators[node.op];
-                if (!namedOperator) {
-                    throw TypeError("unidentified operator")
-                }
-                return this.FunctionNode({
-                    name: namedOperator,
-                    args: node.args
-                })
-            }
-        }, {
-            "../misc/Operators": 61
-        }],
-        69: [function(require, module, exports) {
-            "use strict";
-            module.exports = function(node) {
-                var id = node.name;
-                return '$$mathCodegen.getProperty("' + id + '", scope, ns)'
-            }
-        }, {}],
-        70: [function(require, module, exports) {
-            "use strict";
-            var UnaryOperators = require("../misc/UnaryOperators");
-            module.exports = function(node) {
-                if (this.options.raw) {
-                    return node.op + this.next(node.argument)
-                }
-                if (!(node.op in UnaryOperators)) {
-                    throw new SyntaxError(node.op + " not implemented")
-                }
-                var namedOperator = UnaryOperators[node.op];
-                return this.FunctionNode({
-                    name: namedOperator,
-                    args: [node.argument]
-                })
-            }
-        }, {
-            "../misc/UnaryOperators": 62
-        }],
-        71: [function(require, module, exports) {
-            "use strict";
-            module.exports = 9007199254740991
-        }, {}],
-        72: [function(require, module, exports) {
-            "use strict";
-            module.exports.Lexer = require("./lib/Lexer");
-            module.exports.Parser = require("./lib/Parser");
-            module.exports.nodeTypes = require("./lib/node/")
-        }, {
-            "./lib/Lexer": 73,
-            "./lib/Parser": 74,
-            "./lib/node/": 85
-        }],
-        73: [function(require, module, exports) {
-            var tokenType = require("./token-type");
-            var ESCAPES = {
-                n: "\n",
-                f: "\f",
-                r: "\r",
-                t: "\t",
-                v: "\v",
-                "'": "'",
-                '"': '"'
-            };
-            var DELIMITERS = {
-                ",": true,
-                "(": true,
-                ")": true,
-                "[": true,
-                "]": true,
-                ";": true,
-                "~": true,
-                "!": true,
-                "+": true,
-                "-": true,
-                "*": true,
-                "/": true,
-                "%": true,
-                "^": true,
-                "**": true,
-                "|": true,
-                "&": true,
-                "^|": true,
-                "=": true,
-                ":": true,
-                "?": true,
-                "||": true,
-                "&&": true,
-                xor: true,
-                "==": true,
-                "!=": true,
-                "===": true,
-                "!==": true,
-                "<": true,
-                ">": true,
-                ">=": true,
-                "<=": true,
-                ">>>": true,
-                "<<": true,
-                ">>": true
-            };
-
-            function isDigit(c) {
-                return c >= "0" && c <= "9"
-            }
-
-            function isIdentifier(c) {
-                return c >= "a" && c <= "z" || c >= "A" && c <= "Z" || c === "$" || c === "_"
-            }
-
-            function isWhitespace(c) {
-                return c === " " || c === "\r" || c === "\t" || c === "\n" || c === "\v" || c === " "
-            }
-
-            function isDelimiter(str) {
-                return DELIMITERS[str]
-            }
-
-            function isQuote(c) {
-                return c === "'" || c === '"'
-            }
-
-            function Lexer() {}
-            Lexer.prototype.throwError = function(message, index) {
-                index = typeof index === "undefined" ? this.index : index;
-                var error = new Error(message + " at index " + index);
-                error.index = index;
-                error.description = message;
-                throw error
-            };
-            Lexer.prototype.lex = function(text) {
-                this.text = text;
-                this.index = 0;
-                this.tokens = [];
-                while (this.index < this.text.length) {
-                    while (isWhitespace(this.peek())) {
-                        this.consume()
-                    }
-                    var c = this.peek();
-                    var c2 = c + this.peek(1);
-                    var c3 = c2 + this.peek(2);
-                    if (isDelimiter(c3)) {
-                        this.tokens.push({
-                            type: tokenType.DELIMITER,
-                            value: c3
-                        });
-                        this.consume();
-                        this.consume();
-                        this.consume()
-                    } else if (isDelimiter(c2)) {
-                        this.tokens.push({
-                            type: tokenType.DELIMITER,
-                            value: c2
-                        });
-                        this.consume();
-                        this.consume()
-                    } else if (isDelimiter(c)) {
-                        this.tokens.push({
-                            type: tokenType.DELIMITER,
-                            value: c
-                        });
-                        this.consume()
-                    } else if (isDigit(c) || c === "." && isDigit(this.peek(1))) {
-                        this.tokens.push({
-                            type: tokenType.NUMBER,
-                            value: this.readNumber()
-                        })
-                    } else if (isQuote(c)) {
-                        this.tokens.push({
-                            type: tokenType.STRING,
-                            value: this.readString()
-                        })
-                    } else if (isIdentifier(c)) {
-                        this.tokens.push({
-                            type: tokenType.SYMBOL,
-                            value: this.readIdentifier()
-                        })
-                    } else {
-                        this.throwError("unexpected character " + c)
-                    }
-                }
-                this.tokens.push({
-                    type: tokenType.EOF
-                });
-                return this.tokens
-            };
-            Lexer.prototype.peek = function(nth) {
-                nth = nth || 0;
-                if (this.index + nth >= this.text.length) {
-                    return
-                }
-                return this.text.charAt(this.index + nth)
-            };
-            Lexer.prototype.consume = function() {
-                var current = this.peek();
-                this.index += 1;
-                return current
-            };
-            Lexer.prototype.readNumber = function() {
-                var number = "";
-                if (this.peek() === ".") {
-                    number += this.consume();
-                    if (!isDigit(this.peek())) {
-                        this.throwError("number expected")
-                    }
-                } else {
-                    while (isDigit(this.peek())) {
-                        number += this.consume()
-                    }
-                    if (this.peek() === ".") {
-                        number += this.consume()
-                    }
-                }
-                while (isDigit(this.peek())) {
-                    number += this.consume()
-                }
-                if (this.peek() === "e" || this.peek() === "E") {
-                    number += this.consume();
-                    if (!(isDigit(this.peek()) || this.peek() === "+" || this.peek() === "-")) {
-                        this.throwError()
-                    }
-                    if (this.peek() === "+" || this.peek() === "-") {
-                        number += this.consume()
-                    }
-                    if (!isDigit(this.peek())) {
-                        this.throwError("number expected")
-                    }
-                    while (isDigit(this.peek())) {
-                        number += this.consume()
-                    }
-                }
-                return number
-            };
-            Lexer.prototype.readIdentifier = function() {
-                var text = "";
-                while (isIdentifier(this.peek()) || isDigit(this.peek())) {
-                    text += this.consume()
-                }
-                return text
-            };
-            Lexer.prototype.readString = function() {
-                var quote = this.consume();
-                var string = "";
-                var escape;
-                while (true) {
-                    var c = this.consume();
-                    if (!c) {
-                        this.throwError("string is not closed")
-                    }
-                    if (escape) {
-                        if (c === "u") {
-                            var hex = this.text.substring(this.index + 1, this.index + 5);
-                            if (!hex.match(/[\da-f]{4}/i)) {
-                                this.throwError("invalid unicode escape")
-                            }
-                            this.index += 4;
-                            string += String.fromCharCode(parseInt(hex, 16))
-                        } else {
-                            var replacement = ESCAPES[c];
-                            if (replacement) {
-                                string += replacement
-                            } else {
-                                string += c
-                            }
-                        }
-                        escape = false
-                    } else if (c === quote) {
-                        break
-                    } else if (c === "\\") {
-                        escape = true
-                    } else {
-                        string += c
-                    }
-                }
-                return string
-            };
-            module.exports = Lexer
-        }, {
-            "./token-type": 86
-        }],
-        74: [function(require, module, exports) {
-            var tokenType = require("./token-type");
-            var Lexer = require("./Lexer");
-            var ConstantNode = require("./node/ConstantNode");
-            var OperatorNode = require("./node/OperatorNode");
-            var UnaryNode = require("./node/UnaryNode");
-            var SymbolNode = require("./node/SymbolNode");
-            var FunctionNode = require("./node/FunctionNode");
-            var ArrayNode = require("./node/ArrayNode");
-            var ConditionalNode = require("./node/ConditionalNode");
-            var AssignmentNode = require("./node/AssignmentNode");
-            var BlockNode = require("./node/BlockNode");
-
-            function Parser() {
-                this.lexer = new Lexer;
-                this.tokens = null
-            }
-            Parser.prototype.current = function() {
-                return this.tokens[0]
-            };
-            Parser.prototype.next = function() {
-                return this.tokens[1]
-            };
-            Parser.prototype.peek = function() {
-                if (this.tokens.length) {
-                    var first = this.tokens[0];
-                    for (var i = 0; i < arguments.length; i += 1) {
-                        if (first.value === arguments[i]) {
-                            return true
-                        }
-                    }
-                }
-            };
-            Parser.prototype.consume = function(e) {
-                return this.tokens.shift()
-            };
-            Parser.prototype.expect = function(e) {
-                if (!this.peek(e)) {
-                    throw Error("expected " + e)
-                }
-                return this.consume()
-            };
-            Parser.prototype.isEOF = function() {
-                return this.current().type === tokenType.EOF
-            };
-            Parser.prototype.parse = function(text) {
-                this.tokens = this.lexer.lex(text);
-                return this.program()
-            };
-            Parser.prototype.program = function() {
-                var blocks = [];
-                while (!this.isEOF()) {
-                    blocks.push(this.assignment());
-                    if (this.peek(";")) {
-                        this.consume()
-                    }
-                }
-                this.end();
-                return new BlockNode(blocks)
-            };
-            Parser.prototype.assignment = function() {
-                var left = this.ternary();
-                if (left instanceof SymbolNode && this.peek("=")) {
-                    this.consume();
-                    return new AssignmentNode(left.name, this.assignment())
-                }
-                return left
-            };
-            Parser.prototype.ternary = function() {
-                var predicate = this.logicalOR();
-                if (this.peek("?")) {
-                    this.consume();
-                    var truthy = this.ternary();
-                    this.expect(":");
-                    var falsy = this.ternary();
-                    return new ConditionalNode(predicate, truthy, falsy)
-                }
-                return predicate
-            };
-            Parser.prototype.logicalOR = function() {
-                var left = this.logicalXOR();
-                if (this.peek("||")) {
-                    var op = this.consume();
-                    var right = this.logicalOR();
-                    return new OperatorNode(op.value, [left, right])
-                }
-                return left
-            };
-            Parser.prototype.logicalXOR = function() {
-                var left = this.logicalAND();
-                if (this.current().value === "xor") {
-                    var op = this.consume();
-                    var right = this.logicalXOR();
-                    return new OperatorNode(op.value, [left, right])
-                }
-                return left
-            };
-            Parser.prototype.logicalAND = function() {
-                var left = this.bitwiseOR();
-                if (this.peek("&&")) {
-                    var op = this.consume();
-                    var right = this.logicalAND();
-                    return new OperatorNode(op.value, [left, right])
-                }
-                return left
-            };
-            Parser.prototype.bitwiseOR = function() {
-                var left = this.bitwiseXOR();
-                if (this.peek("|")) {
-                    var op = this.consume();
-                    var right = this.bitwiseOR();
-                    return new OperatorNode(op.value, [left, right])
-                }
-                return left
-            };
-            Parser.prototype.bitwiseXOR = function() {
-                var left = this.bitwiseAND();
-                if (this.peek("^|")) {
-                    var op = this.consume();
-                    var right = this.bitwiseXOR();
-                    return new OperatorNode(op.value, [left, right])
-                }
-                return left
-            };
-            Parser.prototype.bitwiseAND = function() {
-                var left = this.relational();
-                if (this.peek("&")) {
-                    var op = this.consume();
-                    var right = this.bitwiseAND();
-                    return new OperatorNode(op.value, [left, right])
-                }
-                return left
-            };
-            Parser.prototype.relational = function() {
-                var left = this.shift();
-                if (this.peek("==", "===", "!=", "!==", ">=", "<=", ">", "<")) {
-                    var op = this.consume();
-                    var right = this.shift();
-                    return new OperatorNode(op.value, [left, right])
-                }
-                return left
-            };
-            Parser.prototype.shift = function() {
-                var left = this.additive();
-                if (this.peek(">>", "<<", ">>>")) {
-                    var op = this.consume();
-                    var right = this.shift();
-                    return new OperatorNode(op.value, [left, right])
-                }
-                return left
-            };
-            Parser.prototype.additive = function() {
-                var left = this.multiplicative();
-                while (this.peek("+", "-")) {
-                    var op = this.consume();
-                    left = new OperatorNode(op.value, [left, this.multiplicative()])
-                }
-                return left
-            };
-            Parser.prototype.multiplicative = function() {
-                var op, right;
-                var left = this.unary();
-                while (this.peek("*", "/", "%")) {
-                    op = this.consume();
-                    left = new OperatorNode(op.value, [left, this.unary()])
-                }
-                if (this.current().type === tokenType.SYMBOL || this.peek("(") || !(left.type instanceof ConstantNode) && this.current().type === tokenType.NUMBER) {
-                    right = this.multiplicative();
-                    return new OperatorNode("*", [left, right])
-                }
-                return left
-            };
-            Parser.prototype.unary = function() {
-                if (this.peek("-", "+", "~")) {
-                    var op = this.consume();
-                    var right = this.unary();
-                    return new UnaryNode(op.value, right)
-                }
-                return this.pow()
-            };
-            Parser.prototype.pow = function() {
-                var left = this.factorial();
-                if (this.peek("^", "**")) {
-                    var op = this.consume();
-                    var right = this.unary();
-                    return new OperatorNode(op.value, [left, right])
-                }
-                return left
-            };
-            Parser.prototype.factorial = function() {
-                var left = this.symbol();
-                if (this.peek("!")) {
-                    var op = this.consume();
-                    return new OperatorNode(op.value, [left])
-                }
-                return left
-            };
-            Parser.prototype.symbol = function() {
-                var current = this.current();
-                if (current.type === tokenType.SYMBOL) {
-                    var symbol = this.consume();
-                    var node = this.functionCall(symbol);
-                    return node
-                }
-                return this.string()
-            };
-            Parser.prototype.functionCall = function(symbolToken) {
-                var name = symbolToken.value;
-                if (this.peek("(")) {
-                    this.consume();
-                    var params = [];
-                    while (!this.peek(")") && !this.isEOF()) {
-                        params.push(this.assignment());
-                        if (this.peek(",")) {
-                            this.consume()
-                        }
-                    }
-                    this.expect(")");
-                    return new FunctionNode(name, params)
-                }
-                return new SymbolNode(name)
-            };
-            Parser.prototype.string = function() {
-                if (this.current().type === tokenType.STRING) {
-                    return new ConstantNode(this.consume().value, "string")
-                }
-                return this.array()
-            };
-            Parser.prototype.array = function() {
-                if (this.peek("[")) {
-                    this.consume();
-                    var params = [];
-                    while (!this.peek("]") && !this.isEOF()) {
-                        params.push(this.assignment());
-                        if (this.peek(",")) {
-                            this.consume()
-                        }
-                    }
-                    this.expect("]");
-                    return new ArrayNode(params)
-                }
-                return this.number()
-            };
-            Parser.prototype.number = function() {
-                var token = this.current();
-                if (token.type === tokenType.NUMBER) {
-                    return new ConstantNode(this.consume().value, "number")
-                }
-                return this.parentheses()
-            };
-            Parser.prototype.parentheses = function() {
-                var token = this.current();
-                if (token.value === "(") {
-                    this.consume();
-                    var left = this.assignment();
-                    this.expect(")");
-                    return left
-                }
-                return this.end()
-            };
-            Parser.prototype.end = function() {
-                var token = this.current();
-                if (token.type !== tokenType.EOF) {
-                    throw Error("unexpected end of expression")
-                }
-            };
-            module.exports = Parser
-        }, {
-            "./Lexer": 73,
-            "./node/ArrayNode": 75,
-            "./node/AssignmentNode": 76,
-            "./node/BlockNode": 77,
-            "./node/ConditionalNode": 78,
-            "./node/ConstantNode": 79,
-            "./node/FunctionNode": 80,
-            "./node/OperatorNode": 82,
-            "./node/SymbolNode": 83,
-            "./node/UnaryNode": 84,
-            "./token-type": 86
-        }],
-        75: [function(require, module, exports) {
-            var Node = require("./Node");
-
-            function ArrayNode(nodes) {
-                this.nodes = nodes
-            }
-            ArrayNode.prototype = Object.create(Node.prototype);
-            ArrayNode.prototype.type = "ArrayNode";
-            module.exports = ArrayNode
-        }, {
-            "./Node": 81
-        }],
-        76: [function(require, module, exports) {
-            var Node = require("./Node");
-
-            function AssignmentNode(name, expr) {
-                this.name = name;
-                this.expr = expr
-            }
-            AssignmentNode.prototype = Object.create(Node.prototype);
-            AssignmentNode.prototype.type = "AssignmentNode";
-            module.exports = AssignmentNode
-        }, {
-            "./Node": 81
-        }],
-        77: [function(require, module, exports) {
-            var Node = require("./Node");
-
-            function BlockNode(blocks) {
-                this.blocks = blocks
-            }
-            BlockNode.prototype = Object.create(Node.prototype);
-            BlockNode.prototype.type = "BlockNode";
-            module.exports = BlockNode
-        }, {
-            "./Node": 81
-        }],
-        78: [function(require, module, exports) {
-            var Node = require("./Node");
-
-            function ConditionalNode(predicate, truthy, falsy) {
-                this.condition = predicate;
-                this.trueExpr = truthy;
-                this.falseExpr = falsy
-            }
-            ConditionalNode.prototype = Object.create(Node.prototype);
-            ConditionalNode.prototype.type = "ConditionalNode";
-            module.exports = ConditionalNode
-        }, {
-            "./Node": 81
-        }],
-        79: [function(require, module, exports) {
-            var Node = require("./Node");
-            var SUPPORTED_TYPES = {
-                number: true,
-                string: true,
-                boolean: true,
-                undefined: true,
-                null: true
-            };
-
-            function ConstantNode(value, type) {
-                if (!SUPPORTED_TYPES[type]) {
-                    throw Error("unsupported type '" + type + "'")
-                }
-                this.value = value;
-                this.valueType = type
-            }
-            ConstantNode.prototype = Object.create(Node.prototype);
-            ConstantNode.prototype.type = "ConstantNode";
-            module.exports = ConstantNode
-        }, {
-            "./Node": 81
-        }],
-        80: [function(require, module, exports) {
-            var Node = require("./Node");
-
-            function FunctionNode(name, args) {
-                this.name = name;
-                this.args = args
-            }
-            FunctionNode.prototype = Object.create(Node.prototype);
-            FunctionNode.prototype.type = "FunctionNode";
-            module.exports = FunctionNode
-        }, {
-            "./Node": 81
-        }],
-        81: [function(require, module, exports) {
-            function Node() {}
-            Node.prototype.type = "Node";
-            module.exports = Node
-        }, {}],
-        82: [function(require, module, exports) {
-            var Node = require("./Node");
-
-            function OperatorNode(op, args) {
-                this.op = op;
-                this.args = args || []
-            }
-            OperatorNode.prototype = Object.create(Node.prototype);
-            OperatorNode.prototype.type = "OperatorNode";
-            module.exports = OperatorNode
-        }, {
-            "./Node": 81
-        }],
-        83: [function(require, module, exports) {
-            var Node = require("./Node");
-
-            function SymbolNode(name) {
-                this.name = name
-            }
-            SymbolNode.prototype = Object.create(Node.prototype);
-            SymbolNode.prototype.type = "SymbolNode";
-            module.exports = SymbolNode
-        }, {
-            "./Node": 81
-        }],
-        84: [function(require, module, exports) {
-            var Node = require("./Node");
-
-            function UnaryNode(op, argument) {
-                this.op = op;
-                this.argument = argument
-            }
-            UnaryNode.prototype = Object.create(Node.prototype);
-            UnaryNode.prototype.type = "UnaryNode";
-            module.exports = UnaryNode
-        }, {
-            "./Node": 81
-        }],
-        85: [function(require, module, exports) {
-            module.exports = {
-                ArrayNode: require("./ArrayNode"),
-                AssignmentNode: require("./AssignmentNode"),
-                BlockNode: require("./BlockNode"),
-                ConditionalNode: require("./ConditionalNode"),
-                ConstantNode: require("./ConstantNode"),
-                FunctionNode: require("./FunctionNode"),
-                Node: require("./Node"),
-                OperatorNode: require("./OperatorNode"),
-                SymbolNode: require("./SymbolNode"),
-                UnaryNode: require("./UnaryNode")
-            }
-        }, {
-            "./ArrayNode": 75,
-            "./AssignmentNode": 76,
-            "./BlockNode": 77,
-            "./ConditionalNode": 78,
-            "./ConstantNode": 79,
-            "./FunctionNode": 80,
-            "./Node": 81,
-            "./OperatorNode": 82,
-            "./SymbolNode": 83,
-            "./UnaryNode": 84
-        }],
-        86: [function(require, module, exports) {
-            module.exports = {
-                EOF: 0,
-                DELIMITER: 1,
-                NUMBER: 2,
-                STRING: 3,
-                SYMBOL: 4
-            }
-        }, {}],
-        87: [function(require, module, exports) {
-            "use strict";
-            var doubleBits = require("double-bits");
-            var SMALLEST_DENORM = Math.pow(2, -1074);
-            var UINT_MAX = -1 >>> 0;
-            module.exports = nextafter;
-
-            function nextafter(x, y) {
-                if (isNaN(x) || isNaN(y)) {
-                    return NaN
-                }
-                if (x === y) {
-                    return x
-                }
-                if (x === 0) {
-                    if (y < 0) {
-                        return -SMALLEST_DENORM
-                    } else {
-                        return SMALLEST_DENORM
-                    }
-                }
-                var hi = doubleBits.hi(x);
-                var lo = doubleBits.lo(x);
-                if (y > x === x > 0) {
-                    if (lo === UINT_MAX) {
-                        hi += 1;
-                        lo = 0
-                    } else {
-                        lo += 1
-                    }
-                } else {
-                    if (lo === 0) {
-                        lo = UINT_MAX;
-                        hi -= 1
-                    } else {
-                        lo -= 1
-                    }
-                }
-                return doubleBits.pack(lo, hi)
-            }
-        }, {
-            "double-bits": 30
-        }],
-        88: [function(require, module, exports) {
-            var process = module.exports = {};
-            var cachedSetTimeout;
-            var cachedClearTimeout;
-
-            function defaultSetTimout() {
-                throw new Error("setTimeout has not been defined")
-            }
-
-            function defaultClearTimeout() {
-                throw new Error("clearTimeout has not been defined")
-            }(function() {
-                try {
-                    if (typeof setTimeout === "function") {
-                        cachedSetTimeout = setTimeout
-                    } else {
-                        cachedSetTimeout = defaultSetTimout
-                    }
-                } catch (e) {
-                    cachedSetTimeout = defaultSetTimout
-                }
-                try {
-                    if (typeof clearTimeout === "function") {
-                        cachedClearTimeout = clearTimeout
-                    } else {
-                        cachedClearTimeout = defaultClearTimeout
-                    }
-                } catch (e) {
-                    cachedClearTimeout = defaultClearTimeout
-                }
-            })();
-
-            function runTimeout(fun) {
-                if (cachedSetTimeout === setTimeout) {
-                    return setTimeout(fun, 0)
-                }
-                if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-                    cachedSetTimeout = setTimeout;
-                    return setTimeout(fun, 0)
-                }
-                try {
-                    return cachedSetTimeout(fun, 0)
-                } catch (e) {
-                    try {
-                        return cachedSetTimeout.call(null, fun, 0)
-                    } catch (e) {
-                        return cachedSetTimeout.call(this, fun, 0)
-                    }
-                }
-            }
-
-            function runClearTimeout(marker) {
-                if (cachedClearTimeout === clearTimeout) {
-                    return clearTimeout(marker)
-                }
-                if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-                    cachedClearTimeout = clearTimeout;
-                    return clearTimeout(marker)
-                }
-                try {
-                    return cachedClearTimeout(marker)
-                } catch (e) {
-                    try {
-                        return cachedClearTimeout.call(null, marker)
-                    } catch (e) {
-                        return cachedClearTimeout.call(this, marker)
-                    }
-                }
-            }
-            var queue = [];
-            var draining = false;
-            var currentQueue;
-            var queueIndex = -1;
-
-            function cleanUpNextTick() {
-                if (!draining || !currentQueue) {
-                    return
-                }
-                draining = false;
-                if (currentQueue.length) {
-                    queue = currentQueue.concat(queue)
-                } else {
-                    queueIndex = -1
-                }
-                if (queue.length) {
-                    drainQueue()
-                }
-            }
-
-            function drainQueue() {
-                if (draining) {
-                    return
-                }
-                var timeout = runTimeout(cleanUpNextTick);
-                draining = true;
-                var len = queue.length;
-                while (len) {
-                    currentQueue = queue;
-                    queue = [];
-                    while (++queueIndex < len) {
-                        if (currentQueue) {
-                            currentQueue[queueIndex].run()
-                        }
-                    }
-                    queueIndex = -1;
-                    len = queue.length
-                }
-                currentQueue = null;
-                draining = false;
-                runClearTimeout(timeout)
-            }
-            process.nextTick = function(fun) {
-                var args = new Array(arguments.length - 1);
-                if (arguments.length > 1) {
-                    for (var i = 1; i < arguments.length; i++) {
-                        args[i - 1] = arguments[i]
-                    }
-                }
-                queue.push(new Item(fun, args));
-                if (queue.length === 1 && !draining) {
-                    runTimeout(drainQueue)
-                }
-            };
-
-            function Item(fun, array) {
-                this.fun = fun;
-                this.array = array
-            }
-            Item.prototype.run = function() {
-                this.fun.apply(null, this.array)
-            };
-            process.title = "browser";
-            process.browser = true;
-            process.env = {};
-            process.argv = [];
-            process.version = "";
-            process.versions = {};
-
-            function noop() {}
-            process.on = noop;
-            process.addListener = noop;
-            process.once = noop;
-            process.off = noop;
-            process.removeListener = noop;
-            process.removeAllListeners = noop;
-            process.emit = noop;
-            process.prependListener = noop;
-            process.prependOnceListener = noop;
-            process.listeners = function(name) {
-                return []
-            };
-            process.binding = function(name) {
-                throw new Error("process.binding is not supported")
-            };
-            process.cwd = function() {
-                return "/"
-            };
-            process.chdir = function(dir) {
-                throw new Error("process.chdir is not supported")
-            };
-            process.umask = function() {
-                return 0
-            }
-        }, {}],
-        89: [function(require, module, exports) {
-            var ua = typeof window !== "undefined" ? window.navigator.userAgent : "",
-                isOSX = /OS X/.test(ua),
-                isOpera = /Opera/.test(ua),
-                maybeFirefox = !/like Gecko/.test(ua) && !isOpera;
-            var i, output = module.exports = {
-                0: isOSX ? "<menu>" : "<UNK>",
-                1: "<mouse 1>",
-                2: "<mouse 2>",
-                3: "<break>",
-                4: "<mouse 3>",
-                5: "<mouse 4>",
-                6: "<mouse 5>",
-                8: "<backspace>",
-                9: "<tab>",
-                12: "<clear>",
-                13: "<enter>",
-                16: "<shift>",
-                17: "<control>",
-                18: "<alt>",
-                19: "<pause>",
-                20: "<caps-lock>",
-                21: "<ime-hangul>",
-                23: "<ime-junja>",
-                24: "<ime-final>",
-                25: "<ime-kanji>",
-                27: "<escape>",
-                28: "<ime-convert>",
-                29: "<ime-nonconvert>",
-                30: "<ime-accept>",
-                31: "<ime-mode-change>",
-                27: "<escape>",
-                32: "<space>",
-                33: "<page-up>",
-                34: "<page-down>",
-                35: "<end>",
-                36: "<home>",
-                37: "<left>",
-                38: "<up>",
-                39: "<right>",
-                40: "<down>",
-                41: "<select>",
-                42: "<print>",
-                43: "<execute>",
-                44: "<snapshot>",
-                45: "<insert>",
-                46: "<delete>",
-                47: "<help>",
-                91: "<meta>",
-                92: "<meta>",
-                93: isOSX ? "<meta>" : "<menu>",
-                95: "<sleep>",
-                106: "<num-*>",
-                107: "<num-+>",
-                108: "<num-enter>",
-                109: "<num--\x3e",
-                110: "<num-.>",
-                111: "<num-/>",
-                144: "<num-lock>",
-                145: "<scroll-lock>",
-                160: "<shift-left>",
-                161: "<shift-right>",
-                162: "<control-left>",
-                163: "<control-right>",
-                164: "<alt-left>",
-                165: "<alt-right>",
-                166: "<browser-back>",
-                167: "<browser-forward>",
-                168: "<browser-refresh>",
-                169: "<browser-stop>",
-                170: "<browser-search>",
-                171: "<browser-favorites>",
-                172: "<browser-home>",
-                173: isOSX && maybeFirefox ? "-" : "<volume-mute>",
-                174: "<volume-down>",
-                175: "<volume-up>",
-                176: "<next-track>",
-                177: "<prev-track>",
-                178: "<stop>",
-                179: "<play-pause>",
-                180: "<launch-mail>",
-                181: "<launch-media-select>",
-                182: "<launch-app 1>",
-                183: "<launch-app 2>",
-                186: ";",
-                187: "=",
-                188: ",",
-                189: "-",
-                190: ".",
-                191: "/",
-                192: "`",
-                219: "[",
-                220: "\\",
-                221: "]",
-                222: "'",
-                223: "<meta>",
-                224: "<meta>",
-                226: "<alt-gr>",
-                229: "<ime-process>",
-                231: isOpera ? "`" : "<unicode>",
-                246: "<attention>",
-                247: "<crsel>",
-                248: "<exsel>",
-                249: "<erase-eof>",
-                250: "<play>",
-                251: "<zoom>",
-                252: "<no-name>",
-                253: "<pa-1>",
-                254: "<clear>"
-            };
-            for (i = 58; i < 65; ++i) {
-                output[i] = String.fromCharCode(i)
-            }
-            for (i = 48; i < 58; ++i) {
-                output[i] = i - 48 + ""
-            }
-            for (i = 65; i < 91; ++i) {
-                output[i] = String.fromCharCode(i)
-            }
-            for (i = 96; i < 106; ++i) {
-                output[i] = "<num-" + (i - 96) + ">"
-            }
-            for (i = 112; i < 136; ++i) {
-                output[i] = "F" + (i - 111)
-            }
-        }, {}],
-        90: [function(require, module, exports) {
-            module.exports = extend;
-            var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-            function extend(target) {
-                for (var i = 1; i < arguments.length; i++) {
-                    var source = arguments[i];
-                    for (var key in source) {
-                        if (hasOwnProperty.call(source, key)) {
-                            target[key] = source[key]
-                        }
-                    }
-                }
-                return target
-            }
-        }, {}]
-    }, {}, [1])(1)
-});
+        function Di(t = {}) { t.data = t.data || []; let n = Fi.cache[t.id]; return n || (n = new Fi(t)), n.build() }
+        Fi.cache = [], Di.globals = hi, Di.$eval = gi, Di.graphTypes = r;
+        n.default = Di
+    }]).default
+}));
+//# sourceMappingURL=function-plot.js.map

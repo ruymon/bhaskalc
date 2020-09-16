@@ -6,7 +6,8 @@ function calcularDelta(a, b, c) {
     const valorDelta = (b ** 2) - 4 * (a * c);
 
     if (valorDelta < 0) {
-        throw new Error("Não existe raizes reais para esses coeficientes...");
+        throw new Error('Não há Raizes no conjunto de números Reais');
+
     };
 
     return valorDelta;
@@ -26,45 +27,39 @@ function calcularBhaskara(a, b, c) {
 };
 
 function calcularResultado() {
+
     const A = parseInt($('#coeficienteA').val());
     const B = parseInt($('#coeficienteB').val());
     const C = parseInt($('#coeficienteC').val());
 
-    if (isNaN(A) === true || isNaN(B) === true || isNaN(C) === true) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Faltando parametros.',
-            showConfirmButton: false,
-            timer: 2500,
-            timerProgressBar: true,
-            customClass: {
-                popup: 'popup-class',
-                header: 'header-class',
-                title: 'title-class',
-                content: 'content-class',
-            },
-        })
+    if (isNaN(A) || isNaN(B) || isNaN(C)) {
+        mostrarModalAlerta('error', 'Opps...', 'Faltando parametros.');
         return;
     }
 
     if (A == 0) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'O Coeficiente A não pode ser 0.',
-            showConfirmButton: false,
-            timer: 2500,
-            timerProgressBar: true,
-            customClass: {
-                popup: 'popup-class',
-                header: 'header-class',
-                title: 'title-class',
-                content: 'content-class',
-            },
-        })
+        mostrarModalAlerta('error', 'Opps...', 'O Coeficiente A não pode ser 0.');
         return;
     };
+
+    document.getElementById('graphText').style.display = 'none';
+    document.getElementById('plotGraph').style.display = 'block';
+
+    functionPlot({
+        target: document.querySelector("#plotGraph"),
+        width: 700,
+        height: 600,
+        yAxis: {
+            domain: [-1, 9]
+        },
+        grid: true,
+        data: [{
+            // fn: 'x^2 + 2x + 3', // f(x) = ax² + bx + c
+            fn: `${A}x^2 + ${B}x + ${C}`
+        }]
+    });
+
+
 
     try {
         const { x1, x2 } = calcularBhaskara(A, B, C);
@@ -79,6 +74,53 @@ function calcularResultado() {
 
 
     } catch (e) {
-        alert(e.message);
+        mostrarModalAlerta('error', 'Opps...', e.message);
     }
 };
+
+
+function resetarValores() {
+
+    document.getElementById('coeficienteA').value = null;
+    document.getElementById('coeficienteB').value = null;
+    document.getElementById('coeficienteC').value = null;
+
+    document.getElementById('graphText').style.display = 'block';
+    document.getElementById('plotGraph').style.display = 'none';
+
+    document.getElementById("resultadoDeltaTratado").innerHTML = "value";
+    document.getElementById("x1Tratado").innerHTML = "value";
+    document.getElementById("x2Tratado").innerHTML = "value";
+
+    document.getElementById("resCS1Tratado").innerHTML = "";
+    document.getElementById("resCS2Tratado").innerHTML = "";
+
+};
+
+function mostrarModalAlerta(icon, title, text) {
+    let temaAtual = sessionStorage.getItem('temaAtual');
+    Swal.fire({
+        icon: icon,
+        title: title,
+        text: text,
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        customClass: {
+            popup: temaAtual == 'dark' ? 'popup-class' : 'popup-classLight',
+            header: temaAtual == 'dark' ? 'header-class' : 'header-classLight',
+            title: temaAtual == 'dark' ? 'title-class' : 'title-classLight',
+            content: temaAtual == 'dark' ? 'content-class' : 'content-classLight',
+        },
+    });
+};
+
+
+
+// SWEET ALERTS TEMPLATES
+
+/*
+
+ICONS  [ success, error, warning, question, info ]
+
+*/
