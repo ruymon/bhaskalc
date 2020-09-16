@@ -82,7 +82,9 @@ git clone https://github.com/ruymon/bhaskalc
 * 💡 Tem ideias para melhorar o **BhasKalc ?** Crie um **Issue** com sua ideia!
 
 
+## ❤️ Agradecimentos
 
+ * Muito obrigado a todos que ajudaram a construir o Bhaskalc, em especial para um grande amigo <a href="https://github.com/gabrielcarreiraribeiro">Gabriel Ribeiro</a>, que me orientou durante esse projeto!
 
 ##
 
