@@ -48,6 +48,9 @@
     <link rel="stylesheet" href="./assets/css/toggle.css">
     <link rel="stylesheet" href="./assets/css/main.css">
     <link rel="stylesheet" href="./assets/css/temaLight.css">
+    <!-- LOADER -->
+    <link rel="stylesheet" href="./assets/css/loader.css">
+
 
     <!-- BHASKHALC CORE JS -->
     <script type="text/javascript" src="assets/js/bhaskara.js"></script>
@@ -56,20 +59,33 @@
     <!-- Script Pegar Status Cache Tema -->
     <script>
         setTimeout(() => {
-                let temaAtual = sessionStorage.getItem('temaAtual');
-                let statusTema = document.getElementById('switch');
+            let temaAtual = sessionStorage.getItem('temaAtual');
+            let statusTema = document.getElementById('switch');
 
-                if (temaAtual && statusTema) {
-                    temaAtual == 'dark' ? statusTema.checked = false : statusTema.checked = true
-                }
-                mudarCor();
-            }, 100) // REZA PARA O USER NAO RODAR EM UMA BATATA
+            if (temaAtual && statusTema) {
+                temaAtual == 'dark' ? statusTema.checked = false : statusTema.checked = true
+            }
+            mudarCor();
+        }, 1000);
+        setTimeout(() => {
+            document.getElementById('loadingScreen').style.display = 'none';
+        }, 4000)
     </script>
-    <!-- Fim Script Pegar Status Cache -->
 
+    <!-- Fim Script Pegar Status Cache -->
 </head>
 
+
 <body id="bodyStyle" class="bodyStyle">
+
+    <div class="loadingScreen" id="loadingScreen">
+        <div class="loadingBg"></div>
+        <div class="loader"></div>
+        <span class="loadingText">Carregando...</span>
+    </div>
+
+
+
     <!-- Start of User Input Content -->
 
     <div class="formInput" id="formInput">

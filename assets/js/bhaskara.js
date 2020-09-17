@@ -4,12 +4,6 @@
 
 function calcularDelta(a, b, c) {
     const valorDelta = (b ** 2) - 4 * (a * c);
-
-    if (valorDelta < 0) {
-        throw new Error('Não há Raizes no conjunto de números Reais');
-
-    };
-
     return valorDelta;
 };
 
@@ -45,37 +39,42 @@ function calcularResultado() {
     document.getElementById('graphText').style.display = 'none';
     document.getElementById('plotGraph').style.display = 'block';
 
-    functionPlot({
-        target: document.querySelector("#plotGraph"),
-        width: 700,
-        height: 600,
-        yAxis: {
-            domain: [-1, 9]
-        },
-        grid: true,
-        data: [{
-            // fn: 'x^2 + 2x + 3', // f(x) = ax² + bx + c
-            fn: `${A}x^2 + ${B}x + ${C}`
-        }]
-    });
-
-
-
     try {
         const { x1, x2 } = calcularBhaskara(A, B, C);
 
-        document.getElementById("resultadoDeltaTratado").innerHTML = calcularDelta(A, B, C).toFixed(2);
-        document.getElementById("x1Tratado").innerHTML = x1.toFixed(2);
-        document.getElementById("x2Tratado").innerHTML = x2.toFixed(2);
+        let resultadoDelta = calcularDelta(A, B, C);
 
-        document.getElementById("resCS1Tratado").innerHTML = x1.toFixed(2);
-        document.getElementById("resCS2Tratado").innerHTML = x2.toFixed(2);
+        if (resultadoDelta >= 0) {
+            document.getElementById("resultadoDeltaTratado").innerHTML = resultadoDelta.toFixed(2);
+            document.getElementById("x1Tratado").innerHTML = x1.toFixed(2);
+            document.getElementById("x2Tratado").innerHTML = x2.toFixed(2);
 
+            document.getElementById("resCS1Tratado").innerHTML = x1.toFixed(2);
+            document.getElementById("resCS2Tratado").innerHTML = x2.toFixed(2);
 
+            functionPlot({
+                target: document.querySelector("#plotGraph"),
+                width: 700,
+                height: 600,
+                yAxis: {
+                    domain: [-1, 9]
+                },
+                grid: true,
+                data: [{
+                    // fn: 'x^2 + 2x + 3', // f(x) = ax² + bx + c
+                    fn: `${A}x^2 + ${B}x + ${C}`
+                }]
+            });
 
-    } catch (e) {
-        mostrarModalAlerta('error', 'Opps...', e.message);
-    }
+        } else {
+            mostrarModalAlerta('error', 'Opps...', 'Não há Raizes no conjunto de números Reais');
+            setTimeout(() => {
+                resetarValores();
+            }, 2501)
+        };
+    } catch {
+        mostrarModalAlerta('error', 'Opps...', 'Algo deu errado... ');
+    };
 };
 
 
