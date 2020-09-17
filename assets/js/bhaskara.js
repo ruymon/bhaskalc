@@ -22,9 +22,10 @@ function calcularBhaskara(a, b, c) {
 
 function calcularResultado() {
 
-    const A = parseInt($('#coeficienteA').val());
-    const B = parseInt($('#coeficienteB').val());
-    const C = parseInt($('#coeficienteC').val());
+    const A = parseFloat($('#coeficienteA').val());
+    const B = parseFloat($('#coeficienteB').val());
+    const C = parseFloat($('#coeficienteC').val());
+
 
     if (isNaN(A) || isNaN(B) || isNaN(C)) {
         mostrarModalAlerta('error', 'Opps...', 'Faltando parametros.');
