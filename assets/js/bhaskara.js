@@ -54,8 +54,8 @@ function calcularResultado() {
 
             functionPlot({
                 target: document.querySelector("#plotGraph"),
-                width: 700,
-                height: 600,
+                width: 695,
+                height: 690,
                 yAxis: {
                     domain: [-1, 9]
                 },
