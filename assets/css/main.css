@@ -332,24 +332,23 @@ body {
 
 /* Modal ALERT */
 
-.popup-class {
+.popup-classDark {
     background-color: var(--main-bg-color-dark);
 }
 
-.header-class {
-    color: var(-input-formula-dark);
-}
-
-.title-class {
-    color: var(--input-title-dark);
+.title-classDark {
+    color: white;
     font-family: 'Titillium Web', sans-serif;
     font-weight: 500;
+    font-size: 30px;
+    padding: 5px;
 }
 
-.content-class {
-    color: var(--input-title-dark);
+.content-classDark {
+    color: white;
     font-family: 'Titillium Web', sans-serif;
     font-weight: 500;
+    font-size: 20px;
 }
 
 

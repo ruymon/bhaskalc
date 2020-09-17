@@ -106,20 +106,10 @@ function mostrarModalAlerta(icon, title, text) {
         timer: 2500,
         timerProgressBar: true,
         customClass: {
-            popup: temaAtual == 'dark' ? 'popup-class' : 'popup-classLight',
-            header: temaAtual == 'dark' ? 'header-class' : 'header-classLight',
-            title: temaAtual == 'dark' ? 'title-class' : 'title-classLight',
-            content: temaAtual == 'dark' ? 'content-class' : 'content-classLight',
+            popup: temaAtual == 'dark' ? 'popup-classDark' : 'popup-classLight',
+            header: temaAtual == 'dark' ? 'header-classDark' : 'header-classLight',
+            title: temaAtual == 'dark' ? 'title-classDark' : 'title-classLight',
+            content: temaAtual == 'dark' ? 'content-classDark' : 'content-classLight',
         },
     });
 };
-
-
-
-// SWEET ALERTS TEMPLATES
-
-/*
-
-ICONS  [ success, error, warning, question, info ]
-
-*/
