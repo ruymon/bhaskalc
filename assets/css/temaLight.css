@@ -227,23 +227,22 @@
 /* Modal ALERT */
 
 .popup-classLight {
-    background-color: var(--main-bg-color-light);
+    background-color: white;
 }
 
-.header-class {
-    color: var(-input-formula-light);
-}
-
-.title-class {
-    color: var(--input-title-light);
+.title-classLight {
+    color: var(--input-formula-light);
     font-family: 'Titillium Web', sans-serif;
     font-weight: 500;
+    font-size: 30px;
+    padding: 5px;
 }
 
-.content-class {
-    color: var(--input-title-light);
+.content-classLight {
+    color: var(--input-formula-light);
     font-family: 'Titillium Web', sans-serif;
     font-weight: 500;
+    font-size: 20px;
 }
 
 
