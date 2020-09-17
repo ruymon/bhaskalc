@@ -4,11 +4,6 @@
 
 function calcularDelta(a, b, c) {
     const valorDelta = (b ** 2) - 4 * (a * c);
-
-    if (valorDelta < 0) {
-        throw new Error("Não existe raizes reais para esses coeficientes...");
-    };
-
     return valorDelta;
 };
 
@@ -26,59 +21,95 @@ function calcularBhaskara(a, b, c) {
 };
 
 function calcularResultado() {
+
     const A = parseInt($('#coeficienteA').val());
     const B = parseInt($('#coeficienteB').val());
     const C = parseInt($('#coeficienteC').val());
 
-    if (isNaN(A) === true || isNaN(B) === true || isNaN(C) === true) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Faltando parametros.',
-            showConfirmButton: false,
-            timer: 2500,
-            timerProgressBar: true,
-            customClass: {
-                popup: 'popup-class',
-                header: 'header-class',
-                title: 'title-class',
-                content: 'content-class',
-            },
-        })
+    if (isNaN(A) || isNaN(B) || isNaN(C)) {
+        mostrarModalAlerta('error', 'Opps...', 'Faltando parametros.');
         return;
     }
 
     if (A == 0) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'O Coeficiente A não pode ser 0.',
-            showConfirmButton: false,
-            timer: 2500,
-            timerProgressBar: true,
-            customClass: {
-                popup: 'popup-class',
-                header: 'header-class',
-                title: 'title-class',
-                content: 'content-class',
-            },
-        })
+        mostrarModalAlerta('error', 'Opps...', 'O Coeficiente A não pode ser 0.');
         return;
     };
+
+    document.getElementById('graphText').style.display = 'none';
+    document.getElementById('plotGraph').style.display = 'block';
 
     try {
         const { x1, x2 } = calcularBhaskara(A, B, C);
 
-        document.getElementById("resultadoDeltaTratado").innerHTML = calcularDelta(A, B, C).toFixed(2);
-        document.getElementById("x1Tratado").innerHTML = x1.toFixed(2);
-        document.getElementById("x2Tratado").innerHTML = x2.toFixed(2);
+        let resultadoDelta = calcularDelta(A, B, C);
 
-        document.getElementById("resCS1Tratado").innerHTML = x1.toFixed(2);
-        document.getElementById("resCS2Tratado").innerHTML = x2.toFixed(2);
+        if (resultadoDelta >= 0) {
+            document.getElementById("resultadoDeltaTratado").innerHTML = resultadoDelta.toFixed(2);
+            document.getElementById("x1Tratado").innerHTML = x1.toFixed(2);
+            document.getElementById("x2Tratado").innerHTML = x2.toFixed(2);
+
+            document.getElementById("resCS1Tratado").innerHTML = x1.toFixed(2);
+            document.getElementById("resCS2Tratado").innerHTML = x2.toFixed(2);
+
+            functionPlot({
+                target: document.querySelector("#plotGraph"),
+                width: 695,
+                height: 690,
+                yAxis: {
+                    domain: [-1, 9]
+                },
+                grid: true,
+                data: [{
+                    // fn: 'x^2 + 2x + 3', // f(x) = ax² + bx + c
+                    fn: `${A}x^2 + ${B}x + ${C}`
+                }]
+            });
+
+        } else {
+            mostrarModalAlerta('error', 'Opps...', 'Não há Raizes no conjunto de números Reais');
+            setTimeout(() => {
+                resetarValores();
+            }, 2501)
+        };
+    } catch {
+        mostrarModalAlerta('error', 'Opps...', 'Algo deu errado... ');
+    };
+};
 
 
+function resetarValores() {
 
-    } catch (e) {
-        alert(e.message);
-    }
+    document.getElementById('coeficienteA').value = null;
+    document.getElementById('coeficienteB').value = null;
+    document.getElementById('coeficienteC').value = null;
+
+    document.getElementById('graphText').style.display = 'block';
+    document.getElementById('plotGraph').style.display = 'none';
+
+    document.getElementById("resultadoDeltaTratado").innerHTML = "value";
+    document.getElementById("x1Tratado").innerHTML = "value";
+    document.getElementById("x2Tratado").innerHTML = "value";
+
+    document.getElementById("resCS1Tratado").innerHTML = "";
+    document.getElementById("resCS2Tratado").innerHTML = "";
+
+};
+
+function mostrarModalAlerta(icon, title, text) {
+    let temaAtual = sessionStorage.getItem('temaAtual');
+    Swal.fire({
+        icon: icon,
+        title: title,
+        text: text,
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        customClass: {
+            popup: temaAtual == 'dark' ? 'popup-classDark' : 'popup-classLight',
+            header: temaAtual == 'dark' ? 'header-classDark' : 'header-classLight',
+            title: temaAtual == 'dark' ? 'title-classDark' : 'title-classLight',
+            content: temaAtual == 'dark' ? 'content-classDark' : 'content-classLight',
+        },
+    });
 };

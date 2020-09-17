@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- END META TAGS -->
 
-    <title>Bhaskalc - BETA</title>
+    <title>Bhaskalc - v2 Beta</title>
 
     <!-- Logo FavIcon -->
     <link rel="icon" type="image/png" href="./assets/img/logo.png" />
@@ -35,25 +35,57 @@
     <!-- END Bootstrap-->
 
     <!-- CDN Sweet Alerts -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script src="sweetalert2.all.min.js"></script>
+    <script src="./assets/libs/sweetalert2@10.js"></script>
     <!-- End CDN Alerts -->
+
+    <!-- Function Plot Lib -->
+    <script src="./assets/libs/function-plot.js"></script>
+    <!-- <script src="https://unpkg.com/function-plot/dist/function-plot.js"></script> -->
+    <!-- End Function Plot Lib -->
 
     <!-- CSS LINK-->
     <link rel="stylesheet" href="./assets/css/reset.css">
     <link rel="stylesheet" href="./assets/css/toggle.css">
     <link rel="stylesheet" href="./assets/css/main.css">
+    <link rel="stylesheet" href="./assets/css/temaLight.css">
+    <!-- LOADER -->
+    <link rel="stylesheet" href="./assets/css/loader.css">
 
-    <!--Themes -->
-    <link rel="stylesheet" href="./assets/css/theme.css">
-    <!-- End Themes-->
 
     <!-- BHASKHALC CORE JS -->
     <script type="text/javascript" src="assets/js/bhaskara.js"></script>
     <!-- End of Script-->
+
+    <!-- Script Pegar Status Cache Tema -->
+    <script>
+        setTimeout(() => {
+            let temaAtual = sessionStorage.getItem('temaAtual');
+            let statusTema = document.getElementById('switch');
+
+            if (temaAtual && statusTema) {
+                temaAtual == 'dark' ? statusTema.checked = false : statusTema.checked = true
+            }
+            mudarCor();
+        }, 1000);
+        setTimeout(() => {
+            document.getElementById('loadingScreen').style.display = 'none';
+        }, 4000)
+    </script>
+
+    <!-- Fim Script Pegar Status Cache -->
 </head>
 
+
 <body id="bodyStyle" class="bodyStyle">
+
+    <div class="loadingScreen" id="loadingScreen">
+        <div class="loadingBg"></div>
+        <div class="loader"></div>
+        <span class="loadingText">Carregando...</span>
+    </div>
+
+
+
     <!-- Start of User Input Content -->
 
     <div class="formInput" id="formInput">
@@ -85,7 +117,7 @@
 
             <div>
                 <!-- Interface Buttons -->
-                <button type="button" class="botaoLimpar" id="botaoLimpar" onclick="window.location.href=window.location.href">Reset</button>
+                <button type="button" class="botaoLimpar" id="botaoLimpar" onclick="resetarValores()">Reset</button>
                 <button type="button" class="botaoCalcular" id="botaoCalcular" onclick='calcularResultado()'>Calcular</button>
             </div>
             <!-- Dark Mode Toggle-->
@@ -107,8 +139,19 @@
     <div class="outputDivision">
         <!-- Parable graph display-->
         <div class="graph" id="graph">
-            <p style="text-align: center; font-size: 72px; margin-top: 40%;">Insert Graph</p>
-            <p style="text-align: center; font-size: 28px; margin-top: 5%;">Recurso em desenvolvimento...</p>
+
+
+            <div id="plotGraph">
+                <!-- GRAPH PLOT -->
+
+            </div>
+
+
+
+
+
+            <p id="graphText" style="text-align: center; font-size: 72px;">Insert Graph</p>
+
         </div>
 
         <!-- Results (delta, x1, x2...)-->

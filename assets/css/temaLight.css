@@ -1,0 +1,249 @@
+/* 
+=======================
+=======================
+=-----TEMA LIGHT------=
+=======================
+=======================
+ */
+
+ :root {
+    /* MAIN SECTION */
+    --main-bg-color-light: rgb(87, 152, 158);
+    --main-bg-input-light: rgb(255, 255, 255);
+    /* INPUT FORM SECTION */
+    --input-title-light: rgb(46, 46, 46);
+    --input-formula-light: rgb(69, 69, 69);
+    --input-input-light: rgb(245, 245, 245);
+    --input-text-light: rgb(0, 0, 0);
+    --input-color-light: rgb(41, 41, 41);
+    --input-botao-bg-light: rgb(87, 152, 158);
+    --dev-credit-color-light: rgb(46, 46, 46);
+    /*GRAPH SECTION */
+    --graph-bg-light: rgb(141, 196, 201);
+    --graph-color-light: rgb(69, 69, 69);
+    /* OUTPUT SECTION */
+    --form-output-bg-light: white;
+    --title-output-color-light: rgb(0, 0, 0);
+    /* OUTPUT DELTA SECTION */
+    --output-delta-tratado-color-light: rgb(209, 13, 209);
+    --output-header-delta-tratado-color-light: rgb(0, 0, 0);
+    --output-delta-tratado-bg-light: rgb(41, 41, 41);
+    /* OUTPUT X1 SECTION */
+    --output-header-x1-tratado-color-light: rgb(0, 0, 0);
+    --output-x1-tratado-color-light: rgb(0, 255, 34);
+    --output-x1-tratado-bg-light: rgb(41, 41, 41);
+    /* OUTPUT X2 SECTION */
+    --output-header-x2-tratado-color-light: rgb(0, 0, 0);
+    --output-x2-tratado-color-light: rgb(0, 255, 34);
+    --output-x2-tratado-bg-light: rgb(41, 41, 41);
+    /* OUTPUT CONJUNTO SOLUÇÃO */
+    --output-header-conjuntoSolucao-tratado-color-light: rgb(0, 0, 0);
+    --output-conjuntoSolucao-tratado-color-light: rgb(0, 238, 255);
+    --output-conjuntoSolucao-tratado-bg-light: rgb(41, 41, 41);
+}
+
+.lightBodyStyle {
+    background-color: var(--main-bg-color-light);
+}
+
+.lightFormInput {
+    left: 5%;
+    bottom: 25%;
+    width: 320px;
+    height: 570px;
+    position: absolute;
+    text-align: center;
+    border-radius: 5px;
+    background-color: var(--main-bg-input-light);
+    box-shadow: 0px 0px 20px 2px rgba(0, 0, 0, 0.30);
+}
+
+.lightInputTittle {
+    color: var(--input-title-light);
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 500;
+    margin-top: 25px;
+    margin-bottom: 9px;
+    font-size: 30px;
+}
+
+.lightFormula {
+    color: var(--input-formula-light);
+    font-family: 'Crimson Text', serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.lightInput {
+    background-color: var(--input-input-light);
+    border: 2px solid rgb(255, 255, 255);
+    color: var(--input-color-light);
+    width: 250px;
+    height: 40px;
+    font-weight: 200;
+    box-sizing: border-box;
+    border-radius: 5px;
+    padding-left: 5px;
+    text-align: left;
+    font-size: 16px;
+    outline: none;
+}
+
+.lightInputText {
+    text-align: left;
+    margin-left: 10%;
+    font-size: 16px;
+    color: var(--input-text-light);
+}
+
+.lightInput:focus {
+    border-radius: 10px;
+    border: 2px solid rgb(87, 152, 158);
+}
+
+.lightBotaoLimpar {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 3px;
+    width: 250px;
+    height: 40px;
+    background-color: var(--input-botao-bg-light);
+    color: white;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 200;
+    font-size: 17px;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.lightBotaoLimpar:hover {
+    transform: scale(1.02);
+    transition-duration: 200ms;
+}
+
+.lightBotaoCalcular {
+    margin-top: 7px;
+    padding: 3px;
+    width: 250px;
+    height: 40px;
+    background-color: var(--input-botao-bg-light);
+    color: white;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 200;
+    font-size: 17px;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.lightBotaoCalcular:hover {
+    transform: scale(1.02);
+    transition-duration: 200ms;
+}
+
+.lightModoNoturno {
+    display: absolute;
+    text-align: center;
+    align-content: center;
+    margin-left: 140px;
+}
+
+.lightDevCredits {
+    margin-top: 18px;
+    letter-spacing: 0.8px;
+    font-size: 12px;
+    font-weight: 100;
+    color: var(--dev-credit-color-light);
+}
+
+.lightGraph {
+    float: left;
+    height: 100%;
+    text-align: center;
+    font-size: 72px;
+    background-color: var(--graph-bg-light);
+    color: var(--graph-color-light);
+    width: 66%;
+}
+
+.lightFormOutput {
+    float: right;
+    height: 100%;
+    width: 34%;
+    background-color: var(--form-output-bg-light);
+}
+
+.lightTituloOutput {
+    padding: 5px;
+    margin-top: 20px;
+    color: var(--title-output-color-light);
+    font-size: 30px;
+    text-align: center;
+}
+
+.lightHeaderDeltaTratado {
+    color: var(--output-header-delta-tratado-color-light);
+    display: inline;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.lightHeaderX1Tratado {
+    color: var(--output-header-x1-tratado-color-light);
+    display: inline;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.lightHeaderX2Tratado {
+    color: var(--output-header-x2-tratado-color-light);
+    display: inline;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+.lightHeaderConjuntoSolucaoTratado {
+    color: var(--output-header-conjuntoSolucao-tratado-color-light);
+    font-size: 25px;
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+
+
+/*
+
+/* Fim Output Delta */
+
+
+/* Modal ALERT */
+
+.popup-classLight {
+    background-color: white;
+}
+
+.title-classLight {
+    color: var(--input-formula-light);
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 500;
+    font-size: 30px;
+    padding: 5px;
+}
+
+.content-classLight {
+    color: var(--input-formula-light);
+    font-family: 'Titillium Web', sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+}
+
+
+/* Fim Output Conjunto Solução */
