@@ -15,6 +15,7 @@
 
 .loadingBg {
     background: rgb(36, 41, 46);
+    background-image: url(/bhaskalc/assets/img/pattern_bg_opaco.png);
     opacity: 1;
     width: 100%;
     z-index: 998;
@@ -24,31 +25,13 @@
     animation: fadeOut 1s 3s;
 }
 
-
-/* .svgPattern {
+.patternBg {
     opacity: 0.2;
-    margin: auto;
-    z-index: 996;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-} */
-
-.svgPatternLeft {
-    width: 50%;
-    position: fixed;
-    opacity: 0.2;
-    margin-left: 50%;
-}
-
-.svgPatternRight {
-    width: 50%;
-    position: fixed;
-    opacity: 0.2;
-    margin-right: 50%;
+    width: 500;
+    size: cover;
+    position: relative;
+    display: block;
+    z-index: 994;
 }
 
 .loadingText {
