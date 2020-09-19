@@ -24,6 +24,35 @@
     animation: fadeOut 1s 3s;
 }
 
+
+/* .svgPattern {
+    opacity: 0.2;
+    margin: auto;
+    z-index: 996;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+} */
+
+.svgPatternLeft {
+    background-image: url("/bhaskalc/assets/svg/bg3.svg") repeat scroll 0% 0%;
+    width: 50%;
+    position: fixed;
+    opacity: 0.2;
+    margin-left: 50%;
+}
+
+.svgPatternRight {
+    background-image: url("/bhaskalc/assets/svg/bg3.svg") repeat scroll 0% 0%;
+    width: 50%;
+    position: fixed;
+    opacity: 0.2;
+    margin-right: 50%;
+}
+
 .loadingText {
     color: rgb(168, 168, 168);
     font-family: 'Titillium Web', sans-serif;
