@@ -61,7 +61,7 @@ body {
     --output-x2-tratado-bg-dark: rgb(41, 41, 41);
     /* OUTPUT CONJUNTO SOLUÇÃO */
     --output-header-conjuntoSolucao-tratado-color-dark: rgb(158, 173, 184);
-    --output-conjuntoSolucao-tratado-color-dark: rgb(170, 182, 0);
+    --output-conjuntoSolucao-tratado-color-dark: #cf6d05;
     --output-conjuntoSolucao-tratado-bg-dark: rgb(41, 41, 41);
 }
 

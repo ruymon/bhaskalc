@@ -9,7 +9,6 @@ function calcularDelta(a, b, c) {
         throw new Error('Não há Raizes no conjunto de números Reais');
 
     };
-
     return valorDelta;
 };
 
@@ -27,8 +26,6 @@ function calcularBhaskara(a, b, c) {
 };
 
 function calcularResultado() {
-
-    console.log('FIX.JS');
 
     const A = parseFloat($('#coeficienteA').val());
     const B = parseFloat($('#coeficienteB').val());
@@ -50,20 +47,27 @@ function calcularResultado() {
     document.getElementById('plotGraph').style.display = 'block';
 
     functionPlot({
+        title: '',
         target: document.querySelector("#plotGraph"),
-        width: 700,
-        height: 600,
-        yAxis: {
-            domain: [-1, 9]
-        },
+        width: 730,
+        height: 660,
         grid: true,
+        tip: {
+            xLine: true, // dashed line parallel to y = 0
+            yLine: true, // dashed line parallel to x = 0
+        },
+        xAxis: {
+            label: 'x - axis',
+            domain: [-10, 10]
+        },
+        yAxis: {
+            label: 'y - axis'
+        },
         data: [{
-            // fn: 'x^2 + 2x + 3', // f(x) = ax² + bx + c
-            fn: `${A}x^2 + ${B}x + ${C}`
+            fn: `${A}x^2 + ${B}x + ${C}`,
+            color: '#ffffff',
         }]
-    });
-
-
+    })
 
     try {
         const { x1, x2 } = calcularBhaskara(A, B, C);
@@ -78,14 +82,7 @@ function calcularResultado() {
 
 
     } catch (e) {
-        mostrarModalAlerta('info', 'Aviso', e.message);
-
-        document.getElementById("x1Tratado").innerHTML = 'TESTE';
-        document.getElementById("x2Tratado").innerHTML = 'TESTE';
-
-        document.getElementById("resCS1Tratado").innerHTML = 'TESTE';
-        document.getElementById("resCS2Tratado").innerHTML = 'TESTE';
-
+        mostrarModalAlerta('info', 'Aviso:', e.message);
     }
 };
 
