@@ -15,6 +15,7 @@
 
 .loadingBg {
     background: rgb(36, 41, 46);
+    background-image: url(/bhaskalc/assets/img/pattern_bg_opaco.png);
     opacity: 1;
     width: 100%;
     z-index: 998;
@@ -22,6 +23,15 @@
     display: block;
     position: absolute;
     animation: fadeOut 1s 3s;
+}
+
+.patternBg {
+    opacity: 0.2;
+    width: 500;
+    size: cover;
+    position: relative;
+    display: block;
+    z-index: 994;
 }
 
 .loadingText {

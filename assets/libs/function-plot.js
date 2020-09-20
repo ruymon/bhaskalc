@@ -3173,15 +3173,16 @@
 
             function i(n) {
                 const r = this;
-                n.derivative && n.derivative.updateOnMouseMove && !n.derivative.$$mouseListener && (n.derivative.$$mouseListener = function(t) { n.derivative && (n.derivative.x0 = t), e(r) }, t.on("tip:update", n.derivative.$$mouseListener))
+                n.derivative && n.derivative.updateOnMouseMove && !n.derivative.$$mouseListener && (n.derivative.$$mouseListener = function({ x: t }) { n.derivative && (n.derivative.x0 = t), e(r) }, t.on("tip:update", n.derivative.$$mouseListener))
             }
             return e = function(n) {
                 n.each((function(e) {
                     const o = Ne(this),
                         a = r.call(n, e);
                     i.call(n, e);
-                    const s = o.selectAll("g.derivative").data(a);
-                    s.enter().append("g").attr("class", "derivative"), s.call(Hi(t)), s.selectAll("path").attr("opacity", .5), s.exit().remove()
+                    const s = o.selectAll("g.derivative").data(a),
+                        u = s.enter().append("g").attr("class", "derivative");
+                    s.merge(u).call(Hi(t)), s.merge(u).selectAll("path").attr("opacity", .5), s.exit().remove()
                 }))
             }, e
         }
@@ -3203,7 +3204,7 @@
 
             function o(n, i) {
                 const o = this;
-                i.updateOnMouseMove && !i.$$mouseListener && (i.$$mouseListener = function(t) { i.x1 = t, r(n, i), e(o) }, t.on("tip:update", i.$$mouseListener))
+                i.updateOnMouseMove && !i.$$mouseListener && (i.$$mouseListener = function({ x: t }) { i.x1 = t, r(n, i), e(o) }, t.on("tip:update", i.$$mouseListener))
             }
 
             function a(t) {
@@ -3305,8 +3306,8 @@
             }
             build() { return this.internalVars(), this.drawGraphWrapper(), this }
             internalVars() {
-                const t = this;
-                let n = this.meta.margin = { left: 40, right: 20, top: 20, bottom: 20 };
+                const t = this,
+                    n = this.meta.margin = { left: 40, right: 20, top: 20, bottom: 20 };
                 this.options.title && (this.meta.margin.top = 40), this.meta.width = (this.options.width || hi.DEFAULT_WIDTH) - n.left - n.right, this.meta.height = (this.options.height || hi.DEFAULT_HEIGHT) - n.top - n.bottom, this.initializeAxes(), this.meta.zoomBehavior || (this.meta.zoomBehavior = function() {
                     var t, n, e, r = Jr,
                         i = ti,
@@ -3510,7 +3511,7 @@
                 const t = this,
                     n = M("~s"),
                     e = M("~e"),
-                    r = function(t) { return function(t) { return t === +t && t === (0 | t) ? n(t) : e(t) } };
+                    r = function() { return function(t) { return t === +t && t === (0 | t) ? n(t) : e(t) } };
                 this.options.xAxis = this.options.xAxis || {}, this.options.xAxis.type = this.options.xAxis.type || "linear", this.options.yAxis = this.options.yAxis || {}, this.options.yAxis.type = this.options.yAxis.type || "linear";
                 const i = this.meta.xDomain = function(t) { if (t.domain) return t.domain; if ("linear" === t.type) { const t = 12; return [-t / 2, t / 2] } if ("log" === t.type) return [1, 10]; throw Error("axis type " + t.type + " unsupported") }(this.options.xAxis),
                     o = this.meta.yDomain = function(n) { if (n.domain) return n.domain; const e = function(n) { const e = n[1] - n[0]; return t.meta.height * e / t.meta.width }(i); if ("linear" === n.type) return [-e / 2, e / 2]; if ("log" === n.type) return [1, 10]; throw Error("axis type " + n.type + " unsupported") }(this.options.yAxis);
@@ -3522,7 +3523,7 @@
                 const t = this.root = Ne(this.options.target).selectAll("svg").data([this.options]);
                 this.root.enter = t.enter().append("svg").attr("class", "function-plot").attr("font-size", this.getFontSize()), t.merge(this.root.enter).attr("width", this.meta.width + this.meta.margin.left + this.meta.margin.right).attr("height", this.meta.height + this.meta.margin.top + this.meta.margin.bottom), this.buildTitle(), this.buildLegend(), this.buildCanvas(), this.buildClip(), this.buildAxis(), this.buildAxisLabel(), this.draw();
                 const n = this.tip = function(t) {
-                    t = Object.assign({ xLine: !1, yLine: !1, renderer: function(t, n, e) { return "(" + t.toFixed(3) + ", " + n.toFixed(3) + ")" }, owner: null }, t);
+                    t = Object.assign({ xLine: !1, yLine: !1, renderer: function(t, n) { return "(" + t.toFixed(3) + ", " + n.toFixed(3) + ")" }, owner: null }, t);
                     const n = d().x((function(t) { return t[0] })).y((function(t) { return t[1] }));
 
                     function e(t, e) { return t.append("path").datum(e).attr("stroke", "grey").attr("stroke-dasharray", "5,5").attr("opacity", .5).attr("d", n) }
@@ -3568,7 +3569,7 @@
                             }
                         }
                         if (-1 !== s) {
-                            i = y, h[s].range && (i = Math.max(i, h[s].range[0]), i = Math.min(i, h[s].range[1])), o = Object(gi.builtIn)(h[s], "fn", { x: i }), r.show(), t.owner.emit("tip:update", i, o, s);
+                            i = y, h[s].range && (i = Math.max(i, h[s].range[0]), i = Math.min(i, h[s].range[1])), o = Object(gi.builtIn)(h[s], "fn", { x: i }), r.show(), t.owner.emit("tip:update", { x: i, y: o, index: s });
                             const n = ui()(i, l.invert(-20), l.invert(p + 20)),
                                 e = ui()(o, f.invert(m + 20), f.invert(-20)),
                                 a = vi.color(h[s], s);
@@ -3597,13 +3598,13 @@
                 t.append("g").attr("class", "x axis"), t.append("g").attr("class", "y axis"), this.canvas.merge(this.canvas.enter).select(".x.axis").attr("transform", "translate(0," + this.meta.height + ")").call(this.meta.xAxis), this.canvas.merge(this.canvas.enter).select(".y.axis").call(this.meta.yAxis)
             }
             buildAxisLabel() {
-                let t, n;
-                const e = this.canvas;
-                t = e.merge(e.enter).selectAll("text.x.axis-label").data((function(t) { return [t.xAxis.label].filter(Boolean) }));
-                const r = t.enter().append("text").attr("class", "x axis-label").attr("text-anchor", "end");
-                t.merge(r).attr("x", this.meta.width).attr("y", this.meta.height - 6).text((function(t) { return t })), t.exit().remove(), n = e.merge(e.enter).selectAll("text.y.axis-label").data((function(t) { return [t.yAxis.label].filter(Boolean) }));
-                const i = n.enter().append("text").attr("class", "y axis-label").attr("y", 6).attr("dy", ".75em").attr("text-anchor", "end").attr("transform", "rotate(-90)");
-                n.merge(i).text((function(t) { return t })), n.exit().remove()
+                const t = this.canvas,
+                    n = t.merge(t.enter).selectAll("text.x.axis-label").data((function(t) { return [t.xAxis.label].filter(Boolean) })),
+                    e = n.enter().append("text").attr("class", "x axis-label").attr("text-anchor", "end");
+                n.merge(e).attr("x", this.meta.width).attr("y", this.meta.height - 6).text((function(t) { return t })), n.exit().remove();
+                const r = t.merge(t.enter).selectAll("text.y.axis-label").data((function(t) { return [t.yAxis.label].filter(Boolean) })),
+                    i = r.enter().append("text").attr("class", "y axis-label").attr("y", 6).attr("dy", ".75em").attr("text-anchor", "end").attr("transform", "rotate(-90)");
+                r.merge(i).text((function(t) { return t })), r.exit().remove()
             }
             buildContent() {
                 const t = this,
@@ -3638,26 +3639,26 @@
                         i = d().x((function(t) { return t[0] })).y((function(t) { return t[1] }));
                     return n = function(t) {
                         t.each((function() {
-                            const t = Ne(this).selectAll("g.annotations").data((function(t) { return t.annotations || [] }));
-                            t.enter().append("g").attr("class", "annotations");
-                            const n = r.range(),
-                                o = e.range(),
-                                a = t.selectAll("path").data((function(t) {
-                                    return t.hasOwnProperty("x") ? [
+                            const t = Ne(this).selectAll("g.annotations").data((function(t) { return t.annotations || [] })),
+                                n = t.enter().append("g").attr("class", "annotations"),
+                                o = r.range(),
+                                a = e.range(),
+                                s = t.merge(n).selectAll("path").data((function(t) {
+                                    return "x" in t ? [
                                         [
-                                            [0, n[0]],
-                                            [0, n[1]]
+                                            [0, o[0]],
+                                            [0, o[1]]
                                         ]
                                     ] : [
                                         [
-                                            [o[0], 0],
-                                            [o[1], 0]
+                                            [a[0], 0],
+                                            [a[1], 0]
                                         ]
                                     ]
                                 }));
-                            a.enter().append("path").attr("stroke", "#eee").attr("d", i), a.exit().remove();
-                            const s = t.selectAll("text").data((function(t) { return [{ text: t.text || "", hasX: t.hasOwnProperty("x") }] }));
-                            s.enter().append("text").attr("y", (function(t) { return t.hasX ? 3 : 0 })).attr("x", (function(t) { return t.hasX ? 0 : 3 })).attr("dy", (function(t) { return t.hasX ? 5 : -5 })).attr("text-anchor", (function(t) { return t.hasX ? "end" : "" })).attr("transform", (function(t) { return t.hasX ? "rotate(-90)" : "" })).text((function(t) { return t.text })), s.exit().remove(), t.attr("transform", (function(t) { return t.hasOwnProperty("x") ? "translate(" + e(t.x) + ", 0)" : "translate(0, " + r(t.y) + ")" })), t.exit().remove()
+                            s.enter().append("path").attr("stroke", "#eee").attr("d", i), s.exit().remove();
+                            const u = t.merge(n).selectAll("text").data((function(t) { return [{ text: t.text || "", hasX: "x" in t }] }));
+                            u.enter().append("text").attr("y", (function(t) { return t.hasX ? 3 : 0 })).attr("x", (function(t) { return t.hasX ? 0 : 3 })).attr("dy", (function(t) { return t.hasX ? 5 : -5 })).attr("text-anchor", (function(t) { return t.hasX ? "end" : "" })).attr("transform", (function(t) { return t.hasX ? "rotate(-90)" : "" })).text((function(t) { return t.text })), u.exit().remove(), t.merge(n).attr("transform", (function(t) { return "x" in t ? "translate(" + e(t.x) + ", 0)" : "translate(0, " + r(t.y) + ")" })), t.exit().remove()
                         }))
                     }, n
                 }({ owner: t }));
@@ -3700,11 +3701,11 @@
                         mouseout: function() { t.tip.hide() },
                         zoom: function({ transform: n }) {
                             if (t.options.disableZoom) return;
-                            let e = n.rescaleX(t.meta.zoomBehavior.xScale).interpolate(Rt),
+                            const e = n.rescaleX(t.meta.zoomBehavior.xScale).interpolate(Rt),
                                 r = n.rescaleY(t.meta.zoomBehavior.yScale).interpolate(Rt);
                             t.meta.xScale.domain(e.domain()).range(e.range()), t.meta.yScale.domain(r.domain()).range(r.range())
                         },
-                        "tip:update": function(n, e, r) {
+                        "tip:update": function({ x: n, y: e, index: r }) {
                             const i = t.root.merge(t.root.enter).datum().data[r],
                                 o = i.title || "",
                                 a = i.renderer || function(t, n) { return t.toFixed(3) + ", " + n.toFixed(3) },
@@ -3718,7 +3719,7 @@
                                 r = { x: t.meta.xScale.invert(e[0]), y: t.meta.yScale.invert(e[1]) };
                             t.linkedGraphs.forEach((function(t) { t.emit("before:mousemove", r), t.emit("mousemove", r) }))
                         },
-                        zoom: function(n) { t.linkedGraphs.forEach((function(e, r) { e.draggable.node().__zoom = t.draggable.node().__zoom, e.emit("zoom", n), e.draw() })), t.emit("all:mousemove", n) }
+                        zoom: function(n) { t.linkedGraphs.forEach((function(e) { e.draggable.node().__zoom = t.draggable.node().__zoom, e.emit("zoom", n), e.draw() })), t.emit("all:mousemove", n) }
                     };
                 Object.keys(n).forEach((function(r) {
                     !e[r] && t.on("all:" + r, (function() {
