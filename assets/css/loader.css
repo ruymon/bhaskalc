@@ -15,7 +15,7 @@
 
 .loadingBg {
     background: rgb(36, 41, 46);
-    background-image: url(/assets/img/pattern_bg_opaco.png);
+    background-image: url(../img/pattern_bg_opaco.png);
     opacity: 1;
     width: 100%;
     z-index: 998;
