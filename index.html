@@ -53,7 +53,7 @@
 
 
     <!-- BHASKHALC CORE JS -->
-    <script type="text/javascript" src="assets/js/bhaskara.js"></script>
+    <script type="text/javascript" src="./assets/js/bhaskara.js"></script>
     <!-- End of Script-->
 
     <!-- Script Pegar Status Cache Tema -->
@@ -117,7 +117,7 @@
             <div>
                 <!-- Interface Buttons -->
                 <button type="button" class="botaoCalcular" id="botaoCalcular" onclick='calcularResultado()'>Calcular</button>
-                <button type="button" class="botaoLimpar" id="botaoLimpar" onclick="resetarValores()">Reset</button>
+                <button type="button" class="botaoLimpar" id="botaoLimpar" onclick='resetarValores()'>Reset</button>
             </div>
             <!-- Dark Mode Toggle-->
             <div class="modoNoturno" id="modoNoturno">
@@ -193,13 +193,15 @@
         <!-- End of Output Content-->
     </div>
 
-
-    <!-- Bhaskara F(x) Script-->
-
-
-
-
-    <!-- End of Bhaskara Script-->
+    <!-- Enter Submit Script -->
+    <script>
+        $('.input').keypress(function(e) {
+            if (e.which == 13) {
+                calcularResultado();
+            }
+        });
+    </script>
+    <!-- End Script -->
 
 
 
