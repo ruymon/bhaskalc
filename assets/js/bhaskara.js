@@ -39,8 +39,10 @@ function calcularResultado() {
     }
 
     if (A == 0) {
-        mostrarModalAlerta('error', 'Opps...', 'O Coeficiente A não pode ser 0.');
-        return;
+
+        console.log('raiz =' C * - 1 / B)
+        //mostrarModalAlerta('error', 'Opps...', 'O Coeficiente A não pode ser 0.');
+        //return;
     };
 
     document.getElementById('graphText').style.display = 'none';
