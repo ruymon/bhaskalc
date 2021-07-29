@@ -40,7 +40,7 @@ function calcularResultado() {
 
     if (A == 0) {
 
-        console.log('raiz =' C * - 1 / B)
+        console.log('raiz =', C * - 1 / B)
         //mostrarModalAlerta('error', 'Opps...', 'O Coeficiente A não pode ser 0.');
         //return;
     };
